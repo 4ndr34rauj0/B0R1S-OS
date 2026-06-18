@@ -1,0 +1,1498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>H4CK-OS v2.7.1</title>
+<style>
+  :root {
+    --bg: #0a0e0a;
+    --bg2: #0f1510;
+    --bg3: #141e14;
+    --panel: #0c130c;
+    --green: #00ff41;
+    --green2: #00cc33;
+    --green3: #009922;
+    --green-dim: #004d14;
+    --green-faint: #001a07;
+    --amber: #ffb000;
+    --red: #ff3333;
+    --cyan: #00ffff;
+    --text: #00ff41;
+    --text-dim: #00992a;
+    --text-mute: #005517;
+    --border: #00441199;
+    --border-bright: #00ff4155;
+    --font: 'Courier New', Courier, monospace;
+    --brightness: 1;
+    --scanline-opacity: 0.04;
+    --crt: 1;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  body {
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: var(--font);
+    overflow: hidden;
+  }
+
+  #tablet {
+    width: 1100px;
+    height: 720px;
+    background: #050805;
+    border: 3px solid #1a2a1a;
+    border-radius: 20px;
+    box-shadow: 0 0 60px #000, 0 0 120px #001a0655;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    filter: brightness(var(--brightness));
+  }
+
+  .scanlines {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,var(--scanline-opacity)) 2px, rgba(0,0,0,var(--scanline-opacity)) 4px);
+    pointer-events: none;
+    z-index: 1000;
+  }
+
+  #taskbar {
+    background: #050805;
+    border-bottom: 1px solid var(--border);
+    height: 36px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 16px;
+    flex-shrink: 0;
+  }
+  #taskbar .logo { color: var(--green); font-weight: bold; font-size: 13px; letter-spacing: 2px; }
+  #taskbar .clock { color: var(--text-dim); font-size: 11px; margin-left: auto; }
+  #taskbar .sig { color: var(--text-mute); font-size: 10px; }
+
+  #screen {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #home {
+    position: absolute;
+    inset: 0;
+    background: var(--bg);
+    padding: 24px;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 16px;
+    align-items: start;
+    transition: opacity 0.2s;
+  }
+  #home.hidden { opacity: 0; pointer-events: none; }
+
+  .app-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 12px 8px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    transition: all 0.15s;
+  }
+  .app-icon:hover {
+    border-color: var(--border-bright);
+    background: var(--green-faint);
+  }
+  .app-icon .icon-box {
+    width: 56px; height: 56px;
+    border: 1px solid var(--green3);
+    border-radius: 8px;
+    background: var(--bg3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    position: relative;
+  }
+  .app-icon .icon-box::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 8px;
+    background: linear-gradient(135deg, rgba(0,255,65,0.08) 0%, transparent 60%);
+  }
+  .app-icon .label {
+    color: var(--text-dim);
+    font-size: 10px;
+    text-align: center;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .app-icon:hover .label { color: var(--green); }
+
+  .app-window {
+    position: absolute;
+    inset: 0;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  .app-window.active { opacity: 1; pointer-events: all; }
+
+  .win-bar {
+    background: #050d05;
+    border-bottom: 1px solid var(--border);
+    height: 32px;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+  .win-bar .win-title { color: var(--green2); font-size: 11px; letter-spacing: 2px; flex: 1; }
+  .win-close {
+    color: var(--red);
+    cursor: pointer;
+    font-size: 16px;
+    background: none;
+    border: none;
+    font-family: var(--font);
+    padding: 0 4px;
+  }
+  .win-close:hover { color: #ff6666; }
+  .win-content { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+
+  /* ========= TERMINAL ========= */
+  #terminal-output {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--text);
+  }
+  #terminal-output .err { color: var(--red); }
+  #terminal-output .warn { color: var(--amber); }
+  #terminal-output .info { color: var(--cyan); }
+  #terminal-output .dim { color: var(--text-dim); }
+  .term-input-row {
+    display: flex;
+    align-items: center;
+    padding: 6px 12px;
+    border-top: 1px solid var(--border);
+    gap: 6px;
+  }
+  .prompt { color: var(--green2); font-size: 12px; white-space: nowrap; }
+  #term-input {
+    flex: 1;
+    background: none;
+    border: none;
+    color: var(--green);
+    font-family: var(--font);
+    font-size: 12px;
+    outline: none;
+    caret-color: var(--green);
+  }
+
+  /* ========= HACK MINIGAME ========= */
+  #hack-app .win-content { padding: 0; }
+  #hack-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    background: #050d05;
+  }
+  .hack-tab {
+    padding: 7px 16px;
+    font-size: 10px;
+    color: var(--text-mute);
+    cursor: pointer;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border-right: 1px solid var(--border);
+    transition: all 0.15s;
+  }
+  .hack-tab.active { color: var(--green); background: var(--green-faint); }
+  .hack-panel { display: none; flex: 1; overflow: auto; padding: 16px; flex-direction: column; gap: 12px; }
+  .hack-panel.active { display: flex; }
+
+  .hk-title { color: var(--green2); font-size: 11px; letter-spacing: 2px; margin-bottom: 4px; }
+  .hk-desc { color: var(--text-dim); font-size: 10px; margin-bottom: 12px; }
+
+  /* Password crack */
+  #crack-grid {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 4px;
+    margin-bottom: 16px;
+  }
+  .crack-cell {
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--green-dim);
+    font-size: 11px;
+    color: var(--text-dim);
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all 0.1s;
+    font-family: var(--font);
+  }
+  .crack-cell:hover { border-color: var(--green2); color: var(--green); background: var(--green-faint); }
+  .crack-cell.selected { border-color: var(--green); color: var(--bg); background: var(--green); }
+  .crack-cell.wrong { border-color: var(--red); color: var(--red); animation: shake 0.3s; }
+  .crack-cell.correct { border-color: var(--cyan); color: var(--cyan); border-color: var(--cyan); }
+  
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-3px)} 75%{transform:translateX(3px)} }
+
+  .hk-meter { height: 12px; background: var(--bg3); border: 1px solid var(--border); border-radius: 2px; overflow: hidden; margin-bottom: 8px; }
+  .hk-meter-fill { height: 100%; background: var(--green3); transition: width 0.3s; }
+  .hk-meter-fill.warn { background: var(--amber); }
+  .hk-meter-fill.danger { background: var(--red); }
+
+  .hk-btn {
+    background: var(--green-faint);
+    border: 1px solid var(--green3);
+    color: var(--green);
+    font-family: var(--font);
+    font-size: 11px;
+    padding: 6px 14px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all 0.15s;
+    border-radius: 3px;
+  }
+  .hk-btn:hover { background: var(--green-dim); border-color: var(--green); }
+  .hk-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .hk-btn.danger { border-color: #550000; color: var(--red); background: #0d0000; }
+  .hk-btn.danger:hover { background: #1a0000; border-color: var(--red); }
+
+  .hk-status { font-size: 11px; color: var(--text-dim); margin-top: 8px; min-height: 16px; }
+  .hk-status.ok { color: var(--green); }
+  .hk-status.bad { color: var(--red); }
+
+  /* Trace game */
+  #trace-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  .trace-node {
+    height: 40px;
+    border: 1px solid var(--green-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: var(--text-mute);
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.15s;
+    font-family: var(--font);
+    position: relative;
+  }
+  .trace-node.active { border-color: var(--green); color: var(--green); background: var(--green-faint); }
+  .trace-node.target { border-color: var(--cyan); color: var(--cyan); animation: pulse 1.5s infinite; }
+  .trace-node.visited { border-color: var(--green3); color: var(--green3); background: #001a07; }
+  .trace-node.blocked { border-color: #550000; color: #550000; background: #0d0000; cursor: not-allowed; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+  /* Port scan */
+  .port-list { display: flex; flex-direction: column; gap: 4px; max-height: 250px; overflow-y: auto; }
+  .port-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 8px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    font-size: 10px;
+    font-family: var(--font);
+  }
+  .port-num { color: var(--cyan); width: 50px; }
+  .port-proto { color: var(--text-dim); width: 40px; }
+  .port-state { width: 60px; }
+  .port-state.open { color: var(--green); }
+  .port-state.closed { color: var(--red); }
+  .port-state.filtered { color: var(--amber); }
+  .port-service { color: var(--text-dim); flex: 1; }
+  .port-exploit { color: var(--green2); cursor: pointer; font-size: 9px; }
+  .port-exploit:hover { color: var(--green); text-decoration: underline; }
+
+  /* ========= SETTINGS ========= */
+  #settings-app .win-content { padding: 20px; overflow-y: auto; gap: 16px; display: flex; flex-direction: column; }
+  .set-section { border: 1px solid var(--border); border-radius: 6px; padding: 14px; }
+  .set-title { color: var(--green2); font-size: 11px; letter-spacing: 2px; margin-bottom: 12px; }
+  .set-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .set-label { color: var(--text-dim); font-size: 11px; }
+  .set-value { color: var(--green); font-size: 11px; min-width: 40px; text-align: right; }
+  
+  input[type=range] {
+    -webkit-appearance: none;
+    width: 160px;
+    height: 4px;
+    background: var(--green-dim);
+    border-radius: 2px;
+    outline: none;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--green);
+    cursor: pointer;
+  }
+
+  .color-options { display: flex; gap: 8px; flex-wrap: wrap; }
+  .color-opt {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 0.15s;
+  }
+  .color-opt.active, .color-opt:hover { border-color: #fff; }
+  
+  select.set-select {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--green);
+    font-family: var(--font);
+    font-size: 11px;
+    padding: 4px 8px;
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  /* ========= CODE EDITOR ========= */
+  #codeit-app .win-content { flex-direction: column; overflow: hidden; }
+  #code-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border-bottom: 1px solid var(--border);
+    background: #050d05;
+    flex-shrink: 0;
+  }
+  #code-toolbar input[type=text] {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--green);
+    font-family: var(--font);
+    font-size: 11px;
+    padding: 4px 8px;
+    border-radius: 3px;
+    outline: none;
+    width: 180px;
+  }
+  #code-editor {
+    flex: 1;
+    background: var(--bg2);
+    color: var(--green);
+    font-family: var(--font);
+    font-size: 12px;
+    border: none;
+    outline: none;
+    padding: 12px;
+    resize: none;
+    line-height: 1.6;
+    tab-size: 2;
+    overflow-y: auto;
+  }
+  #code-preview-area {
+    height: 180px;
+    border-top: 1px solid var(--border);
+    overflow: auto;
+    background: var(--bg);
+    padding: 10px;
+    font-size: 11px;
+    color: var(--text-dim);
+    flex-shrink: 0;
+  }
+
+  /* ========= CUSTOM APPS ========= */
+  .custom-app-frame {
+    width: 100%; height: 100%;
+    border: none;
+    background: var(--bg);
+    color: var(--green);
+    font-family: var(--font);
+  }
+
+  /* ========= FILE MANAGER ========= */
+  #files-app .win-content { display: flex; overflow: hidden; }
+  #files-tree {
+    width: 160px;
+    border-right: 1px solid var(--border);
+    padding: 10px;
+    font-size: 11px;
+    overflow-y: auto;
+    flex-shrink: 0;
+  }
+  .file-tree-item {
+    color: var(--text-dim);
+    padding: 3px 6px;
+    cursor: pointer;
+    border-radius: 3px;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .file-tree-item:hover { color: var(--green); background: var(--green-faint); }
+  .file-tree-item.active { color: var(--green); background: var(--green-faint); }
+  .file-tree-dir { color: var(--cyan); }
+  #files-content { flex: 1; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
+  .file-item { display: flex; align-items: center; gap: 8px; padding: 5px 8px; border-radius: 3px; cursor: pointer; border: 1px solid transparent; }
+  .file-item:hover { border-color: var(--border); background: var(--green-faint); }
+  .file-icon { color: var(--cyan); font-size: 10px; width: 16px; text-align: center; }
+  .file-name { color: var(--text); font-size: 11px; flex: 1; }
+  .file-size { color: var(--text-mute); font-size: 10px; }
+  .file-date { color: var(--text-mute); font-size: 10px; width: 80px; text-align: right; }
+
+  /* ========= NETWORK MAP ========= */
+  #netmap-canvas { flex: 1; cursor: crosshair; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg2); }
+  ::-webkit-scrollbar-thumb { background: var(--green-dim); border-radius: 3px; }
+
+  /* Badges */
+  .badge {
+    font-size: 8px;
+    padding: 1px 5px;
+    border-radius: 3px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .badge.ok { background: #001a07; color: var(--green2); border: 1px solid var(--green3); }
+  .badge.warn { background: #1a0e00; color: var(--amber); border: 1px solid #664400; }
+  .badge.err { background: #1a0000; color: var(--red); border: 1px solid #550000; }
+  .badge.info { background: #001a1a; color: var(--cyan); border: 1px solid #005555; }
+
+  #boot-screen {
+    position: absolute;
+    inset: 0;
+    background: #000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 500;
+    color: var(--green);
+    font-size: 12px;
+    gap: 6px;
+  }
+  #boot-screen.gone { display: none; }
+  #boot-log { max-width: 500px; width: 100%; text-align: left; }
+  #boot-log div { margin-bottom: 2px; animation: fadein 0.05s; }
+  @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+
+  .theme-amber { --green: #ffb000; --green2: #cc8800; --green3: #997700; --green-dim: #4d3800; --green-faint: #1a1200; --text: #ffb000; --text-dim: #997700; --text-mute: #4d3800; --border: #66440099; --border-bright: #ffb00055; }
+  .theme-cyan { --green: #00ffff; --green2: #00cccc; --green3: #009999; --green-dim: #004d4d; --green-faint: #001a1a; --text: #00ffff; --text-dim: #009999; --text-mute: #004d4d; --border: #00444499; --border-bright: #00ffff55; }
+  .theme-red { --green: #ff3333; --green2: #cc1111; --green3: #991111; --green-dim: #4d0000; --green-faint: #1a0000; --text: #ff3333; --text-dim: #991111; --text-mute: #4d0000; --border: #44000099; --border-bright: #ff333355; }
+  .theme-purple { --green: #cc44ff; --green2: #aa22dd; --green3: #881199; --green-dim: #3d0055; --green-faint: #150019; --text: #cc44ff; --text-dim: #881199; --text-mute: #3d0055; --border: #44006699; --border-bright: #cc44ff55; }
+</style>
+</head>
+<body>
+<div id="tablet">
+  <div class="scanlines"></div>
+
+  <div id="boot-screen">
+    <div style="font-size:20px;letter-spacing:4px;color:var(--green);margin-bottom:24px;">H4CK-OS</div>
+    <div id="boot-log"></div>
+    <div style="width:300px;height:3px;background:#0a0a0a;border:1px solid var(--green-dim);margin-top:18px;border-radius:2px;overflow:hidden;">
+      <div id="boot-bar" style="height:100%;width:0;background:var(--green2);transition:width 0.05s;"></div>
+    </div>
+  </div>
+
+  <div id="taskbar">
+    <span class="logo">H4CK-OS v2.7.1</span>
+    <span class="sig">[ SECURE_SESSION ]</span>
+    <span class="sig" id="tb-ip">IP: ---.---.---.-</span>
+    <span class="clock" id="clock">00:00:00</span>
+  </div>
+
+  <div id="screen">
+    <div id="home">
+      <div class="app-icon" onclick="openApp('terminal')">
+        <div class="icon-box">💻</div>
+        <span class="label">Terminal</span>
+      </div>
+      <div class="app-icon" onclick="openApp('hack')">
+        <div class="icon-box">🔓</div>
+        <span class="label">HackKit</span>
+      </div>
+      <div class="app-icon" onclick="openApp('files')">
+        <div class="icon-box">📁</div>
+        <span class="label">Files</span>
+      </div>
+      <div class="app-icon" onclick="openApp('netmap')">
+        <div class="icon-box">🌐</div>
+        <span class="label">NetMap</span>
+      </div>
+      <div class="app-icon" onclick="openApp('settings')">
+        <div class="icon-box">⚙️</div>
+        <span class="label">Settings</span>
+      </div>
+      <div class="app-icon" onclick="openApp('codeit')">
+        <div class="icon-box">📝</div>
+        <span class="label">CodeIt</span>
+      </div>
+      <div id="custom-icons"></div>
+    </div>
+
+    <!-- TERMINAL -->
+    <div class="app-window" id="terminal-app">
+      <div class="win-bar">
+        <span class="win-title">TERMINAL — root@hackos</span>
+        <button class="win-close" onclick="closeApp('terminal')">✕</button>
+      </div>
+      <div class="win-content">
+        <div id="terminal-output"></div>
+        <div class="term-input-row">
+          <span class="prompt" id="term-prompt">root@hackos:~$</span>
+          <input type="text" id="term-input" autocomplete="off" spellcheck="false" placeholder="type a command...">
+        </div>
+      </div>
+    </div>
+
+    <!-- HACKKIT -->
+    <div class="app-window" id="hack-app">
+      <div class="win-bar">
+        <span class="win-title">HACKKIT v3.1 — EXPLOITATION SUITE</span>
+        <button class="win-close" onclick="closeApp('hack')">✕</button>
+      </div>
+      <div class="win-content">
+        <div id="hack-tabs">
+          <div class="hack-tab active" onclick="switchHackTab('crack')">PWD CRACK</div>
+          <div class="hack-tab" onclick="switchHackTab('portscan')">PORT SCAN</div>
+          <div class="hack-tab" onclick="switchHackTab('trace')">TRACE ROUTE</div>
+        </div>
+
+        <!-- Password Crack -->
+        <div class="hack-panel active" id="hack-crack">
+          <div>
+            <div class="hk-title">// PASSWORD MATRIX BREACH</div>
+            <div class="hk-desc">Select words that share similarities with the password to reduce attempts. Find the correct entry.</div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+              <span style="font-size:10px;color:var(--text-dim);">ATTEMPTS REMAINING</span>
+              <span id="crack-attempts" style="font-size:10px;color:var(--amber);">4/4</span>
+            </div>
+            <div class="hk-meter"><div class="hk-meter-fill" id="crack-bar" style="width:100%"></div></div>
+          </div>
+          <div id="crack-grid"></div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <button class="hk-btn" onclick="crackHint()">SCAN SIMILARITY</button>
+            <button class="hk-btn danger" onclick="initCrack()">RESET MATRIX</button>
+            <div id="crack-hint" style="font-size:10px;color:var(--cyan);"></div>
+          </div>
+          <div class="hk-status" id="crack-status"></div>
+        </div>
+
+        <!-- Port Scan -->
+        <div class="hack-panel" id="hack-portscan">
+          <div>
+            <div class="hk-title">// NETWORK PORT SCANNER</div>
+            <div class="hk-desc">Scan target IP for open services. Exploit vulnerabilities to gain access vectors.</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;">
+            <input id="scan-target" type="text" value="192.168.1.47" style="background:var(--bg3);border:1px solid var(--border);color:var(--green);font-family:var(--font);font-size:11px;padding:5px 10px;border-radius:3px;outline:none;width:160px;">
+            <button class="hk-btn" onclick="startScan()" id="scan-btn">INITIATE SCAN</button>
+            <div class="hk-status" id="scan-status" style="margin:0;"></div>
+          </div>
+          <div class="port-list" id="port-list"></div>
+          <div id="exploit-log" style="margin-top:10px;font-size:10px;color:var(--text-dim);min-height:30px;max-height:80px;overflow-y:auto;"></div>
+        </div>
+
+        <!-- Trace Route -->
+        <div class="hack-panel" id="hack-trace">
+          <div>
+            <div class="hk-title">// NETWORK TRACE ROUTER</div>
+            <div class="hk-desc">Navigate through hostile nodes to reach the target server. Avoid ICE blocks. Plan your route carefully.</div>
+          </div>
+          <div style="display:flex;gap:16px;align-items:center;margin-bottom:8px;">
+            <span style="font-size:10px;color:var(--text-dim);">START: <span style="color:var(--green);">NODE-00</span></span>
+            <span style="font-size:10px;color:var(--text-dim);">TARGET: <span style="color:var(--cyan);" id="trace-target-label">---</span></span>
+            <span style="font-size:10px;color:var(--text-dim);">HOPS: <span style="color:var(--green);" id="trace-hops">0</span></span>
+            <button class="hk-btn" onclick="initTrace()">NEW ROUTE</button>
+          </div>
+          <div id="trace-grid"></div>
+          <div class="hk-status" id="trace-status"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FILES -->
+    <div class="app-window" id="files-app">
+      <div class="win-bar">
+        <span class="win-title">FILE SYSTEM — /root</span>
+        <button class="win-close" onclick="closeApp('files')">✕</button>
+      </div>
+      <div class="win-content" style="flex-direction:row;">
+        <div id="files-tree">
+          <div style="color:var(--text-mute);font-size:9px;letter-spacing:1px;margin-bottom:8px;">DIRECTORIES</div>
+        </div>
+        <div id="files-content">
+          <div style="color:var(--text-mute);font-size:9px;letter-spacing:1px;margin-bottom:8px;display:flex;justify-content:space-between;">
+            <span id="files-path">/root</span>
+            <span id="files-count"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NETMAP -->
+    <div class="app-window" id="netmap-app">
+      <div class="win-bar">
+        <span class="win-title">NETWORK MAP — LIVE TOPOLOGY</span>
+        <button class="win-close" onclick="closeApp('netmap')">✕</button>
+      </div>
+      <div class="win-content" style="position:relative;">
+        <canvas id="netmap-canvas"></canvas>
+        <div style="position:absolute;bottom:10px;left:12px;font-size:9px;color:var(--text-mute);line-height:1.8;">
+          <div>⬤ <span style="color:var(--green)">OWNED</span>&nbsp;&nbsp;⬤ <span style="color:var(--cyan)">GATEWAY</span>&nbsp;&nbsp;⬤ <span style="color:var(--amber)">TARGET</span>&nbsp;&nbsp;⬤ <span style="color:var(--red)">ICE</span></div>
+        </div>
+        <div id="netmap-tooltip" style="position:absolute;background:#050d05;border:1px solid var(--border);padding:6px 10px;font-size:10px;color:var(--green);pointer-events:none;border-radius:4px;display:none;"></div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="app-window" id="settings-app">
+      <div class="win-bar">
+        <span class="win-title">SYSTEM SETTINGS</span>
+        <button class="win-close" onclick="closeApp('settings')">✕</button>
+      </div>
+      <div class="win-content">
+        <div class="set-section">
+          <div class="set-title">// DISPLAY</div>
+          <div class="set-row">
+            <span class="set-label">BRIGHTNESS</span>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <input type="range" min="20" max="100" value="100" oninput="setBrightness(this.value)" id="bright-slider">
+              <span class="set-value" id="bright-val">100%</span>
+            </div>
+          </div>
+          <div class="set-row">
+            <span class="set-label">SCANLINES</span>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <input type="range" min="0" max="20" value="4" oninput="setScanlines(this.value)" id="scan-slider">
+              <span class="set-value" id="scan-val">4</span>
+            </div>
+          </div>
+          <div class="set-row">
+            <span class="set-label">FONT SIZE</span>
+            <select class="set-select" onchange="setFontSize(this.value)">
+              <option value="11">SMALL</option>
+              <option value="12" selected>MEDIUM</option>
+              <option value="14">LARGE</option>
+            </select>
+          </div>
+        </div>
+        <div class="set-section">
+          <div class="set-title">// THEME COLOR</div>
+          <div class="color-options">
+            <div class="color-opt active" style="background:#00ff41;" title="Green" onclick="setTheme('green',this)"></div>
+            <div class="color-opt" style="background:#ffb000;" title="Amber" onclick="setTheme('amber',this)"></div>
+            <div class="color-opt" style="background:#00ffff;" title="Cyan" onclick="setTheme('cyan',this)"></div>
+            <div class="color-opt" style="background:#ff3333;" title="Red" onclick="setTheme('red',this)"></div>
+            <div class="color-opt" style="background:#cc44ff;" title="Purple" onclick="setTheme('purple',this)"></div>
+          </div>
+        </div>
+        <div class="set-section">
+          <div class="set-title">// TERMINAL</div>
+          <div class="set-row">
+            <span class="set-label">HOSTNAME</span>
+            <input type="text" id="hostname-input" value="hackos" style="background:var(--bg3);border:1px solid var(--border);color:var(--green);font-family:var(--font);font-size:11px;padding:4px 8px;border-radius:3px;outline:none;width:140px;" oninput="updateHostname(this.value)">
+          </div>
+          <div class="set-row">
+            <span class="set-label">USERNAME</span>
+            <input type="text" id="username-input" value="root" style="background:var(--bg3);border:1px solid var(--border);color:var(--green);font-family:var(--font);font-size:11px;padding:4px 8px;border-radius:3px;outline:none;width:140px;" oninput="updateUsername(this.value)">
+          </div>
+        </div>
+        <div class="set-section">
+          <div class="set-title">// SYSTEM INFO</div>
+          <div style="font-size:10px;color:var(--text-dim);line-height:2;display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+            <span>OS:</span><span style="color:var(--green);">H4CK-OS 2.7.1</span>
+            <span>KERNEL:</span><span style="color:var(--green);">shadow-5.4.0</span>
+            <span>SESSION:</span><span style="color:var(--green);" id="session-time">0:00</span>
+            <span>MEMORY:</span><span style="color:var(--green);">2.1GB / 8GB</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CODEIT -->
+    <div class="app-window" id="codeit-app">
+      <div class="win-bar">
+        <span class="win-title">CODEIT — APP BUILDER</span>
+        <button class="win-close" onclick="closeApp('codeit')">✕</button>
+      </div>
+      <div class="win-content">
+        <div id="code-toolbar">
+          <span style="font-size:10px;color:var(--text-mute);">APP NAME:</span>
+          <input type="text" id="app-name-input" value="MyApp" placeholder="App name...">
+          <span style="font-size:10px;color:var(--text-mute);">ICON:</span>
+          <input type="text" id="app-icon-input" value="🔧" style="background:var(--bg3);border:1px solid var(--border);color:var(--green);font-family:var(--font);font-size:11px;padding:4px 8px;border-radius:3px;outline:none;width:50px;">
+          <button class="hk-btn" onclick="previewCode()">▶ RUN</button>
+          <button class="hk-btn" onclick="installApp()">⬇ INSTALL APP</button>
+          <button class="hk-btn danger" onclick="clearEditor()">CLEAR</button>
+        </div>
+        <textarea id="code-editor" spellcheck="false" placeholder="// Write HTML/CSS/JS here.
+// This will become an app on your home screen.
+// Example:
+document.write('<h2 style=color:#00ff41>Hello, Hacker!</h2>');">// H4CK-OS App Builder
+// Write HTML content for your app below.
+// You can use inline styles and JS.
+
+document.body.style.background = '#0a0e0a';
+document.body.style.color = '#00ff41';
+document.body.style.fontFamily = 'Courier New, monospace';
+document.body.style.padding = '20px';
+document.write('<h2 style="color:#00ff41;letter-spacing:2px;">MY APP v1.0</h2>');
+document.write('<p style="color:#009922;margin-top:12px;">Edit this code to build your own app.</p>');</textarea>
+        <div style="background:#050d05;border-top:1px solid var(--border);padding:4px 12px;font-size:10px;color:var(--text-mute);flex-shrink:0;display:flex;gap:12px;">
+          <span>OUTPUT PREVIEW</span>
+          <span id="code-line-count">Lines: 0</span>
+        </div>
+        <div id="code-preview-area">
+          <span style="color:var(--text-mute);font-size:10px;">▶ Press RUN to preview your app here</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CUSTOM APP WINDOWS will be inserted here -->
+  </div>
+</div>
+
+<script>
+"use strict";
+
+const tablet = document.getElementById('tablet');
+let sessionStart = Date.now();
+let username = 'root';
+let hostname = 'hackos';
+let currentDir = '/root';
+let customApps = {};
+
+// ====== BOOT ======
+const bootLines = [
+  'BIOS v2.7.1 initializing...',
+  'Memory check: 8192MB OK',
+  'Loading kernel modules...',
+  'shadow-kernel-5.4.0 loaded',
+  'Mounting encrypted filesystem...',
+  'VPN tunnel established',
+  'Firewall rules applied',
+  'Starting H4CK-OS services...',
+  '  [OK] anonymizer daemon',
+  '  [OK] packet router',
+  '  [OK] shadow shell',
+  '  [OK] display manager',
+  'Loading user profile: root',
+  'Session encrypted. Welcome.',
+];
+
+function boot() {
+  const log = document.getElementById('boot-log');
+  const bar = document.getElementById('boot-bar');
+  let i = 0;
+  function step() {
+    if (i < bootLines.length) {
+      const d = document.createElement('div');
+      d.style.color = bootLines[i].startsWith('  [OK]') ? 'var(--green2)' : 'var(--text-dim)';
+      d.textContent = bootLines[i];
+      log.appendChild(d);
+      bar.style.width = ((i + 1) / bootLines.length * 100) + '%';
+      i++;
+      setTimeout(step, 80);
+    } else {
+      setTimeout(() => {
+        document.getElementById('boot-screen').classList.add('gone');
+        initAll();
+      }, 400);
+    }
+  }
+  step();
+}
+
+function initAll() {
+  updateClock();
+  setInterval(updateClock, 1000);
+  randomizeIP();
+  initTerminal();
+  initCrack();
+  initFiles();
+  initNetmap();
+  initTrace();
+}
+
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock').textContent =
+    now.toTimeString().slice(0,8);
+  const elapsed = Math.floor((Date.now() - sessionStart) / 1000);
+  const m = Math.floor(elapsed/60), s = elapsed%60;
+  const el = document.getElementById('session-time');
+  if(el) el.textContent = m+':'+(s<10?'0':'')+s;
+}
+
+function randomizeIP() {
+  const ip = Array.from({length:4}, () => Math.floor(Math.random()*254+1)).join('.');
+  document.getElementById('tb-ip').textContent = 'IP: ' + ip;
+}
+
+// ====== APP MANAGEMENT ======
+function openApp(id) {
+  document.getElementById('home').classList.add('hidden');
+  document.querySelectorAll('.app-window').forEach(w => w.classList.remove('active'));
+  document.getElementById(id + '-app').classList.add('active');
+  if (id === 'terminal') document.getElementById('term-input').focus();
+  if (id === 'netmap') drawNetmap();
+}
+
+function closeApp(id) {
+  document.getElementById(id + '-app').classList.remove('active');
+  document.getElementById('home').classList.remove('hidden');
+}
+
+// ====== TERMINAL ======
+const fsTree = {
+  '/root': ['documents', 'tools', 'payloads', '.config'],
+  '/root/documents': ['mission_brief.txt', 'contacts.enc', 'targets.lst'],
+  '/root/tools': ['nmap.sh', 'hydra.py', 'exploit_db.sh'],
+  '/root/payloads': ['backdoor.bin', 'keylogger.py', 'rat.sh'],
+  '/root/.config': ['alias.conf', 'vpn.conf', 'theme.json'],
+};
+
+const fileContents = {
+  'mission_brief.txt': '// MISSION BRIEF — CLASSIFIED\nTarget: Helix Corp mainframe\nObjective: Extract R&D data\nDeadline: 72 hours\nStatus: IN PROGRESS',
+  'contacts.enc': '[ENCRYPTED — AES-256]\nDecrypt with: decrypt contacts.enc',
+  'targets.lst': '192.168.1.47 — Helix Corp DMZ\n10.0.0.5 — Internal Gateway\n172.16.0.22 — Research Server',
+  'alias.conf': 'alias ll="ls -la"\nalias cls="clear"\nalias hack="cd /root/tools"',
+  'vpn.conf': 'proto udp\nremote vpn.shadow.net 1194\nca /etc/openvpn/ca.crt\n[tunnel: ACTIVE]',
+  'theme.json': '{"color":"green","brightness":1.0,"scanlines":0.04}',
+};
+
+const termHistory = [];
+let histIdx = -1;
+
+const cmds = {
+  help: () => `Available commands:
+  <span class="info">ls</span>          list directory contents
+  <span class="info">cd [dir]</span>     change directory
+  <span class="info">cat [file]</span>   read file contents
+  <span class="info">pwd</span>          print working directory
+  <span class="info">whoami</span>       current user
+  <span class="info">ifconfig</span>     network interfaces
+  <span class="info">ping [host]</span>  ping a host
+  <span class="info">nmap [ip]</span>    scan target (roleplay)
+  <span class="info">clear</span>        clear terminal
+  <span class="info">decrypt [f]</span> decrypt encrypted file
+  <span class="info">ssh [host]</span>   connect to remote host
+  <span class="info">history</span>      command history
+  <span class="info">echo [text]</span> print text`,
+
+  ls: (args) => {
+    const dir = currentDir;
+    const contents = fsTree[dir] || [];
+    if (!contents.length) return '<span class="dim">(empty)</span>';
+    return contents.map(f => {
+      const isDir = fsTree[dir + '/' + f];
+      return isDir ? `<span class="info">${f}/</span>` : `<span class="dim">${f}</span>`;
+    }).join('  ');
+  },
+
+  pwd: () => `<span class="dim">${currentDir}</span>`,
+  whoami: () => `<span class="info">${username}</span>`,
+
+  cd: (args) => {
+    const target = args[0];
+    if (!target || target === '~') { currentDir = '/root'; updatePrompt(); return ''; }
+    if (target === '..') {
+      const parts = currentDir.split('/');
+      if (parts.length > 2) { parts.pop(); currentDir = parts.join('/') || '/root'; }
+      updatePrompt(); return '';
+    }
+    const newPath = currentDir + '/' + target;
+    if (fsTree[newPath]) { currentDir = newPath; updatePrompt(); return ''; }
+    return `<span class="err">cd: ${target}: No such file or directory</span>`;
+  },
+
+  cat: (args) => {
+    const f = args[0];
+    if (!f) return '<span class="err">Usage: cat [filename]</span>';
+    if (fileContents[f]) return `<span class="dim">${fileContents[f]}</span>`;
+    const contents = fsTree[currentDir] || [];
+    if (contents.includes(f)) return `<span class="err">cat: ${f}: Permission denied</span>`;
+    return `<span class="err">cat: ${f}: No such file or directory</span>`;
+  },
+
+  clear: () => { document.getElementById('terminal-output').innerHTML = ''; return null; },
+
+  ifconfig: () => `eth0: flags=4163 mtu 1500
+  inet <span class="info">10.0.0.4</span>  netmask 255.255.255.0  broadcast 10.0.0.255
+  ether 02:42:ac:11:00:04
+
+tun0: flags=4305 mtu 1500
+  inet <span class="info">172.31.0.1</span>  netmask 255.255.0.0
+  <span class="ok">VPN ACTIVE — shadow.net</span>`,
+
+  ping: (args) => {
+    const host = args[0] || 'localhost';
+    return `PING ${host}: 56 bytes
+64 bytes from ${host}: icmp_seq=1 ttl=64 time=<span class="info">${(Math.random()*50+1).toFixed(1)}ms</span>
+64 bytes from ${host}: icmp_seq=2 ttl=64 time=<span class="info">${(Math.random()*50+1).toFixed(1)}ms</span>
+<span class="dim">2 packets transmitted, 2 received, 0% packet loss</span>`;
+  },
+
+  nmap: (args) => {
+    const ip = args[0] || '127.0.0.1';
+    const ports = [22,80,443,3306,8080].filter(()=>Math.random()>0.3);
+    const services = {22:'ssh',80:'http',443:'https',3306:'mysql',8080:'http-proxy'};
+    let out = `Starting Nmap 7.94 scan on ${ip}\n`;
+    ports.forEach(p => out += `<span class="info">${p}/tcp</span>  <span class="ok">open</span>  ${services[p]}\n`);
+    out += `<span class="dim">${ports.length} ports open</span>`;
+    return out;
+  },
+
+  decrypt: (args) => {
+    const f = args[0];
+    if (f === 'contacts.enc') return `Decrypting contacts.enc...\n<span class="info">DECRYPTED:</span>\nAgent X — 555-SHADOW\nOperator V — enc:aGFja2Vy\nHandler — [REDACTED]`;
+    return `<span class="err">decrypt: ${f || 'file'}: Unknown target</span>`;
+  },
+
+  ssh: (args) => {
+    const host = args[0] || 'localhost';
+    return `Connecting to ${host}...\n<span class="info">SSH-2.0-OpenSSH_8.9</span>\n<span class="warn">Authentication required</span>\n<span class="dim">Use hackkit for credential attacks</span>`;
+  },
+
+  history: () => termHistory.slice(-20).map((c,i) => `<span class="dim">${String(i+1).padStart(3)}  ${c}</span>`).join('\n'),
+
+  echo: (args) => args.join(' '),
+};
+
+function initTerminal() {
+  termPrint('<span class="info">H4CK-OS Terminal v2.7.1 — Type <b>help</b> for commands</span>');
+  const input = document.getElementById('term-input');
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      const val = input.value.trim();
+      if (!val) return;
+      termHistory.push(val);
+      histIdx = -1;
+      termPrint(`<span style="color:var(--green2)">${escH(getPromptText())} ${escH(val)}</span>`);
+      const parts = val.split(' ');
+      const cmd = parts[0].toLowerCase();
+      const args = parts.slice(1);
+      if (cmds[cmd]) {
+        const out = cmds[cmd](args);
+        if (out !== null && out !== undefined && out !== '') termPrint(out);
+      } else {
+        termPrint(`<span class="err">${escH(cmd)}: command not found</span>`);
+      }
+      input.value = '';
+      scrollTerm();
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (histIdx < termHistory.length - 1) histIdx++;
+      input.value = termHistory[termHistory.length - 1 - histIdx] || '';
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (histIdx > 0) histIdx--;
+      input.value = termHistory[termHistory.length - 1 - histIdx] || '';
+    }
+  });
+}
+
+function termPrint(html) {
+  const out = document.getElementById('terminal-output');
+  const d = document.createElement('div');
+  d.innerHTML = html;
+  out.appendChild(d);
+  scrollTerm();
+}
+function scrollTerm() {
+  const out = document.getElementById('terminal-output');
+  out.scrollTop = out.scrollHeight;
+}
+function getPromptText() { return `${username}@${hostname}:${currentDir.replace('/root','~')}$`; }
+function updatePrompt() { document.getElementById('term-prompt').textContent = getPromptText(); }
+function escH(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ====== HACKKIT ======
+function switchHackTab(id) {
+  document.querySelectorAll('.hack-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.hack-panel').forEach(p => p.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('hack-' + id).classList.add('active');
+}
+
+// --- Password Crack ---
+const wordPool = ['ACCESS','SHADOW','MATRIX','CIPHER','REBOOT','SYSTEM','KERNEL','MASTER','BINARY','SHIELD',
+  'SECURE','BYPASS','STEALTH','ATTACK','DEFEND','HIDDEN','SCRIPT','INJECT','PACKET','DAEMON'];
+let crackAnswer = '', crackAttempts = 4, crackWords = [];
+
+function initCrack() {
+  crackAttempts = 4;
+  crackAnswer = wordPool[Math.floor(Math.random() * wordPool.length)];
+  crackWords = shuffle([crackAnswer, ...wordPool.filter(w=>w!==crackAnswer).slice(0,15)]);
+  const grid = document.getElementById('crack-grid');
+  grid.innerHTML = '';
+  crackWords.forEach(w => {
+    const c = document.createElement('div');
+    c.className = 'crack-cell';
+    c.textContent = w;
+    c.onclick = () => crackGuess(w, c);
+    grid.appendChild(c);
+  });
+  document.getElementById('crack-attempts').textContent = '4/4';
+  document.getElementById('crack-bar').style.width = '100%';
+  document.getElementById('crack-bar').className = 'hk-meter-fill';
+  document.getElementById('crack-status').textContent = '';
+  document.getElementById('crack-status').className = 'hk-status';
+  document.getElementById('crack-hint').textContent = '';
+}
+
+function crackGuess(word, el) {
+  if (crackAttempts <= 0) return;
+  if (word === crackAnswer) {
+    el.classList.add('correct');
+    document.getElementById('crack-status').textContent = '[ ACCESS GRANTED ] — Password: ' + word;
+    document.getElementById('crack-status').className = 'hk-status ok';
+    document.querySelectorAll('.crack-cell').forEach(c => c.onclick = null);
+    return;
+  }
+  el.classList.add('wrong');
+  el.onclick = null;
+  crackAttempts--;
+  const pct = (crackAttempts / 4 * 100);
+  const bar = document.getElementById('crack-bar');
+  bar.style.width = pct + '%';
+  if (pct <= 25) bar.className = 'hk-meter-fill danger';
+  else if (pct <= 50) bar.className = 'hk-meter-fill warn';
+  document.getElementById('crack-attempts').textContent = crackAttempts + '/4';
+  if (crackAttempts === 0) {
+    document.getElementById('crack-status').textContent = '[ LOCKOUT ] — Terminal locked. Reset required.';
+    document.getElementById('crack-status').className = 'hk-status bad';
+    document.querySelectorAll('.crack-cell').forEach(c => c.onclick = null);
+  } else {
+    const sim = countSimilar(word, crackAnswer);
+    document.getElementById('crack-status').textContent = `Wrong. ${sim}/${crackAnswer.length} chars match`;
+  }
+}
+
+function crackHint() {
+  const active = crackWords.filter(w => {
+    const el = [...document.querySelectorAll('.crack-cell')].find(c => c.textContent === w);
+    return el && !el.classList.contains('wrong') && !el.classList.contains('correct');
+  });
+  if (!active.length) return;
+  const similar = active.map(w => ({w, s: countSimilar(w, crackAnswer)}))
+    .sort((a,b) => b.s - a.s);
+  document.getElementById('crack-hint').textContent =
+    `Best match: "${similar[0].w}" (${similar[0].s}/${crackAnswer.length} chars)`;
+}
+
+function countSimilar(a, b) {
+  let count = 0;
+  for (let i = 0; i < Math.min(a.length, b.length); i++) {
+    if (a[i] === b[i]) count++;
+  }
+  return count;
+}
+
+// --- Port Scan ---
+const services = {
+  21: {name:'FTP',exploits:['Anonymous login','Brute force','Directory traversal']},
+  22: {name:'SSH',exploits:['Weak credentials','CVE-2023-38408','Key injection']},
+  23: {name:'Telnet',exploits:['Cleartext sniff','Banner grab','Auth bypass']},
+  80: {name:'HTTP',exploits:['SQLi via /login','XSS in search param','Path traversal']},
+  443: {name:'HTTPS',exploits:['Heartbleed','SSL strip','Cert spoofing']},
+  445: {name:'SMB',exploits:['EternalBlue','MS17-010','Pass-the-hash']},
+  3306: {name:'MySQL',exploits:['Default creds','Root login','Blind SQLi']},
+  8080: {name:'HTTP-ALT',exploits:['Admin panel exposed','Spring4Shell','Log4j RCE']},
+  3389: {name:'RDP',exploits:['BlueKeep','Brute force','Token hijack']},
+  6379: {name:'Redis',exploits:['No-auth access','Config file write','Slave attack']},
+};
+
+function startScan() {
+  const target = document.getElementById('scan-target').value || '127.0.0.1';
+  const btn = document.getElementById('scan-btn');
+  const status = document.getElementById('scan-status');
+  const list = document.getElementById('port-list');
+  btn.disabled = true;
+  list.innerHTML = '';
+  document.getElementById('exploit-log').innerHTML = '';
+  status.textContent = 'Scanning...';
+  status.className = 'hk-status warn';
+  let i = 0;
+  const allPorts = Object.keys(services).map(Number);
+  function scanNext() {
+    if (i >= allPorts.length) {
+      btn.disabled = false;
+      status.textContent = '[ SCAN COMPLETE ]';
+      status.className = 'hk-status ok';
+      return;
+    }
+    const port = allPorts[i++];
+    const state = Math.random() < 0.5 ? 'open' : (Math.random() < 0.5 ? 'closed' : 'filtered');
+    const svc = services[port];
+    const row = document.createElement('div');
+    row.className = 'port-row';
+    row.innerHTML = `<span class="port-num">${port}/tcp</span>
+      <span class="port-proto">TCP</span>
+      <span class="port-state ${state}">${state.toUpperCase()}</span>
+      <span class="port-service">${svc.name}</span>
+      ${state === 'open' ? `<span class="port-exploit" onclick="exploit(${port})" title="Exploit this port">[ EXPLOIT ]</span>` : '<span style="color:var(--text-mute);font-size:9px;">—</span>'}`;
+    list.appendChild(row);
+    setTimeout(scanNext, 80);
+  }
+  setTimeout(scanNext, 200);
+}
+
+function exploit(port) {
+  const svc = services[port];
+  const ex = svc.exploits[Math.floor(Math.random() * svc.exploits.length)];
+  const log = document.getElementById('exploit-log');
+  const r = Math.random();
+  const ok = r > 0.35;
+  log.innerHTML += `<div style="color:${ok?'var(--green)':'var(--red)'};">` +
+    `[${new Date().toTimeString().slice(0,8)}] ${svc.name}:${port} — ${ex} — ` +
+    `${ok ? '[ SUCCESS ] Shell opened' : '[ FAILED ] Connection reset'}</div>`;
+  log.scrollTop = log.scrollHeight;
+}
+
+// --- Trace Route ---
+let traceNodes = [], traceTarget = -1, traceCurrent = 0, traceHops = 0;
+
+function initTrace() {
+  const count = 18;
+  const blocked = new Set();
+  while (blocked.size < 5) blocked.add(Math.floor(Math.random() * count));
+  traceTarget = Math.floor(count * 0.7 + Math.random() * count * 0.3);
+  while (blocked.has(traceTarget)) traceTarget = (traceTarget + 1) % count;
+  traceNodes = Array.from({length: count}, (_, i) => ({
+    id: i,
+    blocked: blocked.has(i) && i !== 0 && i !== traceTarget,
+    visited: false,
+  }));
+  traceNodes[0].visited = true;
+  traceCurrent = 0;
+  traceHops = 0;
+  document.getElementById('trace-target-label').textContent = 'NODE-' + String(traceTarget).padStart(2,'0');
+  document.getElementById('trace-hops').textContent = '0';
+  renderTrace();
+  document.getElementById('trace-status').textContent = '';
+}
+
+function renderTrace() {
+  const grid = document.getElementById('trace-grid');
+  grid.innerHTML = '';
+  traceNodes.forEach(n => {
+    const el = document.createElement('div');
+    el.className = 'trace-node';
+    if (n.id === traceCurrent) el.classList.add('active');
+    else if (n.id === traceTarget) el.classList.add('target');
+    else if (n.visited) el.classList.add('visited');
+    else if (n.blocked) el.classList.add('blocked');
+    el.textContent = 'N-' + String(n.id).padStart(2,'0');
+    if (!n.blocked && n.id !== traceCurrent) {
+      el.onclick = () => moveTrace(n.id);
+    }
+    grid.appendChild(el);
+  });
+}
+
+function moveTrace(id) {
+  const node = traceNodes[id];
+  if (node.blocked) return;
+  traceNodes[traceCurrent].visited = true;
+  traceCurrent = id;
+  traceHops++;
+  document.getElementById('trace-hops').textContent = traceHops;
+  if (id === traceTarget) {
+    document.getElementById('trace-status').textContent = `[ CONNECTED ] Target reached in ${traceHops} hops.`;
+    document.getElementById('trace-status').className = 'hk-status ok';
+    renderTrace();
+    return;
+  }
+  renderTrace();
+}
+
+// ====== FILES ======
+function initFiles() {
+  const tree = document.getElementById('files-tree');
+  tree.innerHTML = '<div style="color:var(--text-mute);font-size:9px;letter-spacing:1px;margin-bottom:8px;">DIRECTORIES</div>';
+  Object.keys(fsTree).forEach(dir => {
+    const el = document.createElement('div');
+    el.className = 'file-tree-item file-tree-dir';
+    const parts = dir.split('/');
+    const indent = (parts.length - 2) * 12;
+    el.style.paddingLeft = (6 + indent) + 'px';
+    el.textContent = (indent > 0 ? '└ ' : '') + parts[parts.length - 1] + '/';
+    el.onclick = () => loadDir(dir, el);
+    tree.appendChild(el);
+  });
+  loadDir('/root');
+}
+
+function loadDir(dir, el) {
+  document.querySelectorAll('.file-tree-item').forEach(i => i.classList.remove('active'));
+  if (el) el.classList.add('active');
+  const contents = fsTree[dir] || [];
+  const fc = document.getElementById('files-content');
+  document.getElementById('files-path').textContent = dir;
+  document.getElementById('files-count').textContent = contents.length + ' items';
+  fc.innerHTML = '<div style="color:var(--text-mute);font-size:9px;letter-spacing:1px;margin-bottom:8px;display:flex;justify-content:space-between;"><span id="files-path">' + dir + '</span><span>' + contents.length + ' items</span></div>';
+  contents.forEach(f => {
+    const isDir = fsTree[dir + '/' + f];
+    const el = document.createElement('div');
+    el.className = 'file-item';
+    const sizes = ['1.2K','4.5K','12K','256K','1.1M','48B'];
+    const dates = ['2024-01-15','2024-02-20','2024-03-01','2023-12-10'];
+    el.innerHTML = `<span class="file-icon">${isDir ? '📁' : '📄'}</span>
+      <span class="file-name" style="${isDir?'color:var(--cyan)':''}">${f}</span>
+      <span class="file-size">${isDir ? '--' : sizes[Math.floor(Math.random()*sizes.length)]}</span>
+      <span class="file-date">${dates[Math.floor(Math.random()*dates.length)]}</span>`;
+    if (isDir) el.onclick = () => loadDir(dir + '/' + f, null);
+    fc.appendChild(el);
+  });
+}
+
+// ====== NETMAP ======
+let netNodes = [], netEdges = [], animFrame;
+
+function initNetmap() {
+  const canvas = document.getElementById('netmap-canvas');
+  canvas.width = canvas.parentElement.offsetWidth || 800;
+  canvas.height = canvas.parentElement.offsetHeight || 400;
+
+  const types = ['owned','gateway','target','target','ice','ice','normal','normal','normal'];
+  netNodes = [
+    {id:0, label:'MY NODE', x:80, y:canvas.height/2, type:'owned', ip:'10.0.0.1'},
+    {id:1, label:'GATEWAY-1', x:220, y:100, type:'gateway', ip:'192.168.1.1'},
+    {id:2, label:'GATEWAY-2', x:220, y:canvas.height-100, type:'gateway', ip:'192.168.1.2'},
+    {id:3, label:'SRV-01', x:380, y:80, type:'normal', ip:'10.1.0.10'},
+    {id:4, label:'SRV-02', x:380, y:200, type:'normal', ip:'10.1.0.11'},
+    {id:5, label:'ICE-WALL', x:380, y:canvas.height-120, type:'ice', ip:'N/A'},
+    {id:6, label:'DB-01', x:540, y:100, type:'normal', ip:'10.2.0.5'},
+    {id:7, label:'TARGET', x:680, y:180, type:'target', ip:'172.16.0.22'},
+    {id:8, label:'ICE-CORE', x:540, y:canvas.height-80, type:'ice', ip:'N/A'},
+    {id:9, label:'BACKUP-SRV', x:680, y:canvas.height-160, type:'normal', ip:'10.3.0.9'},
+  ];
+  netEdges = [[0,1],[0,2],[1,3],[1,4],[2,5],[3,6],[4,7],[6,7],[2,8],[8,9],[4,9]];
+
+  canvas.addEventListener('mousemove', e => {
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+    const tip = document.getElementById('netmap-tooltip');
+    const hit = netNodes.find(n => Math.hypot(n.x - mx, n.y - my) < 22);
+    if (hit) {
+      tip.style.display = 'block';
+      tip.style.left = (mx + 14) + 'px';
+      tip.style.top = (my - 10) + 'px';
+      tip.innerHTML = `<b>${hit.label}</b><br>IP: ${hit.ip}<br>TYPE: ${hit.type.toUpperCase()}`;
+    } else {
+      tip.style.display = 'none';
+    }
+  });
+}
+
+function drawNetmap() {
+  const canvas = document.getElementById('netmap-canvas');
+  if (!canvas) return;
+  canvas.width = canvas.parentElement.offsetWidth || 800;
+  canvas.height = canvas.parentElement.offsetHeight || 400;
+  const ctx = canvas.getContext('2d');
+  const colors = {owned:'#00ff41',gateway:'#00ffff',target:'#ffb000',ice:'#ff3333',normal:'#009922'};
+  
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  
+  netEdges.forEach(([a,b]) => {
+    const na = netNodes[a], nb = netNodes[b];
+    ctx.beginPath();
+    ctx.moveTo(na.x, na.y);
+    ctx.lineTo(nb.x, nb.y);
+    ctx.strokeStyle = '#004d1488';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4,4]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  });
+
+  netNodes.forEach(n => {
+    ctx.beginPath();
+    ctx.arc(n.x, n.y, 18, 0, Math.PI * 2);
+    ctx.fillStyle = colors[n.type] + '22';
+    ctx.fill();
+    ctx.strokeStyle = colors[n.type];
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.fillStyle = colors[n.type];
+    ctx.font = '8px Courier New';
+    ctx.textAlign = 'center';
+    ctx.fillText(n.label, n.x, n.y + 30);
+    ctx.font = 'bold 9px Courier New';
+    ctx.fillText(n.type === 'ice' ? '❌' : '●', n.x, n.y + 3);
+  });
+}
+
+// ====== SETTINGS ======
+function setBrightness(v) {
+  tablet.style.filter = `brightness(${v/100})`;
+  document.getElementById('bright-val').textContent = v + '%';
+}
+function setScanlines(v) {
+  document.querySelector('.scanlines').style.setProperty('--scanline-opacity', v/100);
+  document.querySelectorAll('.scanlines').forEach(el => {
+    el.style.background = `repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,${v/100}) 2px, rgba(0,0,0,${v/100}) 4px)`;
+  });
+  document.getElementById('scan-val').textContent = v;
+}
+function setTheme(name, el) {
+  document.querySelectorAll('.color-opt').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  tablet.className = name !== 'green' ? 'theme-' + name : '';
+  drawNetmap();
+}
+function setFontSize(v) {
+  document.getElementById('terminal-output').style.fontSize = v + 'px';
+  document.getElementById('term-input').style.fontSize = v + 'px';
+}
+function updateHostname(v) {
+  hostname = v || 'hackos';
+  updatePrompt();
+  document.getElementById('tablet').querySelector('#taskbar .logo').textContent = 'H4CK-OS — ' + v;
+}
+function updateUsername(v) {
+  username = v || 'root';
+  updatePrompt();
+}
+
+// ====== CODEIT ======
+document.addEventListener('DOMContentLoaded', () => {});
+
+const codeEditor = document.getElementById('code-editor');
+if (codeEditor) {
+  codeEditor.addEventListener('input', () => {
+    const lines = codeEditor.value.split('\n').length;
+    document.getElementById('code-line-count').textContent = 'Lines: ' + lines;
+  });
+  codeEditor.addEventListener('keydown', e => {
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      const s = codeEditor.selectionStart;
+      codeEditor.value = codeEditor.value.slice(0,s) + '  ' + codeEditor.value.slice(codeEditor.selectionEnd);
+      codeEditor.selectionStart = codeEditor.selectionEnd = s + 2;
+    }
+  });
+}
+
+function previewCode() {
+  const code = document.getElementById('code-editor').value;
+  const preview = document.getElementById('code-preview-area');
+  try {
+    const iframe = document.createElement('iframe');
+    iframe.style.cssText = 'width:100%;height:100%;border:none;background:#0a0e0a;';
+    preview.innerHTML = '';
+    preview.appendChild(iframe);
+    const doc = iframe.contentDocument || iframe.contentWindow.document;
+    doc.open();
+    doc.write(`<!DOCTYPE html><html><head><style>
+      body{background:#0a0e0a;color:#00ff41;font-family:'Courier New',monospace;padding:10px;}
+    </style></head><body><script>${code}<\/script></body></html>`);
+    doc.close();
+  } catch(e) {
+    preview.innerHTML = `<span style="color:var(--red);">Error: ${e.message}</span>`;
+  }
+}
+
+function installApp() {
+  const name = document.getElementById('app-name-input').value.trim() || 'App';
+  const icon = document.getElementById('app-icon-input').value.trim() || '📦';
+  const code = document.getElementById('code-editor').value;
+  const id = 'custom_' + Date.now();
+  customApps[id] = { name, icon, code };
+
+  // Add icon to home
+  const iconArea = document.getElementById('custom-icons');
+  const ic = document.createElement('div');
+  ic.className = 'app-icon';
+  ic.onclick = () => openCustomApp(id);
+  ic.innerHTML = `<div class="icon-box">${icon}</div><span class="label">${name}</span>`;
+  iconArea.appendChild(ic);
+
+  // Create window
+  const win = document.createElement('div');
+  win.className = 'app-window';
+  win.id = id + '-app';
+  win.innerHTML = `<div class="win-bar">
+    <span class="win-title">${name.toUpperCase()}</span>
+    <button class="win-close" onclick="closeCustomApp('${id}')">✕</button>
+  </div>
+  <div class="win-content" style="padding:0;">
+    <iframe class="custom-app-frame" id="${id}-frame"></iframe>
+  </div>`;
+  document.getElementById('screen').appendChild(win);
+
+  alert(`App "${name}" installed! Find it on the home screen.`);
+}
+
+function openCustomApp(id) {
+  const app = customApps[id];
+  if (!app) return;
+  document.getElementById('home').classList.add('hidden');
+  document.querySelectorAll('.app-window').forEach(w => w.classList.remove('active'));
+  document.getElementById(id + '-app').classList.add('active');
+  const frame = document.getElementById(id + '-frame');
+  const doc = frame.contentDocument || frame.contentWindow.document;
+  doc.open();
+  doc.write(`<!DOCTYPE html><html><head><style>
+    body{background:#0a0e0a;color:#00ff41;font-family:'Courier New',monospace;padding:12px;}
+    a{color:#00ffff;}
+  </style></head><body><script>${app.code}<\/script></body></html>`);
+  doc.close();
+}
+
+function closeCustomApp(id) {
+  document.getElementById(id + '-app').classList.remove('active');
+  document.getElementById('home').classList.remove('hidden');
+}
+
+function clearEditor() {
+  document.getElementById('code-editor').value = '';
+  document.getElementById('code-preview-area').innerHTML = '<span style="color:var(--text-mute);font-size:10px;">▶ Press RUN to preview</span>';
+}
+
+// ====== UTILS ======
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i+1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+// ====== START ======
+boot();
+</script>
+</body>
+</html>
