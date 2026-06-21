@@ -354,6 +354,50 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 ::-webkit-scrollbar{width:5px;}
 ::-webkit-scrollbar-track{background:var(--bg2);}
 ::-webkit-scrollbar-thumb{background:var(--green-dim);border-radius:3px;}
+/*------------------------------------------*/
+/* DEVICES PANEL */
+#devices-wrap{flex:1;display:flex;flex-direction:column;padding:18px 22px;position:relative;z-index:1;min-height:0;}
+#devices-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+#devices-header h1{color:var(--green);font-size:14px;letter-spacing:3px;}
+#devices-count{color:var(--text-dim);font-size:10px;letter-spacing:1px;}
+#dev-scan-btn{background:var(--green-faint);border:1px solid var(--green3);color:var(--green);font-family:var(--font);
+  font-size:10px;padding:5px 10px;cursor:pointer;border-radius:3px;letter-spacing:1px;transition:all .15s;}
+#dev-scan-btn:hover{background:var(--green-dim);}
+#dev-scan-btn:disabled{opacity:.5;cursor:default;}
+
+#device-list{flex:1;overflow-y:auto;border:1px solid var(--border);border-radius:6px;background:#0a0505;margin-bottom:12px;min-height:0;}
+.device-row{display:flex;align-items:center;gap:12px;padding:9px 12px;border-bottom:1px solid var(--border);font-size:11px;transition:background .15s;}
+.device-row:last-child{border-bottom:none;}
+.device-row:hover{background:var(--green-faint);}
+.dev-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.dev-dot.on{background:var(--green);box-shadow:0 0 6px var(--green);}
+.dev-dot.off{background:var(--text-mute);}
+.dev-icon{font-size:14px;width:18px;text-align:center;}
+.dev-name{color:var(--text);min-width:140px;}
+.dev-ip{color:var(--text-dim);min-width:110px;}
+.dev-mac{color:var(--text-mute);min-width:140px;font-size:10px;}
+.dev-status{margin-left:auto;font-size:9px;letter-spacing:1px;padding:2px 7px;border-radius:3px;}
+.dev-status.on{color:var(--green);border:1px solid var(--green3);}
+.dev-status.off{color:var(--text-mute);border:1px solid var(--border);}
+
+/* MINI TERMINAL */
+#mini-term{height:190px;flex-shrink:0;border:1px solid var(--border);border-radius:6px;background:#080404;
+  display:flex;flex-direction:column;overflow:hidden;}
+#mt-bar{background:#050202;border-bottom:1px solid var(--border);padding:5px 10px;font-size:9px;
+  color:var(--text-dim);letter-spacing:1px;display:flex;justify-content:space-between;}
+#mt-output{flex:1;overflow-y:auto;padding:8px 10px;font-size:11px;line-height:1.5;}
+#mt-output div{color:var(--text-dim);margin-bottom:1px;white-space:pre-wrap;word-break:break-word;}
+#mt-output div.cmd{color:var(--green);}
+#mt-output div.err{color:var(--red);}
+#mt-output div.ok{color:var(--green);}
+#mt-input-row{display:flex;align-items:center;padding:6px 10px;border-top:1px solid var(--border);gap:6px;}
+#mt-prompt{color:var(--green);font-size:11px;white-space:nowrap;}
+#mt-input{flex:1;background:none;border:none;outline:none;color:var(--text);font-family:var(--font);font-size:11px;}
+
+::-webkit-scrollbar{width:7px;}
+::-webkit-scrollbar-thumb{background:var(--green-dim);border-radius:4px;}
+::-webkit-scrollbar-track{background:#0a0505;}
+/*-----------------------------------------------*/
 </style>
 </head>
 <body>
@@ -684,6 +728,33 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
       </div>
     </div>
 
+    <!-- DEVICES -->
+    <div class="app-window" id="devices-app">
+      <div class="win-bar"><span class="win-title">DEVICES</span><button class="win-close" onclick="closeApp('devices')">✕</button></div>
+      <div class="win-content" style="padding:0;">
+        <div id="devices-wrap">
+          <div id="devices-header">
+            <h1>// CONNECTED DEVICES</h1>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <span id="devices-count">0 ONLINE</span>
+              <button id="dev-scan-btn" onclick="scanDevices()">⟳ SCAN NETWORK</button>
+            </div>
+          </div>
+
+          <div id="device-list"></div>
+
+          <div id="mini-term">
+            <div id="mt-bar"><span>TERMINAL</span><span id="mt-host">root@hackos</span></div>
+            <div id="mt-output"></div>
+            <div id="mt-input-row">
+              <span id="mt-prompt">root@hackos:~$</span>
+              <input id="mt-input" type="text" autocomplete="off" spellcheck="false" onkeydown="mtKeydown(event)">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- CODEIT -->
     <div class="app-window" id="codeit-app">
       <div class="win-bar"><span class="win-title">CODEIT — APP BUILDER</span><button class="win-close" onclick="closeApp('codeit')">✕</button></div>
@@ -705,15 +776,7 @@ document.write('<h2 style="letter-spacing:2px;">MY APP v1.0</h2><p style="color:
       </div>
     </div>
     
-    <!-- DEVICES -->>
-    <div class="app-window" id="devices-app">
-  <div class="win-bar"><span class="win-title">DEVICES</span>
-    <button class="win-close" onclick="closeApp('devices')">✕</button></div>
-  <div class="win-content" style="padding:0;">
-    /*this loads the "devices" that simulate other devices connected to the tablet.*/
-    <iframe src="devices.html" style="width:100%;height:100%;border:none;background:#0a0e0a00;"></iframe>
-  </div>
-</div>
+    
 
     <!-- REWARD SETUP (accessed via terminal setreward) -->
     <div class="app-window" id="rw-setup-app">
@@ -766,10 +829,7 @@ document.write('<h2 style="letter-spacing:2px;">MY APP v1.0</h2><p style="color:
 // =====================================================================
 // STORAGE
 // =====================================================================
-// Some browsers block or throw on localStorage when a file is opened
-// directly via file:// (rather than served over http/https). Detect
-// that up front and fall back to an in-memory store so the app still
-// works for the session — it just won't persist across page reloads.
+
 const memStore={};
 let lsOK=false;
 try{
@@ -980,6 +1040,7 @@ function openApp(id){
   if(id==='netmap')setTimeout(drawNetmap,60);
   if(id==='files')renderFiles();
   if(id==='rw-setup')renderRwTree();
+  if(id==='devices'&&!devices.length){genDevices();mtLog('Mini terminal ready. Type "help" for commands.');}
 }
 function closeApp(id){document.getElementById(id+'-app').classList.remove('active');document.getElementById('home').classList.remove('hidden');}
 function escH(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
@@ -1762,6 +1823,154 @@ function openCA(id){const app=customApps[id];if(!app)return;document.getElementB
   document.getElementById(id+'-app').classList.add('active');const fr=document.getElementById(id+'-fr');const doc=fr.contentDocument||fr.contentWindow.document;doc.open();
   doc.write(`<!DOCTYPE html><html><head><style>body{background:#0a0e0a;color:#00ff41;font-family:'Courier New',monospace;padding:10px;margin:0;}</style></head><body><script>${app.code}<\/script></body></html>`);doc.close();}
 function closeCA(id){document.getElementById(id+'-app').classList.remove('active');document.getElementById('home').classList.remove('hidden');}
+
+/*----------------------------------------------------------------*/
+
+function randMac(){
+  const h=()=>Math.floor(Math.random()*256).toString(16).padStart(2,'0');
+  return [h(),h(),h(),h(),h(),h()].join(':');
+}
+function randIp(){return '192.168.1.'+(Math.floor(Math.random()*200)+10);}
+
+const deviceIcons={router:'📡',phone:'📱',laptop:'💻',pc:'🖥️',iot:'🔌',printer:'🖨️',tv:'📺',cam:'🎥'};
+const deviceNames=[
+  ['ROUTER-GW','router'],['PIXEL-7-PRO','phone'],['MACBOOK-AIR','laptop'],
+  ['DESKTOP-RIG','pc'],['SMART-PLUG-01','iot'],['HP-LASERJET','printer'],
+  ['LIVINGROOM-TV','tv'],['FRONTDOOR-CAM','cam'],['IPHONE-15','phone'],['NAS-SERVER','pc']
+];
+let devices=[];
+
+function genDevices(){
+  const count=Math.floor(Math.random()*5)+4;
+  const shuffled=[...deviceNames].sort(()=>Math.random()-.5).slice(0,count);
+  devices=shuffled.map(([name,type])=>({
+    name,type,ip:randIp(),mac:randMac(),online:Math.random()>0.2
+  }));
+  // router always online
+  if(devices[0])devices[0].online=true;
+  renderDevices();
+}
+
+function renderDevices(){
+  const list=document.getElementById('device-list');
+  list.innerHTML='';
+  devices.forEach(d=>{
+    const row=document.createElement('div');
+    row.className='device-row';
+    row.innerHTML=`
+      <span class="dev-dot ${d.online?'on':'off'}"></span>
+      <span class="dev-icon">${deviceIcons[d.type]||'📦'}</span>
+      <span class="dev-name">${d.name}</span>
+      <span class="dev-ip">${d.ip}</span>
+      <span class="dev-mac">${d.mac}</span>
+      <span class="dev-status ${d.online?'on':'off'}">${d.online?'ONLINE':'OFFLINE'}</span>
+    `;
+    list.appendChild(row);
+  });
+  const online=devices.filter(d=>d.online).length;
+  document.getElementById('devices-count').textContent=online+' ONLINE / '+devices.length+' TOTAL';
+}
+
+function scanDevices(){
+  const btn=document.getElementById('dev-scan-btn');
+  btn.disabled=true;btn.textContent='⟳ SCANNING...';
+  mtLog('Initiating network scan...','ok');
+  setTimeout(()=>{
+    genDevices();
+    btn.disabled=false;btn.textContent='⟳ SCAN NETWORK';
+    mtLog('Scan complete. '+devices.length+' device(s) found.','ok');
+  },900);
+}
+
+// =====================================================================
+// MINI TERMINAL
+// =====================================================================
+function mtLog(text,cls){
+  const out=document.getElementById('mt-output');
+  const div=document.createElement('div');
+  if(cls)div.className=cls;
+  div.textContent=text;
+  out.appendChild(div);
+  out.scrollTop=out.scrollHeight;
+}
+
+function mtKeydown(e){
+  if(e.key!=='Enter')return;
+  const input=document.getElementById('mt-input');
+  const raw=input.value;
+  if(!raw.trim())return;
+  mtLog('root@hackos:~$ '+raw,'cmd');
+  input.value='';
+  runMtCommand(raw.trim());
+}
+
+function runMtCommand(raw){
+  const parts=raw.split(/\s+/);
+  const cmd=parts[0].toLowerCase();
+  const args=parts.slice(1);
+
+  switch(cmd){
+    case 'help':
+      mtLog('Available commands:');
+      mtLog('  scan            - scan network for devices');
+      mtLog('  list            - list connected devices');
+      mtLog('  ping <ip>       - ping a device');
+      mtLog('  info <name>     - show device details');
+      mtLog('  block <name>    - mark device offline');
+      mtLog('  allow <name>    - mark device online');
+      mtLog('  clear           - clear terminal output');
+      break;
+    case 'scan':
+      scanDevices();
+      break;
+    case 'list':
+      if(!devices.length){mtLog('No devices found. Run "scan" first.','err');break;}
+      devices.forEach(d=>mtLog(`${d.online?'[ON ]':'[OFF]'} ${d.name.padEnd(16)} ${d.ip.padEnd(15)} ${d.mac}`));
+      break;
+    case 'ping':{
+      const ip=args[0];
+      if(!ip){mtLog('Usage: ping <ip>','err');break;}
+      const dev=devices.find(d=>d.ip===ip);
+      if(dev&&dev.online){mtLog(`Reply from ${ip}: time=${(Math.random()*20+1).toFixed(1)}ms`,'ok');}
+      else if(dev){mtLog(`Request timed out: ${ip}`,'err');}
+      else{mtLog(`Unknown host: ${ip}`,'err');}
+      break;
+    }
+    case 'info':{
+      const name=args.join(' ').toUpperCase();
+      const dev=devices.find(d=>d.name===name);
+      if(!dev){mtLog('Device not found: '+name,'err');break;}
+      mtLog(`NAME: ${dev.name}`);
+      mtLog(`TYPE: ${dev.type}`);
+      mtLog(`IP:   ${dev.ip}`);
+      mtLog(`MAC:  ${dev.mac}`);
+      mtLog(`STATUS: ${dev.online?'ONLINE':'OFFLINE'}`,dev.online?'ok':'err');
+      break;
+    }
+    case 'block':{
+      const name=args.join(' ').toUpperCase();
+      const dev=devices.find(d=>d.name===name);
+      if(!dev){mtLog('Device not found: '+name,'err');break;}
+      dev.online=false;renderDevices();
+      mtLog(name+' marked OFFLINE.','err');
+      break;
+    }
+    case 'allow':{
+      const name=args.join(' ').toUpperCase();
+      const dev=devices.find(d=>d.name===name);
+      if(!dev){mtLog('Device not found: '+name,'err');break;}
+      dev.online=true;renderDevices();
+      mtLog(name+' marked ONLINE.','ok');
+      break;
+    }
+    case 'clear':
+      document.getElementById('mt-output').innerHTML='';
+      break;
+    default:
+      mtLog('Unknown command: '+cmd+' (type "help")','err');
+  }
+}
+/*----------------------------------------------------------------------------*/
 
 // =====================================================================
 // START
