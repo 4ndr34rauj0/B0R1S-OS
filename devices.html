@@ -1,1 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📡</text></svg>">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>B0R1S-OS // DEVICES</title>
+<style>
+:root{
+  --bg:#0e0a0a;--bg2:#150f0f;--bg3:#1e1414;
+  --green:#ff3333;--green2:#cc1111;--green3:#991111;
+  --green-dim:#4d0000;--green-faint:#1a0000;
+  --amber:#ffb000;--red:#ff3333;--cyan:#00ffff;
+  --text:#ff3333;--text-dim:#991111;--text-mute:#4d0000;
+  --border:#44000099;--border-bright:#ff333355;
+  --font:'Courier New',Courier,monospace;
+  --brightness:1;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:var(--font);}
+body{display:flex;align-items:center;justify-content:center;}
 
+#tablet{
+  width:1280px;height:720px;background:var(--bg);
+  border:5px solid #2a1a1a;border-radius:20px;
+  box-shadow:0 0 80px #000,0 0 40px #1a000644;
+  display:flex;flex-direction:column;
+  position:relative;overflow:hidden;
+  filter:brightness(var(--brightness));
+}
+.bg-image-active{background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important;}
+.scanlines{position:absolute;inset:0;pointer-events:none;z-index:9999;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.04) 2px,rgba(0,0,0,0.04) 4px);}
+
+/* THEME VARIANTS (copied from hackos.html) */
+.theme-green{--green:#00ff41;--green2:#00cc33;--green3:#009922;--green-dim:#003d10;--green-faint:#001a08;--text:#00ff41;--text-dim:#119933;--text-mute:#004d10;--border-bright:#00ff4155;}
+.theme-amber{--green:#ffb000;--green2:#cc8c00;--green3:#996900;--green-dim:#4d2c00;--green-faint:#1a0f00;--text:#ffb000;--text-dim:#996900;--text-mute:#4d2c00;--border-bright:#ffb00055;}
+.theme-cyan{--green:#00ffff;--green2:#00cccc;--green3:#009999;--green-dim:#004d4d;--green-faint:#001a1a;--text:#00ffff;--text-dim:#119999;--text-mute:#004d4d;--border-bright:#00ffff55;}
+.theme-purple{--green:#cc44ff;--green2:#a330d9;--green3:#7a26a3;--green-dim:#3d0d4d;--green-faint:#1a041a;--text:#cc44ff;--text-dim:#a330d9;--text-mute:#3d0d4d;--border-bright:#cc44ff55;}
+
+/* TASKBAR (copied from hackos.html) */
+#taskbar{background:#050805;border-bottom:1px solid var(--border);height:36px;
+  display:flex;align-items:center;padding:0 14px;gap:12px;flex-shrink:0;}
+.tb-logo{color:var(--green);font-weight:bold;font-size:12px;letter-spacing:2px;}
+.tb-sig{color:var(--text-mute);font-size:10px;}
+#clock{color:var(--text-dim);font-size:11px;margin-left:auto;}
+#cc-btn{background:none;border:1px solid var(--border);color:var(--text-dim);font-family:var(--font);
+  font-size:10px;padding:3px 8px;border-radius:3px;cursor:pointer;letter-spacing:1px;margin-left:4px;transition:all .15s;}
+#cc-btn:hover{border-color:var(--green2);color:var(--green);}
+
+/* CONTROL CENTER (copied from hackos.html) */
+#control-center{
+  position:absolute;top:36px;right:0;width:290px;
+  background:#0d0202;
+  border-top:none;border-radius:0 0 0 8px;
+  padding:0px;z-index:500;
+  max-height:0px;overflow:hidden;
+  transition:max-height .35s cubic-bezier(.4,0,.2,1),padding .35s;
+  box-shadow:0 8px 30px #000c;
+}
+#control-center.cc-open{max-height:500px;padding:14px;}
+.cc-title{color:var(--green2);font-size:9px;letter-spacing:2px;margin-bottom:6px;}
+.cc-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;}
+.cc-label{color:var(--text-dim);font-size:10px;}
+.cc-val{color:var(--green);font-size:10px;min-width:32px;text-align:right;}
+.cc-section{border-top:1px solid var(--border);padding-top:10px;margin-top:2px;}
+input[type=range]{-webkit-appearance:none;height:3px;background:var(--green-dim);border-radius:2px;outline:none;cursor:pointer;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;height:11px;border-radius:50%;background:var(--green);cursor:pointer;}
+.theme-swatches{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px;}
+.swatch{width:20px;height:20px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:border-color .15s;}
+.swatch.active,.swatch:hover{border-color:#fff;}
+.cc-hk-btn{background:var(--green-faint);border:1px solid var(--green3);color:var(--green);font-family:var(--font);
+  font-size:10px;padding:4px 8px;cursor:pointer;border-radius:3px;letter-spacing:1px;transition:all .15s;width:100%;margin-top:4px;}
+.cc-hk-btn:hover{background:var(--green-dim);}
+.cc-bg-options{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px;}
+.cc-bg-btn{font-size:9px;padding:3px 7px;background:var(--bg3);border:1px solid var(--border);
+  color:var(--text-dim);cursor:pointer;border-radius:3px;font-family:var(--font);letter-spacing:1px;transition:all .15s;}
+.cc-bg-btn:hover{border-color:var(--green2);color:var(--green);}
+.cc-bg-btn.active{border-color:var(--green);color:var(--green);background:var(--green-faint);}
+.ci-input{background:var(--bg3);border:1px solid var(--border);color:var(--green);font-family:var(--font);font-size:10px;padding:3px 6px;border-radius:3px;outline:none;}
+
+/* SCREEN */
+#screen{flex:1;position:relative;overflow:hidden;display:flex;flex-direction:column;}
+#matrix-canvas{position:absolute;inset:0;display:none;pointer-events:none;z-index:0;opacity:0.18;}
+
+/* DEVICES PANEL */
+#devices-wrap{flex:1;display:flex;flex-direction:column;padding:18px 22px;position:relative;z-index:1;min-height:0;}
+#devices-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+#devices-header h1{color:var(--green);font-size:14px;letter-spacing:3px;}
+#devices-count{color:var(--text-dim);font-size:10px;letter-spacing:1px;}
+#scan-btn{background:var(--green-faint);border:1px solid var(--green3);color:var(--green);font-family:var(--font);
+  font-size:10px;padding:5px 10px;cursor:pointer;border-radius:3px;letter-spacing:1px;transition:all .15s;}
+#scan-btn:hover{background:var(--green-dim);}
+#scan-btn:disabled{opacity:.5;cursor:default;}
+
+#device-list{flex:1;overflow-y:auto;border:1px solid var(--border);border-radius:6px;background:#0a0505;margin-bottom:12px;min-height:0;}
+.device-row{display:flex;align-items:center;gap:12px;padding:9px 12px;border-bottom:1px solid var(--border);font-size:11px;transition:background .15s;}
+.device-row:last-child{border-bottom:none;}
+.device-row:hover{background:var(--green-faint);}
+.dev-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.dev-dot.on{background:var(--green);box-shadow:0 0 6px var(--green);}
+.dev-dot.off{background:var(--text-mute);}
+.dev-icon{font-size:14px;width:18px;text-align:center;}
+.dev-name{color:var(--text);min-width:140px;}
+.dev-ip{color:var(--text-dim);min-width:110px;}
+.dev-mac{color:var(--text-mute);min-width:140px;font-size:10px;}
+.dev-status{margin-left:auto;font-size:9px;letter-spacing:1px;padding:2px 7px;border-radius:3px;}
+.dev-status.on{color:var(--green);border:1px solid var(--green3);}
+.dev-status.off{color:var(--text-mute);border:1px solid var(--border);}
+
+/* MINI TERMINAL */
+#mini-term{height:190px;flex-shrink:0;border:1px solid var(--border);border-radius:6px;background:#080404;
+  display:flex;flex-direction:column;overflow:hidden;}
+#mt-bar{background:#050202;border-bottom:1px solid var(--border);padding:5px 10px;font-size:9px;
+  color:var(--text-dim);letter-spacing:1px;display:flex;justify-content:space-between;}
+#mt-output{flex:1;overflow-y:auto;padding:8px 10px;font-size:11px;line-height:1.5;}
+#mt-output div{color:var(--text-dim);margin-bottom:1px;white-space:pre-wrap;word-break:break-word;}
+#mt-output div.cmd{color:var(--green);}
+#mt-output div.err{color:var(--red);}
+#mt-output div.ok{color:var(--green);}
+#mt-input-row{display:flex;align-items:center;padding:6px 10px;border-top:1px solid var(--border);gap:6px;}
+#mt-prompt{color:var(--green);font-size:11px;white-space:nowrap;}
+#mt-input{flex:1;background:none;border:none;outline:none;color:var(--text);font-family:var(--font);font-size:11px;}
+
+::-webkit-scrollbar{width:7px;}
+::-webkit-scrollbar-thumb{background:var(--green-dim);border-radius:4px;}
+::-webkit-scrollbar-track{background:#0a0505;}
+</style>
+</head>
+<body>
+
+<div id="tablet">
+  <div class="scanlines" id="scanlines-el"></div>
+
+  <div id="taskbar">
+    <span class="tb-logo">B0R1S-OS v2.7.1</span>
+    <span class="tb-sig">[ DEVICES ]</span>
+    <span id="clock">00:00:00</span>
+    <button id="cc-btn" onclick="toggleCC()">⚙ CTRL CENTER</button>
+  </div>
+
+  <!-- CONTROL CENTER -->
+  <div id="control-center">
+    <div>
+      <div class="cc-title">// DISPLAY</div>
+      <div class="cc-row"><span class="cc-label">BRIGHTNESS</span>
+        <div style="display:flex;align-items:center;gap:5px;">
+          <input type="range" min="20" max="100" value="100" style="width:110px;" oninput="setBrightness(this.value)" id="cc-bright">
+          <span class="cc-val" id="cc-bright-val">100%</span>
+        </div>
+      </div>
+      <div class="cc-row"><span class="cc-label">SCANLINES</span>
+        <div style="display:flex;align-items:center;gap:5px;">
+          <input type="range" min="0" max="15" value="4" style="width:110px;" oninput="setScanlines(this.value)" id="cc-scan">
+          <span class="cc-val" id="cc-scan-val">4</span>
+        </div>
+      </div>
+    </div>
+    <div class="cc-section">
+      <div class="cc-title">// BACKGROUND</div>
+      <div class="cc-bg-options">
+        <button class="cc-bg-btn active" id="bg-def-btn" onclick="setBG('default',this)">DEFAULT</button>
+        <button class="cc-bg-btn" id="bg-img-btn" onclick="setBG('image',this)">SKULL</button>
+        <button class="cc-bg-btn" id="bg-mat-btn" onclick="setBG('matrix',this)">MATRIX</button>
+      </div>
+    </div>
+    <div class="cc-section">
+      <div class="cc-title">// THEME</div>
+      <div class="theme-swatches">
+        <div class="swatch" style="background:#00ff41;" onclick="setTheme('green',this)"></div>
+        <div class="swatch" style="background:#ffb000;" onclick="setTheme('amber',this)"></div>
+        <div class="swatch" style="background:#00ffff;" onclick="setTheme('cyan',this)"></div>
+        <div class="swatch active" style="background:#ff3333;" onclick="setTheme('red',this)"></div>
+        <div class="swatch" style="background:#cc44ff;" onclick="setTheme('purple',this)"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="screen">
+    <canvas id="matrix-canvas"></canvas>
+
+    <div id="devices-wrap">
+      <div id="devices-header">
+        <h1>// CONNECTED DEVICES</h1>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span id="devices-count">0 ONLINE</span>
+          <button id="scan-btn" onclick="scanDevices()">⟳ SCAN NETWORK</button>
+        </div>
+      </div>
+
+      <div id="device-list"></div>
+
+      <div id="mini-term">
+        <div id="mt-bar"><span>TERMINAL</span><span id="mt-host">root@hackos</span></div>
+        <div id="mt-output"></div>
+        <div id="mt-input-row">
+          <span id="mt-prompt">root@hackos:~$</span>
+          <input id="mt-input" type="text" autocomplete="off" spellcheck="false" onkeydown="mtKeydown(event)">
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// =====================================================================
+// CLOCK
+// =====================================================================
+function updateClock(){document.getElementById('clock').textContent=new Date().toTimeString().slice(0,8);}
+setInterval(updateClock,1000);updateClock();
+
+// =====================================================================
+// CONTROL CENTER (copied from hackos.html)
+// =====================================================================
+function toggleCC(){
+  document.getElementById('control-center').classList.toggle('cc-open');
+}
+document.addEventListener('click',e=>{
+  const cc=document.getElementById('control-center'),btn=document.getElementById('cc-btn');
+  if(!cc.contains(e.target)&&!btn.contains(e.target))cc.classList.remove('cc-open');
+});
+function setBrightness(v){document.getElementById('tablet').style.filter=`brightness(${v/100})`;document.getElementById('cc-bright-val').textContent=v+'%';}
+function setScanlines(v){
+  const op=v/100;
+  document.getElementById('scanlines-el').style.background=`repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,${op}) 2px,rgba(0,0,0,${op}) 4px)`;
+  document.getElementById('cc-scan-val').textContent=v;
+}
+function setTheme(name,el){
+  document.querySelectorAll('.swatch').forEach(s=>s.classList.remove('active'));
+  if(el)el.classList.add('active');
+  const t=document.getElementById('tablet');
+  t.className='';
+  if(name!=='red')t.classList.add('theme-'+name);
+}
+function setBG(type,el){
+  document.querySelectorAll('.cc-bg-btn').forEach(b=>b.classList.remove('active'));
+  if(el)el.classList.add('active');
+  const sc=document.getElementById('screen'),mc=document.getElementById('matrix-canvas');
+  sc.style.backgroundImage='';sc.classList.remove('bg-image-active');
+  mc.style.display='none';if(window._matrixIv){clearInterval(window._matrixIv);window._matrixIv=null;}
+  if(type==='image'){sc.style.backgroundImage="url('background_1.png')";sc.classList.add('bg-image-active');}
+  else if(type==='matrix'){mc.style.display='block';startMatrix();}
+}
+function startMatrix(){
+  const mc=document.getElementById('matrix-canvas'),sc=document.getElementById('screen');
+  mc.width=sc.offsetWidth||1100;mc.height=sc.offsetHeight||684;
+  const ctx=mc.getContext('2d'),cols=Math.floor(mc.width/14),drops=Array(cols).fill(1);
+  window._matrixIv=setInterval(()=>{
+    ctx.fillStyle='rgba(0,0,0,0.05)';ctx.fillRect(0,0,mc.width,mc.height);
+    ctx.fillStyle='#ff3333';ctx.font='12px Courier New';
+    drops.forEach((y,i)=>{ctx.fillText(String.fromCharCode(0x30A0+Math.random()*96),i*14,y*14);
+      if(y*14>mc.height&&Math.random()>.975)drops[i]=0;drops[i]++;});
+  },50);
+}
+
+// =====================================================================
+// DEVICES PANEL
+// =====================================================================
+function randMac(){
+  const h=()=>Math.floor(Math.random()*256).toString(16).padStart(2,'0');
+  return [h(),h(),h(),h(),h(),h()].join(':');
+}
+function randIp(){return '192.168.1.'+(Math.floor(Math.random()*200)+10);}
+
+const deviceIcons={router:'📡',phone:'📱',laptop:'💻',pc:'🖥️',iot:'🔌',printer:'🖨️',tv:'📺',cam:'🎥'};
+const deviceNames=[
+  ['ROUTER-GW','router'],['PIXEL-7-PRO','phone'],['MACBOOK-AIR','laptop'],
+  ['DESKTOP-RIG','pc'],['SMART-PLUG-01','iot'],['HP-LASERJET','printer'],
+  ['LIVINGROOM-TV','tv'],['FRONTDOOR-CAM','cam'],['IPHONE-15','phone'],['NAS-SERVER','pc']
+];
+let devices=[];
+
+function genDevices(){
+  const count=Math.floor(Math.random()*5)+4;
+  const shuffled=[...deviceNames].sort(()=>Math.random()-.5).slice(0,count);
+  devices=shuffled.map(([name,type])=>({
+    name,type,ip:randIp(),mac:randMac(),online:Math.random()>0.2
+  }));
+  // router always online
+  if(devices[0])devices[0].online=true;
+  renderDevices();
+}
+
+function renderDevices(){
+  const list=document.getElementById('device-list');
+  list.innerHTML='';
+  devices.forEach(d=>{
+    const row=document.createElement('div');
+    row.className='device-row';
+    row.innerHTML=`
+      <span class="dev-dot ${d.online?'on':'off'}"></span>
+      <span class="dev-icon">${deviceIcons[d.type]||'📦'}</span>
+      <span class="dev-name">${d.name}</span>
+      <span class="dev-ip">${d.ip}</span>
+      <span class="dev-mac">${d.mac}</span>
+      <span class="dev-status ${d.online?'on':'off'}">${d.online?'ONLINE':'OFFLINE'}</span>
+    `;
+    list.appendChild(row);
+  });
+  const online=devices.filter(d=>d.online).length;
+  document.getElementById('devices-count').textContent=online+' ONLINE / '+devices.length+' TOTAL';
+}
+
+function scanDevices(){
+  const btn=document.getElementById('scan-btn');
+  btn.disabled=true;btn.textContent='⟳ SCANNING...';
+  mtLog('Initiating network scan...','ok');
+  setTimeout(()=>{
+    genDevices();
+    btn.disabled=false;btn.textContent='⟳ SCAN NETWORK';
+    mtLog('Scan complete. '+devices.length+' device(s) found.','ok');
+  },900);
+}
+
+// =====================================================================
+// MINI TERMINAL
+// =====================================================================
+function mtLog(text,cls){
+  const out=document.getElementById('mt-output');
+  const div=document.createElement('div');
+  if(cls)div.className=cls;
+  div.textContent=text;
+  out.appendChild(div);
+  out.scrollTop=out.scrollHeight;
+}
+
+function mtKeydown(e){
+  if(e.key!=='Enter')return;
+  const input=document.getElementById('mt-input');
+  const raw=input.value;
+  if(!raw.trim())return;
+  mtLog('root@hackos:~$ '+raw,'cmd');
+  input.value='';
+  runMtCommand(raw.trim());
+}
+
+function runMtCommand(raw){
+  const parts=raw.split(/\s+/);
+  const cmd=parts[0].toLowerCase();
+  const args=parts.slice(1);
+
+  switch(cmd){
+    case 'help':
+      mtLog('Available commands:');
+      mtLog('  scan            - scan network for devices');
+      mtLog('  list            - list connected devices');
+      mtLog('  ping <ip>       - ping a device');
+      mtLog('  info <name>     - show device details');
+      mtLog('  block <name>    - mark device offline');
+      mtLog('  allow <name>    - mark device online');
+      mtLog('  clear           - clear terminal output');
+      break;
+    case 'scan':
+      scanDevices();
+      break;
+    case 'list':
+      if(!devices.length){mtLog('No devices found. Run "scan" first.','err');break;}
+      devices.forEach(d=>mtLog(`${d.online?'[ON ]':'[OFF]'} ${d.name.padEnd(16)} ${d.ip.padEnd(15)} ${d.mac}`));
+      break;
+    case 'ping':{
+      const ip=args[0];
+      if(!ip){mtLog('Usage: ping <ip>','err');break;}
+      const dev=devices.find(d=>d.ip===ip);
+      if(dev&&dev.online){mtLog(`Reply from ${ip}: time=${(Math.random()*20+1).toFixed(1)}ms`,'ok');}
+      else if(dev){mtLog(`Request timed out: ${ip}`,'err');}
+      else{mtLog(`Unknown host: ${ip}`,'err');}
+      break;
+    }
+    case 'info':{
+      const name=args.join(' ').toUpperCase();
+      const dev=devices.find(d=>d.name===name);
+      if(!dev){mtLog('Device not found: '+name,'err');break;}
+      mtLog(`NAME: ${dev.name}`);
+      mtLog(`TYPE: ${dev.type}`);
+      mtLog(`IP:   ${dev.ip}`);
+      mtLog(`MAC:  ${dev.mac}`);
+      mtLog(`STATUS: ${dev.online?'ONLINE':'OFFLINE'}`,dev.online?'ok':'err');
+      break;
+    }
+    case 'block':{
+      const name=args.join(' ').toUpperCase();
+      const dev=devices.find(d=>d.name===name);
+      if(!dev){mtLog('Device not found: '+name,'err');break;}
+      dev.online=false;renderDevices();
+      mtLog(name+' marked OFFLINE.','err');
+      break;
+    }
+    case 'allow':{
+      const name=args.join(' ').toUpperCase();
+      const dev=devices.find(d=>d.name===name);
+      if(!dev){mtLog('Device not found: '+name,'err');break;}
+      dev.online=true;renderDevices();
+      mtLog(name+' marked ONLINE.','ok');
+      break;
+    }
+    case 'clear':
+      document.getElementById('mt-output').innerHTML='';
+      break;
+    default:
+      mtLog('Unknown command: '+cmd+' (type "help")','err');
+  }
+}
+
+// =====================================================================
+// START
+// =====================================================================
+mtLog('Mini terminal ready. Type "help" for commands.');
+genDevices();
+</script>
+</body>
+</html>
