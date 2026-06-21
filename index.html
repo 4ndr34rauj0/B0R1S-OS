@@ -441,7 +441,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
       <div class="cc-title">// BACKGROUND</div>
       <div class="cc-bg-options">
         <button class="cc-bg-btn active" id="bg-def-btn" onclick="setBG('default',this)">DEFAULT</button>
-        <button class="cc-bg-btn" id="bg-img-btn" onclick="setBG('image',this)">NKT</button>
+        <button class="cc-bg-btn" id="bg-img-btn" onclick="setBG('image',this)">SKULL</button>
         <button class="cc-bg-btn" id="bg-mat-btn" onclick="setBG('matrix',this)">MATRIX</button>
          <!--colocar aqui as imagens de background para adicionar-->
       </div>
@@ -487,6 +487,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
       </div>
       <div class="app-icon" onclick="openTxtWriter()">
         <div class="icon-box">🖋️</div><span class="label">TxtWriter</span>
+      </div>
+      <div class="app-icon" onclick="openApp('devices')">
+        <div class="icon-box">🔌</div><span class="label">Devices</span>
       </div>
       <div id="custom-icons"></div>
     </div>
@@ -701,6 +704,16 @@ document.write('<h2 style="letter-spacing:2px;">MY APP v1.0</h2><p style="color:
         <div id="code-preview-area"><span style="color:var(--text-mute);font-size:9px;">▶ Press RUN</span></div>
       </div>
     </div>
+    
+    <!-- DEVICES -->>
+    <div class="app-window" id="devices-app">
+  <div class="win-bar"><span class="win-title">DEVICES</span>
+    <button class="win-close" onclick="closeApp('devices')">✕</button></div>
+  <div class="win-content" style="padding:0;">
+    /*this loads the "devices" that simulate other devices connected to the tablet.*/
+    <iframe src="devices.html" style="width:100%;height:100%;border:none;background:#0a0e0a00;"></iframe>
+  </div>
+</div>
 
     <!-- REWARD SETUP (accessed via terminal setreward) -->
     <div class="app-window" id="rw-setup-app">
