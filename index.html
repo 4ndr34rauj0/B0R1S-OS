@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>☠</text></svg>">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>H4CK-OS v2.7.1</title>
+<title>B0R1S-OS v2.7.1</title>
 <style>
 :root{
   --bg:#0e0a0a;--bg2:#150f0f;--bg3:#1e1414;
@@ -21,7 +22,7 @@ body{display:flex;align-items:center;justify-content:center;}
 
 #tablet{
   width:1280px;height:720px;background:var(--bg);
-  border:4px solid #2a1a1a;border-radius:20px;
+  border:5px solid #2a1a1a;border-radius:20px;
   box-shadow:0 0 80px #000,0 0 40px #1a000644;
   display:flex;flex-direction:column;
   position:relative;overflow:hidden;
@@ -362,12 +363,16 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 <!-- BOOT -->
 <div id="boot-layer">
   <pre id="boot-art"> 
-    ██╗  ██╗ █████╗  ██████╗██╗  ██╗       ██████╗ ███████╗
-    ██║  ██║██╔══██╗██╔════╝██║ ██╔╝      ██╔═══██╗██╔════╝
-    ███████║███████║██║     █████╔╝ █████╗██║   ██║███████╗
-    ██╔══██║██╔══██║██║     ██╔═██╗ ╚════╝██║   ██║╚════██║
-    ██║  ██║██║  ██║╚██████╗██║  ██╗      ╚██████╔╝███████║
-    ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝       ╚═════╝ ╚══════╝
+ _______    ______   _______     __    ______           ______    ______  
+|       \  /      \ |       \  _/  \  /      \         /      \  /      \ 
+| $$$$$$$\|  $$$$$$\| $$$$$$$\|   $$ |  $$$$$$\       |  $$$$$$\|  $$$$$$\
+| $$__/ $$| $$$\| $$| $$__| $$ \$$$$ | $$___\$$______ | $$  | $$| $$___\$$
+| $$    $$| $$$$\ $$| $$    $$  | $$  \$$    \|      \| $$  | $$ \$$    \ 
+| $$$$$$$\| $$\$$\$$| $$$$$$$\  | $$  _\$$$$$$\\$$$$$$| $$  | $$ _\$$$$$$\
+| $$__/ $$| $$_\$$$$| $$  | $$ _| $$_|  \__| $$       | $$__/ $$|  \__| $$
+| $$    $$ \$$  \$$$| $$  | $$|   $$ \\$$    $$        \$$    $$ \$$    $$
+ \$$$$$$$   \$$$$$$  \$$   \$$ \$$$$$$ \$$$$$$          \$$$$$$   \$$$$$$ 
+                                             
     </pre>
   <div id="boot-log"></div>
   <div id="boot-progress"><div id="boot-bar"></div></div>
@@ -377,8 +382,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 <div id="login-layer">
   <div id="login-box">
     <div id="login-skull">💀</div>
-    <h2>HACK_OS — LOCKED</h2>
-    <div id="login-user">root@hackos</div>
+    <h2>B0R1S-OS — LOCKED</h2>
+    <div id="login-user">root@admin</div>
     <div id="login-dots">
       <div class="login-dot" id="ld0"></div>
       <div class="login-dot" id="ld1"></div>
@@ -399,7 +404,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 <!-- OS -->
 <div id="os-layer">
   <div id="taskbar">
-    <span class="tb-logo">HACK-OS v1.0</span>
+    <span class="tb-logo">B0R1S-OS v2.7.1</span>
     <span class="tb-sig">[ SECURE ]</span>
     <span id="clock">00:00:00</span>
     <button id="cc-btn" onclick="toggleCC()">⚙ CTRL CENTER</button>
@@ -436,7 +441,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
       <div class="cc-title">// BACKGROUND</div>
       <div class="cc-bg-options">
         <button class="cc-bg-btn active" id="bg-def-btn" onclick="setBG('default',this)">DEFAULT</button>
-        <button class="cc-bg-btn" id="bg-img-btn" onclick="setBG('image',this)">NKT</button>
+        <button class="cc-bg-btn" id="bg-img-btn" onclick="setBG('image',this)">SKULL</button>
         <button class="cc-bg-btn" id="bg-mat-btn" onclick="setBG('matrix',this)">MATRIX</button>
          <!--colocar aqui as imagens de background para adicionar-->
       </div>
@@ -488,12 +493,12 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 
     <!-- TERMINAL -->
     <div class="app-window" id="terminal-app">
-      <div class="win-bar"><span class="win-title" id="term-win-title">TERMINAL — root@hackos</span>
+      <div class="win-bar"><span class="win-title" id="term-win-title">TERMINAL — root@admin</span>
         <button class="win-close" onclick="closeApp('terminal')">✕</button></div>
       <div class="win-content">
         <div id="terminal-output"></div>
         <div class="term-input-row">
-          <span class="prompt" id="term-prompt">root@hackos:~$</span>
+          <span class="prompt" id="term-prompt">root@admin:~$</span>
           <input type="text" id="term-input" autocomplete="off" spellcheck="false" placeholder="type command...">
         </div>
       </div>
@@ -1039,10 +1044,10 @@ const TCMDS={
 };
 
 function initTerminal(){
-  tPrint('<span class="info">H4CK-OS Terminal — type <b>help</b> for commands</span>');
-  tPrint('<span class="dim">Tip: type <b>setreward</b> to configure mission rewards</span>');
+  tPrint('<span class="info">B0R1S-OS Terminal — type <b>help</b> for commands</span>');
+  /*tPrint('<span class="dim">Tip: type <b>setreward</b> to configure mission rewards</span>');
   tPrint('<span class="dim">Tip: type <b>upload</b> to import a file into FILES</span>');
-  tPrint('<span class="dim">Tip: type <b>edtnetmap</b> to toggle NETMAP edit mode</span>');
+  tPrint('<span class="dim">Tip: type <b>edtnetmap</b> to toggle NETMAP edit mode</span>');*/
   if(!lsOK)tPrint('<span class="warn">⚠ Local storage unavailable (likely opened via file://) — changes will NOT persist across reloads. Open via a local web server to enable saving.</span>');
   const inp=document.getElementById('term-input');
   inp.addEventListener('keydown',e=>{
