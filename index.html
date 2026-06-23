@@ -33,12 +33,14 @@ body{display:flex;align-items:center;justify-content:center;}
   background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.04) 2px,rgba(0,0,0,0.04) 4px);}
 
 /* LAYERS */
+
 #boot-layer,#login-layer,#os-layer{position:absolute;inset:0;}
 #boot-layer{background:#000;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--green);}
 #login-layer{background:#000;z-index:90;display:none;flex-direction:column;align-items:center;justify-content:center;}
 #os-layer{z-index:10;display:none;flex-direction:column;}
 
 /* BOOT */
+
 #boot-art{font-size:10px;line-height:1.3;color:var(--green2);margin-bottom:20px;white-space:pre;text-align:center;}
 #boot-log{max-width:500px;width:100%;text-align:left;margin-bottom:14px;font-size:11px;}
 #boot-log div{margin-bottom:2px;color:var(--text-dim);}
@@ -47,6 +49,7 @@ body{display:flex;align-items:center;justify-content:center;}
 #boot-bar{height:100%;width:0;background:var(--green2);transition:width .05s;}
 
 /* LOGIN */
+
 #login-box{border:1px solid var(--border-bright);border-radius:8px;padding:28px 38px;background:#0d0505;
   display:flex;flex-direction:column;align-items:center;gap:14px;min-width:300px;}
 #login-box h2{color:var(--green);font-size:13px;letter-spacing:3px;}
@@ -64,6 +67,7 @@ body{display:flex;align-items:center;justify-content:center;}
 #login-hint{color:var(--text-mute);font-size:9px;letter-spacing:1px;}
 
 /* TASKBAR */
+
 #taskbar{background:#050805;border-bottom:1px solid var(--border);height:36px;
   display:flex;align-items:center;padding:0 14px;gap:12px;flex-shrink:0;}
 .tb-logo{color:var(--green);font-weight:bold;font-size:12px;letter-spacing:2px;}
@@ -78,6 +82,7 @@ body{display:flex;align-items:center;justify-content:center;}
 #cc-btn:hover{border-color:var(--green2);color:var(--green);}
 
 /* CONTROL CENTER */
+
 #control-center{
   position:absolute;top:36px;right:0;width:290px;
   background:#0d0202;/*border:0px solid var(--border-bright);*/
@@ -109,6 +114,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 .ci-input{background:var(--bg3);border:1px solid var(--border);color:var(--green);font-family:var(--font);font-size:10px;padding:3px 6px;border-radius:3px;outline:none;}
 
 /* SCREEN & HOME */
+
 #screen{flex:1;position:relative;overflow:hidden;}
 #matrix-canvas{position:absolute;inset:0;display:none;pointer-events:none;z-index:0;opacity:0.18;}
 #home{position:absolute;inset:0;padding:24px;display:grid;grid-template-columns:repeat(5,1fr);
@@ -123,6 +129,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 .app-icon:hover .label{color:var(--green);}
 
 /* APP WINDOWS */
+
 .app-window{position:absolute;inset:0;background:var(--bg);display:flex;flex-direction:column;
   opacity:0;pointer-events:none;transition:opacity .2s;}
 .app-window.active{opacity:1;pointer-events:all;}
@@ -134,6 +141,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 .win-content{flex:1;overflow:hidden;display:flex;flex-direction:column;}
 
 /* TERMINAL */
+
 #terminal-output{flex:1;overflow-y:auto;padding:10px;font-size:12px;line-height:1.6;color:var(--text);}
 #terminal-output .err{color:var(--red);}
 #terminal-output .warn{color:var(--amber);}
@@ -144,6 +152,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 #term-input{flex:1;background:none;border:none;color:var(--green);font-family:var(--font);font-size:12px;outline:none;caret-color:var(--green);}
 
 /* HACKKIT */
+
 #hack-tabs{display:flex;border-bottom:1px solid var(--border);background:#0d0505;flex-shrink:0;}
 .hack-tab{padding:7px 14px;font-size:9px;color:var(--text-mute);cursor:pointer;letter-spacing:1px;
   text-transform:uppercase;border-right:1px solid var(--border);transition:all .15s;position:relative;}
@@ -171,6 +180,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 .hk-meter-fill.danger{background:var(--red);}
 
 /* QUEST STATUS BAR */
+
 #quest-bar{display:flex;align-items:center;gap:12px;padding:6px 14px;border-bottom:1px solid var(--border);
   background:#030803;flex-shrink:0;font-size:9px;letter-spacing:1px;}
 .quest-step{display:flex;align-items:center;gap:5px;color:var(--text-mute);}
@@ -179,6 +189,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 .quest-arrow{color:var(--green-dim);}
 
 /* PORT SCAN */
+
 .port-list{display:flex;flex-direction:column;gap:3px;max-height:240px;overflow-y:auto;}
 .port-row{display:flex;align-items:center;gap:6px;padding:5px 8px;border:1px solid var(--border);border-radius:3px;font-size:9px;
   font-family:var(--font);animation:row-appear .3s ease-out;}
@@ -199,6 +210,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 #breach-term-out .warn{color:var(--amber);}
 
 /* PASSWORD CRACKER */
+
 #pc-layout{display:flex;gap:12px;flex:1;min-height:0;}
 #pc-terminal{flex:1;display:flex;flex-direction:column;border:1px solid var(--border);border-radius:4px;overflow:hidden;}
 #pc-term-out{flex:1;overflow-y:auto;padding:8px;font-size:10px;line-height:1.6;color:var(--text-dim);}
@@ -216,6 +228,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 @keyframes cell-land{from{transform:scale(1.3);color:#fff}to{transform:scale(1)}}
 
 /* FIREWALL BREACHER */
+
 #fb-layout{display:flex;gap:14px;flex:1;min-height:0;}
 #fb-left{flex:1;display:flex;flex-direction:column;gap:8px;}
 #fb-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;}
@@ -237,6 +250,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 #fb-score-disp{font-size:10px;color:var(--cyan);letter-spacing:1px;}
 
 /* REWARD MODAL (terminal popup) */
+
 #reward-overlay{position:absolute;inset:0;background:#000a;z-index:200;display:none;align-items:center;justify-content:center;}
 #reward-overlay.open{display:flex;}
 #reward-modal{background:#0d0202;border:1px solid var(--green);border-radius:6px;padding:20px;max-width:560px;width:90%;
@@ -254,10 +268,12 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 .rw-close-btn:hover{border-color:var(--red);color:var(--red);}
 
 /* COMPLETION FLASH */
+
 @keyframes completion-flash{0%{box-shadow:0 0 40px #ff333388}50%{box-shadow:0 0 80px #ff3333cc}100%{box-shadow:0 0 40px #ff333388}}
 .quest-complete-flash{animation:completion-flash 1s 3;}
 
 /* FILES */
+
 #files-app .win-content{flex-direction:row;overflow:hidden;position:relative;}
 #files-sidebar{width:155px;border-right:1px solid var(--border);padding:6px;overflow-y:auto;flex-shrink:0;}
 #files-main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
@@ -285,6 +301,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 #note-ta{flex:1;background:var(--bg2);border:none;outline:none;color:var(--green);font-family:var(--font);font-size:11px;padding:10px;resize:none;line-height:1.7;}
 
 /* NETMAP */
+
 #netmap-app .win-content{position:relative;overflow:hidden;}
 #nm-toolbar{display:flex;gap:6px;padding:6px 10px;border-bottom:1px solid var(--border);flex-shrink:0;align-items:center;}
 #nm-edit-indicator{font-size:9px;letter-spacing:1px;color:var(--text-mute);}
@@ -308,11 +325,13 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 #nm-legend{position:absolute;bottom:8px;left:10px;font-size:9px;color:var(--text-mute);line-height:2;pointer-events:none;}
 
 /* CODEIT */
+
 #code-toolbar{display:flex;align-items:center;gap:6px;padding:5px 10px;border-bottom:1px solid var(--border);background:#0d0505;flex-shrink:0;flex-wrap:wrap;}
 #code-editor{flex:1;background:var(--bg2);color:var(--green);font-family:var(--font);font-size:11px;border:none;outline:none;padding:10px;resize:none;line-height:1.6;tab-size:2;}
 #code-preview-area{height:150px;border-top:1px solid var(--border);overflow:auto;background:var(--bg);padding:6px;font-size:10px;color:var(--text-dim);flex-shrink:0;}
 
 /* TXTWRITER */
+
 #tw-toolbar{display:flex;align-items:center;gap:6px;padding:5px 10px;border-bottom:1px solid var(--border);background:#0d0505;flex-shrink:0;flex-wrap:wrap;}
 #tw-ta{flex:1;width:100%;background:var(--bg2);color:var(--green);font-family:var(--font);font-size:12px;border:none;outline:none;padding:14px;resize:none;line-height:1.7;}
 #tw-picker{max-height:160px;overflow-y:auto;border-bottom:1px solid var(--border);background:var(--bg2);display:flex;flex-direction:column;flex-shrink:0;}
@@ -321,6 +340,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 .tw-pick-row:hover{background:var(--green-faint);color:var(--green);}
 
 /* UPLOAD PANEL */
+
 #upload-panel{display:none;flex-direction:column;gap:8px;padding:10px;border-bottom:1px solid var(--border);background:var(--bg2);flex-shrink:0;}
 #upload-panel.open{display:flex;}
 #upload-panel .up-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
@@ -328,6 +348,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 #upload-status{font-size:9px;color:var(--text-mute);}
 
 /* REWARD SETUP (terminal command) */
+
 #rw-setup-app .win-content{padding:14px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;}
 .rw-folder{border:1px solid var(--border);border-radius:4px;overflow:hidden;}
 .rw-folder-header{display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--bg3);cursor:pointer;font-size:10px;color:var(--cyan);}
@@ -345,6 +366,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 #rw-setup-toolbar{display:flex;gap:6px;flex-wrap:wrap;}
 
 /* THEMES */
+
 .theme-green{--green:#00ff41;--green2:#00cc33;--green3:#009922;--green-dim:#004d14;--green-faint:#001a07;--text:#00ff41;--text-dim:#00992a;--text-mute:#005517;--border:#00441199;--border-bright:#00ff4155;}
 .theme-amber{--green:#ffb000;--green2:#cc8800;--green3:#997700;--green-dim:#4d3800;--green-faint:#1a1200;--text:#ffb000;--text-dim:#997700;--text-mute:#4d3800;--border:#66440099;--border-bright:#ffb00055;}
 .theme-cyan{--green:#00ffff;--green2:#00cccc;--green3:#009999;--green-dim:#004d4d;--green-faint:#001a1a;--text:#00ffff;--text-dim:#009999;--text-mute:#004d4d;--border:#00444499;--border-bright:#00ffff55;}
@@ -354,8 +376,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 ::-webkit-scrollbar{width:5px;}
 ::-webkit-scrollbar-track{background:var(--bg2);}
 ::-webkit-scrollbar-thumb{background:var(--green-dim);border-radius:3px;}
-/*------------------------------------------*/
+
 /* DEVICES PANEL */
+
 #devices-wrap{flex:1;display:flex;flex-direction:column;padding:18px 22px;position:relative;z-index:1;min-height:0;}
 #devices-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
 #devices-header h1{color:var(--green);font-size:14px;letter-spacing:3px;}
@@ -380,7 +403,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 .dev-status.on{color:var(--green);border:1px solid var(--green3);}
 .dev-status.off{color:var(--text-mute);border:1px solid var(--border);}
 
-/* MINI TERMINAL */
+/* TERMINAL DEVICES */
+
 #mini-term{height:190px;flex-shrink:0;border:1px solid var(--border);border-radius:6px;background:#080404;
   display:flex;flex-direction:column;overflow:hidden;}
 #mt-bar{background:#050202;border-bottom:1px solid var(--border);padding:5px 10px;font-size:9px;
@@ -397,7 +421,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 ::-webkit-scrollbar{width:7px;}
 ::-webkit-scrollbar-thumb{background:var(--green-dim);border-radius:4px;}
 ::-webkit-scrollbar-track{background:#0a0505;}
-/*-----------------------------------------------*/
+
+
 </style>
 </head>
 <body>
@@ -405,6 +430,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 <div class="scanlines" id="scanlines-el"></div>
 
 <!-- BOOT -->
+
 <div id="boot-layer">
   <pre id="boot-art"> 
  _______    ______   _______     __    ______           ______    ______  
@@ -423,6 +449,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 </div>
 
 <!-- LOGIN -->
+
 <div id="login-layer">
   <div id="login-box">
     <div id="login-skull">💀</div>
@@ -446,6 +473,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 </div>
 
 <!-- OS -->
+
 <div id="os-layer">
   <div id="taskbar">
     <span class="tb-logo">B0R1S-OS v2.7.1</span>
@@ -455,6 +483,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
   </div>
 
   <!-- CONTROL CENTER -->
+
   <div id="control-center">
     <div>
       <div class="cc-title">// DISPLAY</div>
@@ -487,7 +516,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
         <button class="cc-bg-btn active" id="bg-def-btn" onclick="setBG('default',this)">DEFAULT</button>
         <button class="cc-bg-btn" id="bg-img-btn" onclick="setBG('image',this)">NKT</button>
         <button class="cc-bg-btn" id="bg-mat-btn" onclick="setBG('matrix',this)">MATRIX</button>
-         <!--colocar aqui as imagens de background para adicionar-->
+        <!--colocar aqui as imagens de background para adicionar-->
+
       </div>
     </div>
     <div class="cc-section">
@@ -503,8 +533,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
     <div class="cc-section">
       <div class="cc-title">// IDENTITY</div>
       <div class="cc-row"><span class="cc-label">USER</span><input type="text" value="root" id="cc-user" class="ci-input" style="width:90px;" oninput="setUser(this.value)"></div>
-      <div class="cc-row"><span class="cc-label">HOST</span><input type="text" value="hackos" id="cc-host" class="ci-input" style="width:90px;" oninput="setHost(this.value)"></div>
-      <div class="cc-row"><span class="cc-label">PIN</span><input type="password" maxlength="5" id="cc-pin" class="ci-input" style="width:70px;" oninput="setPin(this.value)" placeholder="5 digits"></div>
+      <div class="cc-row"><span class="cc-label">HOST</span><input type="text" value="admin" id="cc-host" class="ci-input" style="width:90px;" oninput="setHost(this.value)"></div>
+      <div class="cc-row"><span class="cc-label">PIN</span><input type="password" maxlength="5" id="cc-pin" class="ci-input" style="width:70px;" oninput="setPin(this.value)" placeholder="4 digits"></div>
     </div>
     <div class="cc-section">
       <button class="cc-hk-btn" onclick="lockDevice()">🔒 LOCK DEVICE</button>
@@ -516,6 +546,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
     <canvas id="matrix-canvas"></canvas>
 
     <!-- HOME -->
+
     <div id="home">
       <div class="app-icon" onclick="openApp('terminal')">
         <div class="icon-box">💻</div><span class="label">Terminal</span>
@@ -539,6 +570,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
     </div>
 
     <!-- TERMINAL -->
+
     <div class="app-window" id="terminal-app">
       <div class="win-bar"><span class="win-title" id="term-win-title">TERMINAL — root@admin</span>
         <button class="win-close" onclick="closeApp('terminal')">✕</button></div>
@@ -552,11 +584,14 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
     </div>
 
     <!-- HACKKIT -->
+
     <div class="app-window" id="hack-app">
       <div class="win-bar"><span class="win-title">HACKKIT v3.1 — EXPLOITATION SUITE</span>
         <button class="win-close" onclick="closeApp('hack')">✕</button></div>
       <div class="win-content">
+
         <!-- Quest progress bar -->
+
         <div id="quest-bar">
           <div class="quest-step active" id="qs-scan">① PORT SCAN</div>
           <div class="quest-arrow">▶</div>
@@ -572,6 +607,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
         </div>
 
         <!-- PORT SCAN -->
+
         <div class="hack-panel active" id="hack-portscan">
           <div><div class="hk-title">// NETWORK PORT SCANNER</div>
             <div class="hk-desc">Scan target IP for open services. Set target to begin breach sequence.</div></div>
@@ -587,6 +623,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
         </div>
 
         <!-- FIREWALL BREACH -->
+
         <div class="hack-panel" id="hack-firewall">
           <div><div class="hk-title">// FIREWALL BREACHER — RING BYPASS</div>
             <div class="hk-desc">Click numbers 0→9 in sequence. Outer ring: 30s · Middle: 15s · Inner: 8s. 2 correct sequences = ring cleared.</div></div>
@@ -610,6 +647,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
         </div>
 
         <!-- PASSWORD CRACK -->
+
         <div class="hack-panel" id="hack-crack">
           <div><div class="hk-title">// PASSWORD CRACKER — MATRIX CIPHER</div>
             <div class="hk-desc">Each matrix row hides ONE letter at a random column (rest show 0). Decode all rows → type the full password. Type HINT for analysis.</div></div>
@@ -640,6 +678,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
     </div>
 
     <!-- FILES -->
+
     <div class="app-window" id="files-app">
       <div class="win-bar"><span class="win-title">FILES — /root</span><button class="win-close" onclick="closeApp('files')">✕</button></div>
       <div class="win-content">
@@ -678,11 +717,12 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
     </div>
 
     <!-- NETMAP -->
+
     <div class="app-window" id="netmap-app">
       <div class="win-bar"><span class="win-title">NETMAP — LIVE TOPOLOGY</span><button class="win-close" onclick="closeApp('netmap')">✕</button></div>
       <div class="win-content">
         <div id="nm-toolbar">
-          <span id="nm-edit-indicator">EDIT MODE: OFF <span style="color:var(--text-mute);">(type <b>edtnetmap</b> in terminal)</span></span>
+          <span id="nm-edit-indicator">READY--<span style="color:var(--text-mute);">Press node for options</span></span>
           <div id="nm-edit-controls">
             <button class="nm-tb-btn" onclick="nmAdd()">+ NODE</button>
             <button class="nm-tb-btn" onclick="nmToggleConnect()" id="nm-conn-btn">CONNECT: OFF</button>
@@ -710,6 +750,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
     </div>
 
     <!-- TXTWRITER -->
+
     <div class="app-window" id="txtwriter-app">
       <div class="win-bar"><span class="win-title">TXTWRITER</span><button class="win-close" onclick="closeApp('txtwriter')">✕</button></div>
       <div class="win-content" style="padding:0;">
@@ -729,6 +770,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
     </div>
 
     <!-- DEVICES -->
+
     <div class="app-window" id="devices-app">
       <div class="win-bar"><span class="win-title">DEVICES</span><button class="win-close" onclick="closeApp('devices')">✕</button></div>
       <div class="win-content" style="padding:0;">
@@ -744,10 +786,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
           <div id="device-list"></div>
 
           <div id="mini-term">
-            <div id="mt-bar"><span>TERMINAL</span><span id="mt-host">root@hackos</span></div>
+            <div id="mt-bar"><span>TERMINAL</span><span id="mt-host">root@admin</span></div>
             <div id="mt-output"></div>
             <div id="mt-input-row">
-              <span id="mt-prompt">root@hackos:~$</span>
+              <span id="mt-prompt">root@admin:~$</span>
               <input id="mt-input" type="text" autocomplete="off" spellcheck="false" onkeydown="mtKeydown(event)">
             </div>
           </div>
@@ -756,6 +798,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
     </div>
 
     <!-- CODEIT -->
+
     <div class="app-window" id="codeit-app">
       <div class="win-bar"><span class="win-title">CODEIT — APP BUILDER</span><button class="win-close" onclick="closeApp('codeit')">✕</button></div>
       <div class="win-content">
@@ -779,6 +822,7 @@ document.write('<h2 style="letter-spacing:2px;">MY APP v1.0</h2><p style="color:
     
 
     <!-- REWARD SETUP (accessed via terminal setreward) -->
+
     <div class="app-window" id="rw-setup-app">
       <div class="win-bar"><span class="win-title">REWARD VAULT — MISSION LOOT SETUP</span><button class="win-close" onclick="closeApp('rw-setup')">✕</button></div>
       <div class="win-content">
@@ -806,6 +850,7 @@ document.write('<h2 style="letter-spacing:2px;">MY APP v1.0</h2><p style="color:
     </div>
 
     <!-- REWARD DELIVERY MODAL -->
+
     <div id="reward-overlay">
       <div id="reward-modal">
         <div class="rw-modal-title">// BREACH COMPLETE — DATA EXFILTRATION</div>
@@ -826,6 +871,7 @@ document.write('<h2 style="letter-spacing:2px;">MY APP v1.0</h2><p style="color:
 
 <script>
 "use strict";
+
 // =====================================================================
 // STORAGE
 // =====================================================================
@@ -857,6 +903,7 @@ const S={
 // =====================================================================
 // AUDIO ENGINE
 // =====================================================================
+
 let _ac=null,_vol=0.6;
 function getAC(){if(!_ac)_ac=new(window.AudioContext||window.webkitAudioContext)();return _ac;}
 function setVolume(v){_vol=v/100;document.getElementById('vol-icon').textContent=v>0?'🔊':'🔇';}
@@ -889,7 +936,8 @@ function playRmlog(){
 // =====================================================================
 // GLOBALS
 // =====================================================================
-let uname=S.g('username','root'),hname=S.g('hostname','hackos'),pinCode=S.g('pin','1337');
+
+let uname=S.g('username','root'),hname=S.g('hostname','admin'),pinCode=S.g('pin','1337');
 let curDir='/root',sessionStart=Date.now(),matrixIv=null,customApps=S.g('custom_apps',{});
 // Quest state
 let questScanDone=false,questFWDone=false,questPWDone=false,questTarget=null;
@@ -898,6 +946,7 @@ let rwSelected=null,rwEditPath=null;
 // =====================================================================
 // BOOT
 // =====================================================================
+
 const bootLines=[
   {t:'BIOS v1.0.1...'},{t:'Memory: 8192MB [OK]',c:'ok'},{t:'Kernel shadow-5.4.0 [OK]',c:'ok'},
   {t:'Encrypted FS mounted [OK]',c:'ok'},{t:'Firewall rules applied [OK]',c:'ok'},
@@ -922,6 +971,7 @@ function boot(){
 // =====================================================================
 // LOGIN
 // =====================================================================
+
 let loginEntry='';
 function showLogin(){document.getElementById('login-layer').style.display='flex';loginEntry='';updDots();document.getElementById('login-error').textContent='';}
 function lk(k){
@@ -949,6 +999,7 @@ function lockDevice(){toggleCC();document.getElementById('os-layer').style.displ
 // =====================================================================
 // OS START
 // =====================================================================
+
 function bootOS(){
   document.getElementById('os-layer').style.display='flex';
   applyStoredSettings();
@@ -970,6 +1021,7 @@ function updateClock(){document.getElementById('clock').textContent=new Date().t
 // =====================================================================
 // CONTROL CENTER
 // =====================================================================
+
 function toggleCC(){
   const cc=document.getElementById('control-center');
   const opening=!cc.classList.contains('cc-open');
@@ -1025,13 +1077,14 @@ function startMatrix(){
   },50);
 }
 function setUser(v){uname=v||'root';S.s('username',v);updatePrompt();}
-function setHost(v){hname=v||'hackos';S.s('hostname',v);updatePrompt();document.getElementById('term-win-title').textContent='TERMINAL — '+uname+'@'+hname;}
+function setHost(v){hname=v||'admin';S.s('hostname',v);updatePrompt();document.getElementById('term-win-title').textContent='TERMINAL — '+uname+'@'+hname;}
 function setPin(v){if(/^\d{4}$/.test(v)){pinCode=v;S.s('pin',v);}}
 function clearAll(){S.s('settings',{});S.s('fs',null);S.s('netmap',null);S.s('rewards',{});S.s('custom_apps',{});location.reload();}
 
 // =====================================================================
 // APP MANAGEMENT
 // =====================================================================
+
 function openApp(id){
   document.getElementById('home').classList.add('hidden');
   document.querySelectorAll('.app-window').forEach(w=>w.classList.remove('active'));
@@ -1040,7 +1093,7 @@ function openApp(id){
   if(id==='netmap')setTimeout(drawNetmap,60);
   if(id==='files')renderFiles();
   if(id==='rw-setup')renderRwTree();
-  if(id==='devices'&&!devices.length){genDevices();mtLog('Mini terminal ready. Type "help" for commands.');}
+  if(id==='devices'&&!devices.length){genDevices();mtLog('Terminal ready. Type "help" for commands.');}
 }
 function closeApp(id){document.getElementById(id+'-app').classList.remove('active');document.getElementById('home').classList.remove('hidden');}
 function escH(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
@@ -1048,6 +1101,7 @@ function escH(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')
 // =====================================================================
 // FILESYSTEM (localStorage)
 // =====================================================================
+
 function getFS(){
   return S.g('fs',{
     '/root':{type:'dir',children:['documents','tools','notes','dwload']},
@@ -1065,6 +1119,7 @@ function saveFS(fs){S.s('fs',fs);}
 // =====================================================================
 // TERMINAL
 // =====================================================================
+
 const tHist=[];let tHistIdx=-1,noteEditing=null;
 
 const TCMDS={
@@ -1119,9 +1174,11 @@ const TCMDS={
 
 function initTerminal(){
   tPrint('<span class="info">B0R1S-OS Terminal — type <b>help</b> for commands</span>');
+
   /*tPrint('<span class="dim">Tip: type <b>setreward</b> to configure mission rewards</span>');
   tPrint('<span class="dim">Tip: type <b>upload</b> to import a file into FILES</span>');
   tPrint('<span class="dim">Tip: type <b>edtnetmap</b> to toggle NETMAP edit mode</span>');*/
+
   if(!lsOK)tPrint('<span class="warn">⚠ Local storage unavailable (likely opened via file://) — changes will NOT persist across reloads. Open via a local web server to enable saving.</span>');
   const inp=document.getElementById('term-input');
   inp.addEventListener('keydown',e=>{
@@ -1144,6 +1201,7 @@ function updatePrompt(){document.getElementById('term-prompt').textContent=getPr
 // =====================================================================
 // HACKKIT TAB SWITCHING + QUEST SYSTEM
 // =====================================================================
+
 function switchHackTab(id,el){
   const tab=document.getElementById('tab-'+id);
   if(tab&&tab.classList.contains('locked')){beep(200,.1,'sawtooth',.2);return;}
@@ -1172,6 +1230,7 @@ function updateQuestBar(){
 // =====================================================================
 // PORT SCAN
 // =====================================================================
+
 const portSvcs={
   21:{name:'FTP',ex:['Anonymous login','Dir traversal']},
   22:{name:'SSH',ex:['Weak creds','CVE-2023-38408']},
@@ -1278,6 +1337,7 @@ function doSetTarget(){
 // =====================================================================
 // FIREWALL BREACHER
 // =====================================================================
+
 let fbLvl=0,fbScore=0,fbOrdersOk=0,fbNext=0,fbTimerVal=0,fbTimerIv=null,fbActive=false;
 const FB_LVLS=[{name:'OUTER',time:30},{name:'MIDDLE',time:15},{name:'INNER',time:8}];
 
@@ -1366,6 +1426,7 @@ function drawFBCanvas(){
 // =====================================================================
 // PASSWORD CRACKER
 // =====================================================================
+
 let pcSecret='',pcRows=0,pcCols=7,pcMaxAttempts=6,pcUsed=0;
 const PC_CHARS='ABCDEFGHJKLMNPQRSTUVWXYZ0123456789';
 const PC_WORDS=['ACCESS','SHADOW','MATRIX','CIPHER','REBOOT','SYSTEM','KERNEL','BINARY','SHIELD','SECURE','BYPASS','PACKET','DAEMON','VECTOR'];
@@ -1453,6 +1514,7 @@ function pcHint(){
 // =====================================================================
 // REWARD DELIVERY (after all quests done)
 // =====================================================================
+
 function triggerRewardDelivery(){
   const rw=getRW();
   const overlay=document.getElementById('reward-overlay');
@@ -1481,6 +1543,7 @@ function triggerRewardDelivery(){
   lines.push({t:'Type <b>rmlog</b> to erase activity logs from target.',c:'rw-info'});
 
   // Copy reward files into /root/dwload in the FS
+
   const fs=getFS();
   const rwData=getRW();
   function copyRW(rwPath,fsDir){
@@ -1510,6 +1573,7 @@ function triggerRewardDelivery(){
   playComplete();
 
   // setup rmlog command
+
   const inp=document.getElementById('rw-cmd-input');
   inp.onkeydown=e=>{
     if(e.key!=='Enter')return;
@@ -1529,6 +1593,7 @@ function closeRewardModal(){document.getElementById('reward-overlay').classList.
 // =====================================================================
 // NETMAP
 // =====================================================================
+
 let nmCV,nmCtx,nmNodes=[],nmEdges=[],nmDrag=null,nmDX=0,nmDY=0,nmSel=null,nmConnMode=false,nmConnFirst=null,nmEditMode=false;
 const NM_TYPES=['owned','gateway','target','ice','normal'];
 const NM_COL={owned:'#00ff41',gateway:'#00ffff',target:'#ffb000',ice:'#ff3333',normal:'#009922'};
@@ -1565,7 +1630,9 @@ function initNetmap(){
     ];
     nmEdges=[[0,1],[0,2],[1,3],[3,4],[2,5]];
   }
+
   // Build type buttons
+
   const wrap=document.getElementById('nm-ep-types');wrap.innerHTML='';
   NM_TYPES.forEach(t=>{const b=document.createElement('div');b.className='nm-type-btn';b.textContent=t.toUpperCase();b.dataset.t=t;
     b.onclick=()=>{document.querySelectorAll('.nm-type-btn').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');
@@ -1619,6 +1686,7 @@ function drawNetmap(){
 // =====================================================================
 // FILES
 // =====================================================================
+
 let fsSelected=null,fsEditPath=null;
 function initFiles(){renderFiles();}
 function renderFiles(){
@@ -1657,7 +1725,10 @@ function fsDelSelected(){if(!fsSelected){alert('Select a file first');return;}if
   const fs=getFS();const name=fsSelected.split('/').pop();const par=fsSelected.slice(0,fsSelected.lastIndexOf('/'));
   const p=fs[par];if(p)p.children=p.children.filter(c=>c!==name);delete fs[fsSelected];saveFS(fs);fsSelected=null;renderFiles();}
 
-// ---- UPLOAD ----
+// =====================================================================
+// UPLOAD FILES
+// =====================================================================
+
 function toggleUploadPanel(force){
   const panel=document.getElementById('upload-panel');
   const open=force!==undefined?force:!panel.classList.contains('open');
@@ -1701,6 +1772,7 @@ function closeNote(){document.getElementById('note-overlay').classList.remove('o
 // =====================================================================
 // TXTWRITER (standalone text editor app)
 // =====================================================================
+
 let twPath=null;
 function openTxtWriter(){
   document.getElementById('home').classList.add('hidden');
@@ -1762,8 +1834,9 @@ function twLoad(path){
 }
 
 // =====================================================================
-// REWARD VAULT SETUP (setreward command)
+// REWARD SETUP (setreward command)
 // =====================================================================
+
 function getRW(){return S.g('rewards',{'/':{type:'dir',name:'rewards',children:['intro.txt']},'/intro.txt':{type:'file',name:'intro.txt',content:'// REWARD VAULT\nComplete all breach tasks to deliver this data.\nEdit me to add your loot!'}});}
 function saveRW(r){S.s('rewards',r);}
 
@@ -1803,6 +1876,7 @@ function rwSave(){if(!rwSelected)return;const rw=getRW();const node=rw[rwSelecte
 // =====================================================================
 // CODEIT
 // =====================================================================
+
 document.getElementById('code-editor').addEventListener('input',function(){document.getElementById('ci-lines').textContent='L:'+this.value.split('\n').length;});
 document.getElementById('code-editor').addEventListener('keydown',e=>{if(e.key==='Tab'){e.preventDefault();const s=e.target.selectionStart;e.target.value=e.target.value.slice(0,s)+'  '+e.target.value.slice(e.target.selectionEnd);e.target.selectionStart=e.target.selectionEnd=s+2;}});
 function previewCode(){const code=document.getElementById('code-editor').value;const area=document.getElementById('code-preview-area');
@@ -1824,7 +1898,9 @@ function openCA(id){const app=customApps[id];if(!app)return;document.getElementB
   doc.write(`<!DOCTYPE html><html><head><style>body{background:#0a0e0a;color:#00ff41;font-family:'Courier New',monospace;padding:10px;margin:0;}</style></head><body><script>${app.code}<\/script></body></html>`);doc.close();}
 function closeCA(id){document.getElementById(id+'-app').classList.remove('active');document.getElementById('home').classList.remove('hidden');}
 
-/*----------------------------------------------------------------*/
+// =====================================================================
+// DEVICES TERMINAL
+// =====================================================================
 
 function randMac(){
   const h=()=>Math.floor(Math.random()*256).toString(16).padStart(2,'0');
@@ -1834,9 +1910,9 @@ function randIp(){return '192.168.1.'+(Math.floor(Math.random()*200)+10);}
 
 const deviceIcons={router:'📡',phone:'📱',laptop:'💻',pc:'🖥️',iot:'🔌',printer:'🖨️',tv:'📺',cam:'🎥'};
 const deviceNames=[
-  ['ROUTER-GW','router'],['PIXEL-7-PRO','phone'],['MACBOOK-AIR','laptop'],
-  ['DESKTOP-RIG','pc'],['SMART-PLUG-01','iot'],['HP-LASERJET','printer'],
-  ['LIVINGROOM-TV','tv'],['FRONTDOOR-CAM','cam'],['IPHONE-15','phone'],['NAS-SERVER','pc']
+  ['ROUTER-GW','router'],['IPHONE-17','phone'],['MACBOOK','laptop'],
+  ['DESKTOP-RIG3','pc'],['SMART-DEVICE-WEB','iot'],['HP-LASER-EXPRESS','printer'],
+  ['SPEEDO-TV','tv'],['NINJA-TV','tv'],['IPHONE-15','phone'],['NKT-SERVER','pc']
 ];
 let devices=[];
 
@@ -1883,8 +1959,9 @@ function scanDevices(){
 }
 
 // =====================================================================
-// MINI TERMINAL
+// DEVICES TERMINAL
 // =====================================================================
+
 function mtLog(text,cls){
   const out=document.getElementById('mt-output');
   const div=document.createElement('div');
@@ -1899,7 +1976,7 @@ function mtKeydown(e){
   const input=document.getElementById('mt-input');
   const raw=input.value;
   if(!raw.trim())return;
-  mtLog('root@hackos:~$ '+raw,'cmd');
+  mtLog('root@admin:~$ '+raw,'cmd');
   input.value='';
   runMtCommand(raw.trim());
 }
@@ -1913,7 +1990,7 @@ function runMtCommand(raw){
     case 'help':
       mtLog('Available commands:');
       mtLog('  scan            - scan network for devices');
-      mtLog('  list            - list connected devices');
+      mtLog('  ls              - list connected devices');
       mtLog('  ping <ip>       - ping a device');
       mtLog('  info <name>     - show device details');
       mtLog('  block <name>    - mark device offline');
@@ -1923,7 +2000,7 @@ function runMtCommand(raw){
     case 'scan':
       scanDevices();
       break;
-    case 'list':
+    case 'ls':
       if(!devices.length){mtLog('No devices found. Run "scan" first.','err');break;}
       devices.forEach(d=>mtLog(`${d.online?'[ON ]':'[OFF]'} ${d.name.padEnd(16)} ${d.ip.padEnd(15)} ${d.mac}`));
       break;
@@ -1970,11 +2047,11 @@ function runMtCommand(raw){
       mtLog('Unknown command: '+cmd+' (type "help")','err');
   }
 }
-/*----------------------------------------------------------------------------*/
 
 // =====================================================================
 // START
 // =====================================================================
+
 boot();
 </script>
 </body>
