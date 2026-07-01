@@ -422,6 +422,69 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 ::-webkit-scrollbar-thumb{background:var(--green-dim);border-radius:4px;}
 ::-webkit-scrollbar-track{background:#0a0505;}
 
+/* TRACKER LOCATOR */
+
+#tracker-app .win-content{padding:0;}
+#trk-tabs{display:flex;border-bottom:1px solid var(--border);background:#0d0505;flex-shrink:0;}
+#trk-status-line{margin-left:auto;padding-right:12px;font-size:9px;color:var(--text-mute);align-self:center;letter-spacing:1px;}
+
+#trk-tri-panel,#trk-map-panel{display:none;flex:1;overflow:hidden;flex-direction:column;min-height:0;}
+#trk-tri-panel.active,#trk-map-panel.active{display:flex;}
+
+/* -- triangulation stage -- */
+#trk-stage{position:relative;flex:1;overflow:hidden;background:radial-gradient(ellipse at center,#050a05 0%,#020302 100%);
+  border-bottom:1px solid var(--border);min-height:0;}
+#trk-stage-title{position:absolute;top:14px;left:0;right:0;text-align:center;z-index:5;pointer-events:none;}
+#trk-stage-title .l1,#trk-stage-title .l2{color:var(--green);font-size:15px;font-weight:bold;letter-spacing:3px;text-shadow:0 0 8px var(--green-dim);}
+#trk-stage-title .l2{font-size:12px;opacity:.85;}
+#trk-stage-title.found .l1,#trk-stage-title.found .l2{color:var(--cyan);text-shadow:0 0 10px #00ffff88;}
+
+#trk-svg{position:absolute;inset:0;width:100%;height:100%;}
+.trk-globe{transform-origin:300px 260px;opacity:1;transition:opacity 1.1s ease;}
+.trk-globe.faded{opacity:0;}
+.trk-globe-ring{fill:none;stroke:var(--green3);stroke-width:1;opacity:.55;}
+.trk-globe-core{fill:url(#trkGlobeGrad);stroke:var(--green-dim);stroke-width:1;}
+#trkGlobeGrad stop:nth-child(1){stop-color:var(--green-faint);}
+#trkGlobeGrad stop:nth-child(2){stop-color:var(--bg3);}
+#trkGlobeGrad stop:nth-child(3){stop-color:#000;}
+.trk-orbit-path{fill:none;stroke:var(--green2);stroke-width:1;stroke-dasharray:3 4;opacity:.7;}
+
+.trk-sat{transition:transform 1.4s cubic-bezier(.4,0,.2,1);}
+.trk-sat-body{fill:var(--green);}
+.trk-sat-panel{fill:var(--green);opacity:.85;}
+.trk-sat.spin{animation:trk-orbit-spin 6s linear infinite;}
+@keyframes trk-orbit-spin{from{transform:rotate(0deg) translateX(0)}to{transform:rotate(360deg) translateX(0)}}
+
+.trk-tri-line{fill:none;stroke:var(--green);stroke-width:1.5;stroke-dasharray:7 6;opacity:0;
+  stroke-dashoffset:220;transition:opacity .4s ease,stroke-dashoffset 1.1s ease;}
+.trk-tri-line.drawn{opacity:.9;stroke-dashoffset:0;}
+
+.trk-center-dot{fill:var(--green);opacity:0;transition:opacity .5s ease,r .5s ease;}
+.trk-center-dot.show{opacity:1;animation:trk-pulse 1.1s ease-in-out infinite;}
+@keyframes trk-pulse{0%,100%{r:5;opacity:1}50%{r:9;opacity:.5}}
+
+#trk-controls{display:flex;align-items:center;gap:8px;padding:8px 12px;flex-shrink:0;border-bottom:1px solid var(--border);}
+#trk-code{height:96px;flex-shrink:0;overflow:hidden;background:#050a05;padding:6px 10px;font-size:9px;line-height:1.55;
+  color:var(--green3);position:relative;}
+#trk-code div{white-space:pre;opacity:.85;}
+#trk-code div.hl{color:var(--green);opacity:1;}
+
+/* -- map -- */
+#trk-map-toolbar{display:flex;align-items:center;gap:10px;padding:6px 10px;border-bottom:1px solid var(--border);flex-shrink:0;flex-wrap:wrap;}
+#trk-map-zoom{width:130px;}
+#trk-map-wrap{position:relative;flex:1;overflow:hidden;background:#000;cursor:grab;min-height:0;}
+#trk-map-wrap.dragging{cursor:grabbing;}
+#trk-map-wrap.edit-mode{cursor:crosshair;}
+#trk-map-world{position:absolute;top:0;left:0;transform-origin:0 0;}
+#trk-map-world img{display:block;width:1600px;max-width:none;user-select:none;pointer-events:none;-webkit-user-drag:none;}
+#trk-ping{position:absolute;width:16px;height:16px;margin:-8px 0 0 -8px;pointer-events:none;}
+#trk-ping-dot{width:14px;height:14px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green);
+  border:2px solid #fff8;animation:trk-pulse2 1.4s ease-in-out infinite;}
+#trk-ping.acquired #trk-ping-dot{animation:trk-pulse2 .5s ease-in-out 4;}
+@keyframes trk-pulse2{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.6);opacity:.55}}
+#trk-map-hint{position:absolute;top:8px;left:50%;transform:translateX(-50%);background:#0d0505ee;border:1px solid var(--border-bright);
+  color:var(--green);font-size:9px;letter-spacing:1px;padding:5px 12px;border-radius:4px;display:none;z-index:6;pointer-events:none;}
+#trk-map-wrap.edit-mode #trk-map-hint{display:block;}
 
 </style>
 </head>
@@ -565,6 +628,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
       </div>
       <div class="app-icon" onclick="openApp('devices')">
         <div class="icon-box">🔌</div><span class="label">Devices</span>
+      </div>
+      <div class="app-icon" onclick="openApp('tracker')">
+        <div class="icon-box">📡</div><span class="label">Tracker</span>
       </div>
       <div id="custom-icons"></div>
     </div>
@@ -863,6 +929,96 @@ document.write('<h2 style="letter-spacing:2px;">MY APP v1.0</h2><p style="color:
       </div>
     </div>
 
+    <!-- TRACKER LOCATOR -->
+
+    <div class="app-window" id="tracker-app">
+      <div class="win-bar"><span class="win-title">TRACKER LOCATOR — SAT-TRIANGULATION SUITE</span>
+        <button class="win-close" onclick="closeApp('tracker')">✕</button></div>
+      <div class="win-content">
+        <div id="trk-tabs">
+          <div class="hack-tab active" id="trk-tab-tri" onclick="trkSwitchTab('tri',this)">SATELLITE TRIANGULATION</div>
+          <div class="hack-tab" id="trk-tab-map" onclick="trkSwitchTab('map',this)">MAP</div>
+          <span id="trk-status-line">IDLE</span>
+        </div>
+
+        <!-- TRIANGULATION -->
+
+        <div id="trk-tri-panel" class="active">
+          <div id="trk-stage">
+            <div id="trk-stage-title"><div class="l1" id="trk-title-l1">LOCATING</div><div class="l2" id="trk-title-l2">TRACKING IP</div></div>
+            <svg id="trk-svg" viewBox="0 0 600 440" preserveAspectRatio="xMidYMid meet">
+              <defs>
+                <radialGradient id="trkGlobeGrad" cx="35%" cy="30%" r="75%">
+                  <stop offset="0%" stop-color="var(--green-faint)"/>
+                  <stop offset="60%" stop-color="var(--bg3)"/>
+                  <stop offset="100%" stop-color="#000"/>
+                </radialGradient>
+              </defs>
+
+              <g class="trk-globe" id="trk-globe">
+                <circle class="trk-globe-core" cx="300" cy="215" r="108"/>
+                <ellipse class="trk-globe-ring" cx="300" cy="215" rx="108" ry="34"/>
+                <ellipse class="trk-globe-ring" cx="300" cy="215" rx="108" ry="70"/>
+                <ellipse class="trk-globe-ring" cx="300" cy="215" rx="34" ry="108"/>
+                <ellipse class="trk-globe-ring" cx="300" cy="215" rx="70" ry="108"/>
+                <circle class="trk-globe-ring" cx="300" cy="215" r="108"/>
+                <path class="trk-orbit-path" d="M110,185 C220,85 380,345 500,165"/>
+                <path class="trk-orbit-path" d="M130,305 C260,365 340,65 470,125"/>
+              </g>
+
+              <path class="trk-tri-line" id="trk-line-ab" d="M300,90 L160,330"/>
+              <path class="trk-tri-line" id="trk-line-ac" d="M300,90 L440,330"/>
+              <path class="trk-tri-line" id="trk-line-bc" d="M160,330 L440,330"/>
+
+              <circle class="trk-center-dot" id="trk-center-dot" cx="300" cy="250" r="5"/>
+
+              <g class="trk-sat" id="trk-sat-a" style="transform:translate(230px,110px) rotate(-20deg)">
+                <rect class="trk-sat-panel" x="-22" y="-4" width="14" height="8" rx="1"/>
+                <rect class="trk-sat-panel" x="8" y="-4" width="14" height="8" rx="1"/>
+                <rect class="trk-sat-body" x="-4" y="-11" width="8" height="22" rx="2"/>
+              </g>
+              <g class="trk-sat" id="trk-sat-b" style="transform:translate(455px,240px) rotate(35deg)">
+                <rect class="trk-sat-panel" x="-22" y="-4" width="14" height="8" rx="1"/>
+                <rect class="trk-sat-panel" x="8" y="-4" width="14" height="8" rx="1"/>
+                <rect class="trk-sat-body" x="-4" y="-11" width="8" height="22" rx="2"/>
+              </g>
+              <g class="trk-sat" id="trk-sat-c" style="transform:translate(300px,395px) rotate(-8deg)">
+                <rect class="trk-sat-panel" x="-22" y="-4" width="14" height="8" rx="1"/>
+                <rect class="trk-sat-panel" x="8" y="-4" width="14" height="8" rx="1"/>
+                <rect class="trk-sat-body" x="-4" y="-11" width="8" height="22" rx="2"/>
+              </g>
+            </svg>
+          </div>
+
+          <div id="trk-controls">
+            <button class="hk-btn" id="trk-run-btn" onclick="trkStart()">▶ TRACK</button>
+            <button class="hk-btn danger" id="trk-skip-btn" onclick="trkSkip()" style="display:none;">Wait..</button>
+            <div class="hk-status" id="trk-tri-status"></div>
+          </div>
+          <div id="trk-code"></div>
+        </div>
+
+        <!-- MAP -->
+
+        <div id="trk-map-panel">
+          <div id="trk-map-toolbar">
+            <span style="font-size:9px;color:var(--text-mute);">ZOOM</span>
+            <input type="range" id="trk-map-zoom" min="60" max="400" value="100" oninput="trkSetZoom(this.value)">
+            <span class="cc-val" id="trk-zoom-val">100%</span>
+            <span id="trk-map-coords" style="margin-left:auto;font-size:9px;color:var(--text-mute);"></span>
+          </div>
+          <div id="trk-map-wrap">
+            <div id="trk-map-hint">📍 CLICK MAP TO PLACE PING</div>
+            <div id="trk-map-world">
+              <img id="trk-map-img" src="https://www.bragitoff.com/wp-content/uploads/2015/11/GTAV-HD-MAP-satellite.jpg" draggable="false" alt="satellite map">
+              <div id="trk-ping"><div id="trk-ping-dot"></div></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
     <div id="custom-windows"></div>
   </div>
 </div>
@@ -1094,6 +1250,7 @@ function openApp(id){
   if(id==='files')renderFiles();
   if(id==='rw-setup')renderRwTree();
   if(id==='devices'&&!devices.length){genDevices();mtLog('Terminal ready. Type "help" for commands.');}
+  if(id==='tracker')trkOnOpen();
 }
 function closeApp(id){document.getElementById(id+'-app').classList.remove('active');document.getElementById('home').classList.remove('hidden');}
 function escH(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
@@ -1126,7 +1283,7 @@ const TCMDS={
   help:()=>`<span class="info">COMMANDS:</span>
   ls · cd [dir] · pwd · cat [file] · mkdir [name] · rm [name]
   echo [text] · whoami · ifconfig · ping [h] · nmap [ip]
-  clear · history · setreward · upload · edtnetmap · help`,
+  clear · history · setreward · upload · edtnetmap · setmap · help`,
   ls:(a)=>{const fs=getFS();const n=fs[curDir];if(!n||n.type!=='dir')return '<span class="err">Not a dir</span>';
     if(!n.children.length)return '<span class="dim">(empty)</span>';
     return n.children.map(c=>{const f=curDir+'/'+c;const isD=fs[f]&&fs[f].type==='dir';return isD?`<span class="info">${c}/</span>`:`<span class="dim">${c}</span>`;}).join('  ');},
@@ -1169,6 +1326,12 @@ const TCMDS={
   edtnetmap:()=>{
     const on=nmToggleEditMode();
     return on?'<span class="ok">NetMap edit mode ENABLED — open NETMAP to add/connect/delete nodes.</span>':'<span class="warn">NetMap edit mode DISABLED.</span>';
+  },
+  setmap:()=>{
+    openApp('tracker');
+    trkSwitchTab('map',document.getElementById('trk-tab-map'));
+    trkEnterEditMode();
+    return '<span class="info">Opening TRACKER LOCATOR → MAP in edit mode. Click the map to place the ping.</span>';
   },
 };
 
@@ -2047,6 +2210,223 @@ function runMtCommand(raw){
       mtLog('Unknown command: '+cmd+' (type "help")','err');
   }
 }
+
+// =====================================================================
+// TRACKER LOCATOR
+// =====================================================================
+
+const trkState={running:false,timers:[],autoTab:'tri'};
+const trkMapState={zoom:1,panX:0,panY:0,editMode:false,dragging:false,dragMoved:false,lastX:0,lastY:0,
+  ping:S.g('tracker_ping',{xPct:50,yPct:50})};
+let trkCodeIv=null;
+
+function trkOnOpen(){
+  trkSwitchTab('tri',document.getElementById('trk-tab-tri'));
+  trkApplyPingPos();
+  trkUpdateCoordsLabel();
+  if(!trkCodeIv)trkCodeIv=setInterval(trkCodeTick,240);
+  clearTrkTimers();
+  trkState.running=false;
+  trkSetStage(0);
+  trkTimer(()=>trkStart(),450);
+}
+
+function trkSwitchTab(id,el){
+  document.querySelectorAll('#trk-tabs .hack-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('trk-tri-panel').classList.remove('active');
+  document.getElementById('trk-map-panel').classList.remove('active');
+  if(el)el.classList.add('active');
+  document.getElementById(id==='tri'?'trk-tri-panel':'trk-map-panel').classList.add('active');
+}
+
+// -- fake code feed --
+
+const trkCodeGen=[
+  ()=>`> querying birdnet node ${trkHex(4)}::${trkHex(2)} ...`,
+  ()=>`sig_lock[${(Math.random()*100).toFixed(2)}%] delta=${(Math.random()*9).toFixed(4)}`,
+  ()=>`resolving azimuth ${Math.floor(Math.random()*360)}° / elev ${Math.floor(Math.random()*90)}°`,
+  ()=>`packet ${trkHex(8)} ack`,
+  ()=>`vector[${(Math.random()*2-1).toFixed(3)}, ${(Math.random()*2-1).toFixed(3)}, ${(Math.random()*2-1).toFixed(3)}]`,
+  ()=>`handshake SAT-${['ALPHA','BETA','GAMMA'][Math.floor(Math.random()*3)]} ...OK`,
+  ()=>`lat/lon drift ${(Math.random()*0.02).toFixed(6)}`,
+  ()=>`freq ${(1200+Math.random()*400).toFixed(2)}MHz snr ${(Math.random()*30).toFixed(1)}dB`,
+  ()=>`buffer 0x${trkHex(6)} checksum OK`,
+];
+function trkHex(n){let s='';for(let i=0;i<n;i++)s+=Math.floor(Math.random()*16).toString(16);return s.toUpperCase();}
+function trkCodeTick(){
+  const out=document.getElementById('trk-code');
+  if(!out||!document.getElementById('tracker-app').classList.contains('active'))return;
+  const d=document.createElement('div');
+  if(Math.random()<0.22)d.className='hl';
+  d.textContent=trkCodeGen[Math.floor(Math.random()*trkCodeGen.length)]();
+  out.appendChild(d);
+  while(out.children.length>40)out.removeChild(out.firstChild);
+  out.scrollTop=out.scrollHeight;
+}
+
+// -- triangulation timeline --
+
+function trkTimer(fn,delay){const id=setTimeout(fn,delay);trkState.timers.push(id);return id;}
+function clearTrkTimers(){trkState.timers.forEach(clearTimeout);trkState.timers=[];}
+
+const trkDockPos={a:'translate(230px,110px) rotate(-20deg)',b:'translate(455px,240px) rotate(35deg)',c:'translate(300px,395px) rotate(-8deg)'};
+const trkTriPos={a:'translate(300px,90px) rotate(0deg)',b:'translate(160px,330px) rotate(0deg)',c:'translate(440px,330px) rotate(0deg)'};
+
+function trkSetStage(n){
+  const title=document.getElementById('trk-stage-title');
+  const l1=document.getElementById('trk-title-l1'),l2=document.getElementById('trk-title-l2');
+  const globe=document.getElementById('trk-globe');
+  const satA=document.getElementById('trk-sat-a'),satB=document.getElementById('trk-sat-b'),satC=document.getElementById('trk-sat-c');
+  const lineAB=document.getElementById('trk-line-ab'),lineAC=document.getElementById('trk-line-ac'),lineBC=document.getElementById('trk-line-bc');
+  const dot=document.getElementById('trk-center-dot');
+  const status=document.getElementById('trk-tri-status'),statusLine=document.getElementById('trk-status-line');
+
+  if(n<=0){
+    globe.classList.remove('faded');
+    satA.style.transform=trkDockPos.a;satB.style.transform=trkDockPos.b;satC.style.transform=trkDockPos.c;
+    [lineAB,lineAC,lineBC].forEach(l=>l.classList.remove('drawn'));
+    dot.classList.remove('show');
+    title.classList.remove('found');
+    l1.textContent='LOCALIZANDO';l2.textContent='RASTREANDO IP';
+    if(status)status.textContent='';if(status)status.className='hk-status';
+    if(statusLine)statusLine.textContent='IDLE';
+    return;
+  }
+  if(n>=1){
+    globe.classList.add('faded');
+    satA.style.transform=trkTriPos.a;satB.style.transform=trkTriPos.b;satC.style.transform=trkTriPos.c;
+    if(statusLine)statusLine.textContent='TRACKING...';
+  }
+  if(n>=2){
+    [lineAB,lineAC,lineBC].forEach(l=>l.classList.add('drawn'));
+  }
+  if(n>=3){
+    dot.classList.add('show');
+  }
+  if(n>=4){
+    title.classList.add('found');
+    l1.textContent='LOCALIZAÇÃO ENCONTRADA';l2.textContent='RASTREANDO SIM';
+    if(statusLine)statusLine.textContent='LOCATION FOUND';
+  }
+}
+
+function trkStart(){
+  if(trkState.running)return;
+  clearTrkTimers();
+  trkState.running=true;
+  trkSetStage(0);
+  document.getElementById('trk-run-btn').disabled=true;
+  document.getElementById('trk-skip-btn').style.display='inline-block';
+  const status=document.getElementById('trk-tri-status');
+  status.textContent='Acquiring satellite lock...';status.className='hk-status warn';
+  playScan();
+  trkTimer(()=>{trkSetStage(1);playTick();},1200);
+  trkTimer(()=>{trkSetStage(2);playScan();},2900);
+  trkTimer(()=>{trkSetStage(3);playTick();},3900);
+  trkTimer(()=>{trkSetStage(4);playSuccess();status.textContent='Signal triangulated.';status.className='hk-status ok';},4700);
+  trkTimer(()=>trkFinish(),5600);
+}
+function trkSkip(){
+  if(!trkState.running)return;
+  clearTrkTimers();
+  trkSetStage(4);
+  const status=document.getElementById('trk-tri-status');
+  status.textContent='Signal triangulated.';status.className='hk-status ok';
+  playSuccess();
+  trkFinish();
+}
+function trkFinish(){
+  trkState.running=false;
+  document.getElementById('trk-run-btn').disabled=false;
+  document.getElementById('trk-run-btn').textContent='↺ RASTREAR NOVAMENTE';
+  document.getElementById('trk-skip-btn').style.display='none';
+  trkTimer(()=>{
+    trkSwitchTab('map',document.getElementById('trk-tab-map'));
+    trkPulsePing();
+  },700);
+}
+
+// -- map: pan / zoom / ping --
+
+function trkApplyTransform(){
+  document.getElementById('trk-map-world').style.transform=`translate(${trkMapState.panX}px,${trkMapState.panY}px) scale(${trkMapState.zoom})`;
+}
+function trkSetZoom(v){
+  trkMapState.zoom=v/100;
+  document.getElementById('trk-zoom-val').textContent=v+'%';
+  trkApplyTransform();
+}
+function trkResetView(){
+  trkMapState.panX=0;trkMapState.panY=0;trkMapState.zoom=1;
+  document.getElementById('trk-map-zoom').value=100;
+  document.getElementById('trk-zoom-val').textContent='100%';
+  trkApplyTransform();
+}
+function trkApplyPingPos(){
+  const p=document.getElementById('trk-ping');
+  p.style.left=trkMapState.ping.xPct+'%';
+  p.style.top=trkMapState.ping.yPct+'%';
+}
+function trkPulsePing(){
+  const p=document.getElementById('trk-ping');
+  p.classList.remove('acquired');void p.offsetWidth;p.classList.add('acquired');
+}
+function trkUpdateCoordsLabel(){
+  const el=document.getElementById('trk-map-coords');
+  if(el)el.textContent=`COORDS X:${trkMapState.ping.xPct.toFixed(1)}% Y:${trkMapState.ping.yPct.toFixed(1)}%`;
+}
+function trkEnterEditMode(){
+  trkSwitchTab('map',document.getElementById('trk-tab-map'));
+  trkMapState.editMode=true;
+  document.getElementById('trk-map-wrap').classList.add('edit-mode');
+}
+function trkInitMapEvents(){
+  const wrap=document.getElementById('trk-map-wrap');
+  wrap.addEventListener('mousedown',e=>{
+    if(trkMapState.editMode)return;
+    trkMapState.dragging=true;trkMapState.dragMoved=false;
+    trkMapState.lastX=e.clientX;trkMapState.lastY=e.clientY;
+    wrap.classList.add('dragging');
+  });
+  window.addEventListener('mousemove',e=>{
+    if(!trkMapState.dragging)return;
+    const dx=e.clientX-trkMapState.lastX,dy=e.clientY-trkMapState.lastY;
+    if(Math.abs(dx)+Math.abs(dy)>3)trkMapState.dragMoved=true;
+    trkMapState.lastX=e.clientX;trkMapState.lastY=e.clientY;
+    trkMapState.panX+=dx;trkMapState.panY+=dy;
+    trkApplyTransform();
+  });
+  window.addEventListener('mouseup',()=>{
+    trkMapState.dragging=false;wrap.classList.remove('dragging');
+  });
+  wrap.addEventListener('click',e=>{
+    if(!trkMapState.editMode)return;
+    if(trkMapState.dragMoved){trkMapState.dragMoved=false;return;}
+    const rect=wrap.getBoundingClientRect();
+    const clickX=e.clientX-rect.left,clickY=e.clientY-rect.top;
+    const worldW=document.getElementById('trk-map-world').offsetWidth||1600;
+    const localX=(clickX-trkMapState.panX)/trkMapState.zoom;
+    const localY=(clickY-trkMapState.panY)/trkMapState.zoom;
+    let xPct=(localX/worldW)*100,yPct=(localY/worldW)*100;
+    xPct=Math.max(0,Math.min(100,xPct));yPct=Math.max(0,Math.min(100,yPct));
+    trkMapState.ping={xPct,yPct};
+    S.s('tracker_ping',trkMapState.ping);
+    trkApplyPingPos();trkUpdateCoordsLabel();trkPulsePing();
+    trkMapState.editMode=false;
+    wrap.classList.remove('edit-mode');
+    playSuccess();
+  });
+  wrap.addEventListener('wheel',e=>{
+    e.preventDefault();
+    const delta=e.deltaY<0?1.1:0.9;
+    let nz=Math.max(0.6,Math.min(4,trkMapState.zoom*delta));
+    trkMapState.zoom=nz;
+    document.getElementById('trk-map-zoom').value=Math.round(nz*100);
+    document.getElementById('trk-zoom-val').textContent=Math.round(nz*100)+'%';
+    trkApplyTransform();
+  },{passive:false});
+}
+trkInitMapEvents();
 
 // =====================================================================
 // START
