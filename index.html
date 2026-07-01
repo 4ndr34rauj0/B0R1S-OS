@@ -2071,13 +2071,16 @@ function randMac(){
 }
 function randIp(){return '192.168.1.'+(Math.floor(Math.random()*200)+10);}
 
-const deviceIcons={router:'📡',phone:'📱',laptop:'💻',pc:'🖥️',iot:'🔌',printer:'🖨️',tv:'📺',cam:'🎥'};
+
+/*este comentário desabilita toda a app "devices" descomentar para reabilitar*/
+
+/*const deviceIcons={router:'📡',phone:'📱',laptop:'💻',pc:'🖥️',iot:'🔌',printer:'🖨️',tv:'📺',cam:'🎥'};
 const deviceNames=[
   ['ROUTER-GW','router'],['IPHONE-17','phone'],['MACBOOK','laptop'],
   ['DESKTOP-RIG3','pc'],['SMART-DEVICE-WEB','iot'],['HP-LASER-EXPRESS','printer'],
   ['SPEEDO-TV','tv'],['NINJA-TV','tv'],['IPHONE-15','phone'],['NKT-SERVER','pc']
 ];
-let devices=[];
+let devices=[];*/
 
 function genDevices(){
   const count=Math.floor(Math.random()*5)+4;
