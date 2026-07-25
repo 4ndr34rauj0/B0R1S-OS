@@ -211,13 +211,12 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 
 /* CIPHER CRACKER */
 
-/* Info grid */
+
 #cc-info-grid{display:grid;grid-template-columns:70px 1fr;gap:5px 0;align-items:center;margin-bottom:10px;}
 .cc-info-label{font-size:9px;color:var(--text-dim);letter-spacing:1px;}
 .cc-info-value{font-size:9px;color:var(--green);background:var(--bg3);border:1px solid var(--border);
   padding:2px 8px;border-radius:2px;width:fit-content;min-width:200px;letter-spacing:1px;}
 
-/* Slot section */
 #cc-slot-section{background:var(--bg3);border:1px solid var(--border);padding:10px 10px 8px;margin-bottom:8px;
   position:relative;overflow:hidden;}
 #cc-slot-section::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
@@ -227,13 +226,11 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 
 .cc-slot-row-label{font-size:9px;color:var(--text-mute);letter-spacing:2px;margin-bottom:5px;text-align:center;}
 
-/* Try row (candidate) */
 .cc-try-reels{display:flex;gap:3px;justify-content:center;margin-bottom:3px;}
 .cc-try-cell{width:40px;height:28px;border:1px solid var(--green-dim);background:transparent;display:flex;
   align-items:center;justify-content:center;font-size:11px;color:var(--text-dim);border-radius:2px;transition:color .1s;font-family:var(--font);}
 .cc-try-cell.active{color:var(--green);}
 
-/* Main reel row */
 .cc-slot-reels{display:flex;gap:3px;justify-content:center;margin-bottom:3px;}
 .cc-reel-cell{width:40px;height:42px;border:1px solid var(--border);background:var(--bg);display:flex;
   align-items:center;justify-content:center;font-size:16px;color:var(--green);position:relative;
@@ -245,7 +242,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
   will-change:transform;position:relative;}
 @keyframes cc-spin-reel{0%{transform:translateY(-50%);opacity:.6}50%{transform:translateY(0);opacity:1}100%{transform:translateY(50%);opacity:.6}}
 
-/* Tick row */
 .cc-tick-reels{display:flex;gap:3px;justify-content:center;}
 .cc-tick-cell{width:40px;height:22px;display:flex;align-items:center;justify-content:center;
   font-size:13px;color:var(--green-dim);border-radius:2px;transition:color .15s,text-shadow .15s;font-family:var(--font);}
@@ -253,17 +249,14 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 .cc-tick-cell.trying{color:var(--amber);}
 @keyframes cc-tick-pop{0%{transform:scale(1.4)}100%{transform:scale(1)}}
 
-/* Lock icon (positioned inside slot section) */
 #cc-lock-wrap{position:absolute;right:14px;top:50%;transform:translateY(-50%);pointer-events:none;}
 #cc-lock-svg{width:52px;height:58px;}
 #cc-lock-svg.cc-unlocked{animation:cc-unlock .6s ease forwards;filter:drop-shadow(0 0 8px var(--green));}
 @keyframes cc-unlock{0%{transform:rotate(0deg)}30%{transform:rotate(-15deg)}60%{transform:rotate(8deg)}100%{transform:rotate(0deg)}}
 
-/* Progress bar */
 #cc-progress-wrap{margin-bottom:8px;height:3px;background:var(--green-faint);border-radius:2px;overflow:hidden;}
 #cc-progress-bar{height:100%;background:var(--green);width:0%;transition:width .3s ease;box-shadow:0 0 6px var(--green);}
 
-/* Status bar */
 #cc-status-bar{background:var(--bg3);border:1px solid var(--border);padding:7px 10px;margin-bottom:8px;
   min-height:42px;position:relative;overflow:hidden;}
 #cc-status-line{font-size:10px;color:var(--text-dim);letter-spacing:.5px;line-height:1.6;font-family:var(--font);}
@@ -280,7 +273,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
   animation:cc-blink .75s step-end infinite;}
 @keyframes cc-blink{0%,100%{opacity:1}50%{opacity:0}}
 
-/* Action buttons (reusing .hk-btn for consistency) */
 #cc-actions{display:flex;justify-content:center;gap:10px;}
 .cc-btn-crack{background:var(--green-faint);border:1px solid var(--green3);color:var(--green);font-family:var(--font);
   font-size:10px;padding:5px 16px;cursor:pointer;letter-spacing:1px;transition:all .15s;border-radius:3px;}
@@ -290,7 +282,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
   font-size:10px;padding:5px 16px;cursor:pointer;letter-spacing:1px;transition:all .15s;border-radius:3px;}
 .cc-btn-reset:hover{border-color:var(--green2);color:var(--green);}
 
-/* FIREWALL BREACHER (new canvas-based ring game) */
+/* FIREWALL BREACHER */
 
 #fb-wrap{display:flex;flex:1;overflow:hidden;min-height:0;}
 #fb-log-panel{width:220px;flex-shrink:0;border-right:1px solid var(--border);display:flex;flex-direction:column;background:var(--bg2);}
@@ -326,7 +318,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 #fb-overlay-sub{font-size:9px;color:var(--text-dim);letter-spacing:1px;line-height:1.6;}
 @keyframes fb-timer-pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
-/* REWARD MODAL (terminal popup) */
+/* REWARD MODAL */
 
 #reward-overlay{position:absolute;inset:0;background:#000a;z-index:200;display:none;align-items:center;justify-content:center;}
 #reward-overlay.open{display:flex;}
