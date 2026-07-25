@@ -1421,9 +1421,7 @@ const tHist=[];let tHistIdx=-1,noteEditing=null;
 
 const TCMDS={
   help:()=>`<span class="info">COMMANDS:</span>
-  ls · cd [dir] · pwd · cat [file] · mkdir [name] · rm [name]
-  echo [text] · whoami · ifconfig · ping [h] · nmap [ip]
-  clear · history · setreward · upload · edtnetmap · setmap · help`,
+  ls · cd [dir] · pwd · cat [file] · mkdir [name] · rm [name] · whoami · ifconfig · ping [h] · nmap [ip] · clear · history · setreward · upload · edtnetmap · setmap · help`,
   ls:(a)=>{const fs=getFS();const n=fs[curDir];if(!n||n.type!=='dir')return '<span class="err">Not a dir</span>';
     if(!n.children.length)return '<span class="dim">(empty)</span>';
     return n.children.map(c=>{const f=curDir+'/'+c;const isD=fs[f]&&fs[f].type==='dir';return isD?`<span class="info">${c}/</span>`:`<span class="dim">${c}</span>`;}).join('  ');},
