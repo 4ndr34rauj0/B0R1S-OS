@@ -209,45 +209,122 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 #breach-term-out .info{color:var(--cyan);}
 #breach-term-out .warn{color:var(--amber);}
 
-/* PASSWORD CRACKER */
+/* CIPHER CRACKER */
 
-#pc-layout{display:flex;gap:12px;flex:1;min-height:0;}
-#pc-terminal{flex:1;display:flex;flex-direction:column;border:1px solid var(--border);border-radius:4px;overflow:hidden;}
-#pc-term-out{flex:1;overflow-y:auto;padding:8px;font-size:10px;line-height:1.6;color:var(--text-dim);}
-#pc-term-input-row{display:flex;align-items:center;padding:4px 8px;border-top:1px solid var(--border);gap:4px;flex-shrink:0;}
-#pc-term-input{flex:1;background:none;border:none;color:var(--green);font-family:var(--font);font-size:11px;outline:none;}
-#pc-right{width:270px;flex-shrink:0;display:flex;flex-direction:column;gap:7px;}
-#pc-attempt-row{display:flex;gap:5px;}
-.pc-box{flex:1;height:30px;border:2px solid var(--green-dim);border-radius:3px;display:flex;align-items:center;
-  justify-content:center;font-size:11px;color:var(--green);font-family:var(--font);background:var(--bg3);}
-.pc-box.filled{border-color:var(--cyan);color:var(--cyan);}
-#pc-grid{display:grid;gap:2px;}
-.pc-cell{border:1px solid var(--green-dim);font-size:9px;display:flex;align-items:center;justify-content:center;
-  height:20px;border-radius:2px;color:var(--text-mute);font-family:var(--font);}
-.pc-cell.letter{color:var(--green);border-color:var(--green3);animation:cell-land .2s;}
-@keyframes cell-land{from{transform:scale(1.3);color:#fff}to{transform:scale(1)}}
+/* Info grid */
+#cc-info-grid{display:grid;grid-template-columns:70px 1fr;gap:5px 0;align-items:center;margin-bottom:10px;}
+.cc-info-label{font-size:9px;color:var(--text-dim);letter-spacing:1px;}
+.cc-info-value{font-size:9px;color:var(--green);background:var(--bg3);border:1px solid var(--border);
+  padding:2px 8px;border-radius:2px;width:fit-content;min-width:200px;letter-spacing:1px;}
 
-/* FIREWALL BREACHER */
+/* Slot section */
+#cc-slot-section{background:var(--bg3);border:1px solid var(--border);padding:10px 10px 8px;margin-bottom:8px;
+  position:relative;overflow:hidden;}
+#cc-slot-section::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--green),transparent);
+  animation:cc-scan-line 3s linear infinite;}
+@keyframes cc-scan-line{0%{transform:translateY(0);opacity:1}100%{transform:translateY(80px);opacity:0}}
 
-#fb-layout{display:flex;gap:14px;flex:1;min-height:0;}
-#fb-left{flex:1;display:flex;flex-direction:column;gap:8px;}
-#fb-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;}
-.fb-cell{height:44px;border:1px solid var(--green-dim);border-radius:4px;display:flex;align-items:center;
-  justify-content:center;font-size:16px;font-weight:bold;color:var(--text-dim);cursor:pointer;
-  transition:all .15s;font-family:var(--font);background:var(--bg3);}
-.fb-cell:hover{border-color:var(--green2);color:var(--green);background:var(--green-faint);}
-.fb-cell.correct{border-color:var(--cyan);color:var(--cyan);background:#001a1a;cursor:default;animation:cell-correct .3s;}
-.fb-cell.wrong{border-color:var(--red);color:var(--red);animation:shake .3s;cursor:default;}
-.fb-cell.disabled{opacity:.3;cursor:not-allowed;}
-@keyframes cell-correct{0%{transform:scale(1)}50%{transform:scale(1.15)}100%{transform:scale(1)}}
-@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
-#fb-right{width:220px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:6px;}
-#fb-canvas{border-radius:4px;}
-#fb-timer-big{font-size:32px;font-weight:bold;color:var(--green);font-family:var(--font);text-align:center;transition:color .3s;}
-#fb-timer-big.warn{color:var(--amber);}
-#fb-timer-big.danger{color:var(--red);animation:timer-pulse .5s infinite;}
-@keyframes timer-pulse{0%,100%{opacity:1}50%{opacity:.4}}
-#fb-score-disp{font-size:10px;color:var(--cyan);letter-spacing:1px;}
+.cc-slot-row-label{font-size:9px;color:var(--text-mute);letter-spacing:2px;margin-bottom:5px;text-align:center;}
+
+/* Try row (candidate) */
+.cc-try-reels{display:flex;gap:3px;justify-content:center;margin-bottom:3px;}
+.cc-try-cell{width:40px;height:28px;border:1px solid var(--green-dim);background:transparent;display:flex;
+  align-items:center;justify-content:center;font-size:11px;color:var(--text-dim);border-radius:2px;transition:color .1s;font-family:var(--font);}
+.cc-try-cell.active{color:var(--green);}
+
+/* Main reel row */
+.cc-slot-reels{display:flex;gap:3px;justify-content:center;margin-bottom:3px;}
+.cc-reel-cell{width:40px;height:42px;border:1px solid var(--border);background:var(--bg);display:flex;
+  align-items:center;justify-content:center;font-size:16px;color:var(--green);position:relative;
+  overflow:hidden;border-radius:2px;font-family:var(--font);}
+.cc-reel-cell.spinning .cc-reel-inner{animation:cc-spin-reel .08s linear infinite;}
+.cc-reel-cell.locked{border-color:var(--green);box-shadow:0 0 6px var(--border-bright);background:var(--green-faint);}
+.cc-reel-cell.locked .cc-reel-inner{animation:none;color:var(--green);}
+.cc-reel-inner{width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+  will-change:transform;position:relative;}
+@keyframes cc-spin-reel{0%{transform:translateY(-50%);opacity:.6}50%{transform:translateY(0);opacity:1}100%{transform:translateY(50%);opacity:.6}}
+
+/* Tick row */
+.cc-tick-reels{display:flex;gap:3px;justify-content:center;}
+.cc-tick-cell{width:40px;height:22px;display:flex;align-items:center;justify-content:center;
+  font-size:13px;color:var(--green-dim);border-radius:2px;transition:color .15s,text-shadow .15s;font-family:var(--font);}
+.cc-tick-cell.confirmed{color:var(--green);text-shadow:0 0 6px var(--border-bright);animation:cc-tick-pop .25s ease;}
+.cc-tick-cell.trying{color:var(--amber);}
+@keyframes cc-tick-pop{0%{transform:scale(1.4)}100%{transform:scale(1)}}
+
+/* Lock icon (positioned inside slot section) */
+#cc-lock-wrap{position:absolute;right:14px;top:50%;transform:translateY(-50%);pointer-events:none;}
+#cc-lock-svg{width:52px;height:58px;}
+#cc-lock-svg.cc-unlocked{animation:cc-unlock .6s ease forwards;filter:drop-shadow(0 0 8px var(--green));}
+@keyframes cc-unlock{0%{transform:rotate(0deg)}30%{transform:rotate(-15deg)}60%{transform:rotate(8deg)}100%{transform:rotate(0deg)}}
+
+/* Progress bar */
+#cc-progress-wrap{margin-bottom:8px;height:3px;background:var(--green-faint);border-radius:2px;overflow:hidden;}
+#cc-progress-bar{height:100%;background:var(--green);width:0%;transition:width .3s ease;box-shadow:0 0 6px var(--green);}
+
+/* Status bar */
+#cc-status-bar{background:var(--bg3);border:1px solid var(--border);padding:7px 10px;margin-bottom:8px;
+  min-height:42px;position:relative;overflow:hidden;}
+#cc-status-line{font-size:10px;color:var(--text-dim);letter-spacing:.5px;line-height:1.6;font-family:var(--font);}
+#cc-status-line .cc-highlight{color:var(--green);}
+#cc-status-line .cc-addr{color:var(--amber);}
+#cc-status-line .cc-success-txt{color:var(--green);font-size:11px;}
+.cc-password-found{display:inline-block;background:var(--green);color:var(--bg);padding:1px 8px;
+  border-radius:2px;font-weight:bold;letter-spacing:2px;font-size:12px;font-family:var(--font);
+  box-shadow:0 0 10px var(--border-bright);animation:cc-found-pulse 1s ease-in-out infinite alternate;}
+@keyframes cc-found-pulse{from{box-shadow:0 0 4px var(--border-bright)}to{box-shadow:0 0 16px var(--green),0 0 30px var(--border-bright)}}
+.cc-scanline-overlay{position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.04) 2px,rgba(0,0,0,.04) 4px);}
+.cc-cursor{display:inline-block;width:7px;height:12px;background:var(--green);vertical-align:middle;
+  animation:cc-blink .75s step-end infinite;}
+@keyframes cc-blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* Action buttons (reusing .hk-btn for consistency) */
+#cc-actions{display:flex;justify-content:center;gap:10px;}
+.cc-btn-crack{background:var(--green-faint);border:1px solid var(--green3);color:var(--green);font-family:var(--font);
+  font-size:10px;padding:5px 16px;cursor:pointer;letter-spacing:1px;transition:all .15s;border-radius:3px;}
+.cc-btn-crack:hover:not(:disabled){background:var(--green-dim);border-color:var(--green);}
+.cc-btn-crack:disabled{opacity:.4;cursor:not-allowed;}
+.cc-btn-reset{background:var(--bg3);border:1px solid var(--border);color:var(--text-dim);font-family:var(--font);
+  font-size:10px;padding:5px 16px;cursor:pointer;letter-spacing:1px;transition:all .15s;border-radius:3px;}
+.cc-btn-reset:hover{border-color:var(--green2);color:var(--green);}
+
+/* FIREWALL BREACHER (new canvas-based ring game) */
+
+#fb-wrap{display:flex;flex:1;overflow:hidden;min-height:0;}
+#fb-log-panel{width:220px;flex-shrink:0;border-right:1px solid var(--border);display:flex;flex-direction:column;background:var(--bg2);}
+#fb-log-header{padding:6px 10px;border-bottom:1px solid var(--border);flex-shrink:0;}
+#fb-log-header span{font-size:9px;color:var(--green2);letter-spacing:2px;}
+#fb-log-out{flex:1;overflow-y:auto;padding:6px 8px;font-size:9px;line-height:1.65;color:var(--text-dim);}
+#fb-log-out .ok{color:var(--green);}
+#fb-log-out .warn{color:var(--amber);}
+#fb-log-out .info{color:var(--cyan);}
+#fb-log-out .err{color:#ff6666;}
+#fb-log-out .dim{color:var(--text-mute);}
+#fb-log-footer{padding:6px 10px;border-top:1px solid var(--border);flex-shrink:0;}
+#fb-prog-wrap{height:3px;background:var(--green-dim);border-radius:2px;overflow:hidden;margin-bottom:4px;}
+#fb-prog-fill{height:100%;background:var(--green);width:0;transition:width .4s ease;}
+#fb-prog-label{font-size:9px;color:var(--text-mute);letter-spacing:1px;}
+#fb-game-panel{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;}
+#fb-info-strip{display:flex;gap:14px;padding:6px 14px;border-bottom:1px solid var(--border);width:100%;flex-shrink:0;background:var(--bg2);}
+.fb-info-cell{display:flex;flex-direction:column;gap:1px;}
+.fb-info-cell .fb-ic-label{font-size:8px;color:var(--text-mute);letter-spacing:2px;}
+.fb-info-cell .fb-ic-val{font-size:10px;color:var(--green);letter-spacing:1px;}
+.fb-info-cell .fb-ic-val.warn{color:var(--amber);}
+.fb-info-cell .fb-ic-val.danger{color:#ff6666;animation:fb-blink-txt .5s step-end infinite;}
+@keyframes fb-blink-txt{0%,100%{opacity:1}50%{opacity:.3}}
+#fb-info-strip .fb-spacer{flex:1;}
+#fb-canvas-wrap{flex:1;display:flex;align-items:center;justify-content:center;position:relative;}
+#fb-game-canvas{display:block;}
+#fb-bottom-bar{display:flex;align-items:center;gap:8px;padding:6px 14px;border-top:1px solid var(--border);background:var(--bg2);flex-shrink:0;}
+#fb-hint-txt{font-size:9px;color:var(--text-mute);flex:1;letter-spacing:.5px;line-height:1.5;}
+#fb-overlay{position:absolute;inset:0;background:#000c;display:none;align-items:center;justify-content:center;z-index:100;flex-direction:column;gap:10px;}
+#fb-overlay.show{display:flex;}
+#fb-overlay-box{background:#0d0202;border:1px solid var(--green);border-radius:8px;padding:22px 28px;display:flex;flex-direction:column;align-items:center;gap:8px;box-shadow:0 0 40px #ff333344;max-width:380px;text-align:center;}
+#fb-overlay-title{font-size:14px;letter-spacing:4px;color:var(--green);}
+#fb-overlay-sub{font-size:9px;color:var(--text-dim);letter-spacing:1px;line-height:1.6;}
+@keyframes fb-timer-pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
 /* REWARD MODAL (terminal popup) */
 
@@ -690,54 +767,117 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 
         <!-- FIREWALL BREACH -->
 
-        <div class="hack-panel" id="hack-firewall">
-          <div><div class="hk-title">// FIREWALL BREACHER — RING BYPASS</div>
-            <div class="hk-desc">Click numbers 0→9 in sequence. Outer ring: 30s · Middle: 15s · Inner: 8s. 2 correct sequences = ring cleared.</div></div>
-          <div id="fb-layout">
-            <div id="fb-left">
-              <div style="font-size:9px;color:var(--text-dim);">LEVEL: <span id="fb-lvl-name" style="color:var(--green);">OUTER</span> &nbsp;|&nbsp; SCORE: <span id="fb-score-inline" style="color:var(--cyan);">0</span></div>
-              <div style="font-size:9px;color:var(--text-mute);margin-bottom:4px;">Click 0 first → 9 last. Wrong click = timeout, hit RESET.</div>
-              <div id="fb-grid"></div>
-              <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-top:6px;">
-                <button class="hk-btn danger" onclick="initFirewall()">↺ RESET</button>
-                <div class="hk-status" id="fb-status"></div>
+        <div class="hack-panel" id="hack-firewall" style="padding:0;overflow:hidden;">
+          <!-- FB wrap -->
+          <div id="fb-wrap">
+            <!-- LEFT LOG PANEL -->
+            <div id="fb-log-panel">
+              <div id="fb-log-header"><span>// BREACH LOG</span></div>
+              <div id="fb-log-out"></div>
+              <div id="fb-log-footer">
+                <div id="fb-prog-wrap"><div id="fb-prog-fill"></div></div>
+                <span id="fb-prog-label">RINGS BREACHED: 0 / 3</span>
               </div>
             </div>
-            <div id="fb-right">
-              <div style="font-size:9px;color:var(--text-mute);letter-spacing:1px;">FIREWALL RINGS</div>
-              <canvas id="fb-canvas" width="200" height="200"></canvas>
-              <div id="fb-timer-big">--</div>
-              <div id="fb-score-disp">SCORE: 0</div>
+            <!-- RIGHT GAME PANEL -->
+            <div id="fb-game-panel">
+              <!-- INFO STRIP -->
+              <div id="fb-info-strip">
+                <div class="fb-info-cell">
+                  <span class="fb-ic-label">RING</span>
+                  <span class="fb-ic-val" id="fb-inf-ring">OUTER</span>
+                </div>
+                <div class="fb-info-cell">
+                  <span class="fb-ic-label">TIME</span>
+                  <span class="fb-ic-val" id="fb-inf-time">30</span>
+                </div>
+                <div class="fb-info-cell">
+                  <span class="fb-ic-label">ALIGNMENT</span>
+                  <span class="fb-ic-val" id="fb-inf-offset">LOCKED</span>
+                </div>
+                <div class="fb-spacer"></div>
+                <div class="fb-info-cell" style="align-items:flex-end;">
+                  <span class="fb-ic-label">STATUS</span>
+                  <span class="fb-ic-val" id="fb-inf-status">STANDBY</span>
+                </div>
+              </div>
+              <!-- CANVAS -->
+              <div id="fb-canvas-wrap">
+                <canvas id="fb-game-canvas" width="430" height="430"></canvas>
+              </div>
+              <!-- BOTTOM BAR -->
+              <div id="fb-bottom-bar">
+                <button class="hk-btn" id="fb-btn-start">▶ START BREACH</button>
+                <button class="hk-btn danger" id="fb-btn-reset" disabled>↺ RESET RING</button>
+                <span id="fb-hint-txt">Use [W] and [D] keys (or ← →) to rotate the outer firewall layer. Align all colored nodes simultaneously to breach.</span>
+              </div>
+              <!-- OVERLAY -->
+              <div id="fb-overlay">
+                <div id="fb-overlay-box">
+                  <div id="fb-overlay-title">FIREWALL BREACHED</div>
+                  <div id="fb-overlay-sub"></div>
+                  <button class="hk-btn" id="fb-overlay-btn" style="margin-top:4px;">CONTINUE →</button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- PASSWORD CRACK -->
+        <!-- PASSWORD CRACK (Cipher Cracker) -->
 
         <div class="hack-panel" id="hack-crack">
-          <div><div class="hk-title">// PASSWORD CRACKER — MATRIX CIPHER</div>
-            <div class="hk-desc">Each matrix row hides ONE letter at a random column (rest show 0). Decode all rows → type the full password. Type HINT for analysis.</div></div>
-          <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;margin-bottom:4px;">
-            <span style="font-size:9px;color:var(--text-mute);">ATTEMPTS:</span>
-            <div id="pc-attempt-row"></div>
-            <span style="font-size:9px;color:var(--text-mute);margin-left:auto;">LEFT: <span id="pc-rem" style="color:var(--amber);">6</span></span>
+          <div><div class="hk-title">// CIPHER CRACKER — BRUTE-FORCE ENGINE</div>
+            <div class="hk-desc">Inject the brute-force payload to crack the 10-char root password. Each reel locks when the correct character is found.</div></div>
+
+          <!-- Target info -->
+          <div id="cc-info-grid">
+            <span class="cc-info-label">TARGET:</span>
+            <span class="cc-info-value" id="cc-target-ip">192.168.0.0</span>
+            <span class="cc-info-label">VECTOR:</span>
+            <span class="cc-info-value">Auth table / Root access</span>
           </div>
-          <div id="pc-layout">
-            <div id="pc-terminal">
-              <div id="pc-term-out"></div>
-              <div id="pc-term-input-row">
-                <span style="color:var(--green2);font-size:10px;">crack&gt;</span>
-                <input type="text" id="pc-term-input" autocomplete="off" spellcheck="false" placeholder="enter code...">
-              </div>
+
+          <!-- Slot machine -->
+          <div id="cc-slot-section">
+            <div class="cc-slot-row-label">[ BRUTE-FORCE ENGINE — 10-CHAR KEYSPACE ]</div>
+
+            <!-- Candidate row -->
+            <div class="cc-try-reels" id="cc-try-reels"></div>
+
+            <!-- Main reel row -->
+            <div class="cc-slot-reels" id="cc-slot-reels"></div>
+
+            <!-- Tick row -->
+            <div class="cc-tick-reels" id="cc-tick-reels"></div>
+
+            <!-- Lock icon -->
+            <div id="cc-lock-wrap">
+              <svg id="cc-lock-svg" viewBox="0 0 80 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="8" y="38" width="64" height="46" rx="4" fill="var(--green-faint)" stroke="var(--green)" stroke-width="3"/>
+                <path id="cc-lock-shackle" d="M20 38 V24 C20 10 60 10 60 24 V38" stroke="var(--green)" stroke-width="5" fill="none" stroke-linecap="round"/>
+                <circle cx="40" cy="61" r="8" fill="var(--green)" opacity="0.9"/>
+                <rect x="36.5" y="61" width="7" height="10" rx="2" fill="var(--green-faint)"/>
+                <circle cx="40" cy="61" r="8" fill="none" stroke="var(--green)" stroke-width="1" opacity="0.4">
+                  <animate attributeName="r" values="8;14;8" dur="2s" repeatCount="indefinite"/>
+                  <animate attributeName="opacity" values="0.4;0;0.4" dur="2s" repeatCount="indefinite"/>
+                </circle>
+              </svg>
             </div>
-            <div id="pc-right">
-              <div style="font-size:9px;color:var(--text-mute);">CODE MATRIX</div>
-              <div style="background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:6px;">
-                <div id="pc-grid"></div>
-              </div>
-              <div class="hk-status" id="pc-status"></div>
-              <button class="hk-btn" onclick="initCrack()">↺ NEW CIPHER</button>
-            </div>
+          </div>
+
+          <!-- Progress bar -->
+          <div id="cc-progress-wrap"><div id="cc-progress-bar"></div></div>
+
+          <!-- Status area -->
+          <div id="cc-status-bar">
+            <div class="cc-scanline-overlay"></div>
+            <div id="cc-status-line">Status: <span class="cc-highlight">STANDBY</span> — Awaiting initiation sequence<span class="cc-cursor"></span></div>
+          </div>
+
+          <!-- Actions -->
+          <div id="cc-actions">
+            <button class="cc-btn-crack" id="cc-btn-crack">⚡ INITIATE CRACK</button>
+            <button class="cc-btn-reset" id="cc-btn-reset">↺ RESET</button>
           </div>
         </div>
       </div>
@@ -1162,7 +1302,7 @@ function bootOS(){
   setInterval(updateClock,1000);updateClock();
   document.getElementById('cc-user').value=uname;document.getElementById('cc-host').value=hname;
   initTerminal();initFiles();initNetmap();restoreCustomApps();
-  initCrack();initFirewall();renderRwTree();
+  initCrack();renderRwTree();
 }
 function applyStoredSettings(){
   const s=S.g('settings',{});
@@ -1480,7 +1620,7 @@ function doSetTarget(){
         document.getElementById('hack-portscan').classList.remove('active');
         document.getElementById('tab-firewall').classList.add('active');
         document.getElementById('hack-firewall').classList.add('active');
-        initFirewall();
+        fbFullReset();
         playUnlock();
         // visual flash
         document.getElementById('hack-app').classList.add('quest-complete-flash');
@@ -1498,181 +1638,488 @@ function doSetTarget(){
 }
 
 // =====================================================================
-// FIREWALL BREACHER
 // =====================================================================
+// FIREWALL BREACHER (new canvas ring-rotation game)
+// =====================================================================
+(function(){
 
-let fbLvl=0,fbScore=0,fbOrdersOk=0,fbNext=0,fbTimerVal=0,fbTimerIv=null,fbActive=false;
-const FB_LVLS=[{name:'OUTER',time:30},{name:'MIDDLE',time:15},{name:'INNER',time:8}];
+const FB_COLORS={
+  blue:  {dot:'#4488ff', arc:'#2266dd', glow:'#4488ff88'},
+  pink:  {dot:'#ff2277', arc:'#cc0055', glow:'#ff227788'},
+  yellow:{dot:'#ffcc00', arc:'#ccaa00', glow:'#ffcc0088'},
+};
+const FB_COLOR_KEYS=Object.keys(FB_COLORS);
 
-function initFirewall(){fbLvl=0;fbScore=0;fbOrdersOk=0;fbActive=false;if(fbTimerIv)clearInterval(fbTimerIv);
-  document.getElementById('fb-status').textContent='';document.getElementById('fb-score-disp').textContent='SCORE: 0';
-  document.getElementById('fb-timer-big').textContent='--';document.getElementById('fb-timer-big').style.color='var(--green)';
-  drawFBCanvas();startFBLevel();}
+const FB_RING_CFG=[
+  {name:'OUTER',  radius:175, nodes:8,  pairs:4, time:30, label:'RING 1 — OUTER SHELL'},
+  {name:'MIDDLE', radius:115, nodes:8,  pairs:4, time:22, label:'RING 2 — CORE LAYER'},
+  {name:'INNER',  radius: 58, nodes:6,  pairs:3, time:15, label:'RING 3 — ROOT ACCESS'},
+];
 
-function startFBLevel(){
-  if(fbLvl>=FB_LVLS.length){fbActive=false;if(fbTimerIv)clearInterval(fbTimerIv);questFWDone=true;updateQuestBar();
-    document.getElementById('fb-status').textContent='[ ALL FIREWALLS BREACHED ]';document.getElementById('fb-status').className='hk-status ok';
-    unlockTab('crack');playComplete();
-    document.getElementById('hack-firewall').classList.remove('active');document.getElementById('tab-firewall').classList.remove('active');
-    document.getElementById('hack-crack').classList.add('active');document.getElementById('tab-crack').classList.add('active');
-    initCrack();return;}
-  document.getElementById('fb-lvl-name').textContent=FB_LVLS[fbLvl].name;fbOrdersOk=0;startFBOrder();}
+let FB={
+  phase:'idle',
+  ringIdx:0,
+  pairs:[],
+  ringOffset:0,
+  visualOffset:0,
+  timerVal:0,
+  timerIv:null,
+  ringsBreached:0,
+};
 
-function startFBOrder(){fbNext=0;fbActive=true;shuffleFBGrid();
-  fbTimerVal=FB_LVLS[fbLvl].time;updFBTimer();
-  if(fbTimerIv)clearInterval(fbTimerIv);
-  fbTimerIv=setInterval(()=>{fbTimerVal--;updFBTimer();if(fbTimerVal<=0){clearInterval(fbTimerIv);fbFail();}},1000);}
+const fbCv=document.getElementById('fb-game-canvas');
+const fbCtx=fbCv.getContext('2d');
+const FB_CX=fbCv.width/2, FB_CY=fbCv.height/2;
 
-function updFBTimer(){
-  const el=document.getElementById('fb-timer-big');el.textContent=fbTimerVal+'s';
-  if(fbTimerVal<=5){el.className='';el.style.color='var(--red)';el.id='fb-timer-big';el.classList.add('danger');playTick();}
-  else if(fbTimerVal<=10){el.style.color='var(--amber)';el.classList.remove('danger');}
-  else{el.style.color='var(--green)';el.classList.remove('danger');}
+let fbAnimFrame=null, fbRotOffset=0, fbPulseT=0, fbFlashT=0;
+
+function fbPolarXY(cx,cy,r,angleDeg){
+  const a=(angleDeg-90)*Math.PI/180;
+  return {x:cx+r*Math.cos(a), y:cy+r*Math.sin(a)};
 }
-
-function shuffleFBGrid(){
-  const nums=[0,1,2,3,4,5,6,7,8,9];
-  for(let i=nums.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[nums[i],nums[j]]=[nums[j],nums[i]];}
-  const g=document.getElementById('fb-grid');g.innerHTML='';
-  nums.forEach(n=>{const c=document.createElement('div');c.className='fb-cell';c.textContent=n;c.dataset.n=n;
-    c.onclick=()=>fbClick(n,c);g.appendChild(c);});
+function fbShuffle(arr){
+  for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}
+  return arr;
 }
-
-function fbClick(n,cell){
-  if(!fbActive)return;
-  if(n===fbNext){
-    cell.className='fb-cell correct';cell.onclick=null;fbNext++;playSuccess();
-    if(fbNext>9){if(fbTimerIv)clearInterval(fbTimerIv);fbScore+=3;fbOrdersOk++;
-      document.getElementById('fb-score-disp').textContent='SCORE: '+fbScore;
-      document.getElementById('fb-score-inline').textContent=fbScore;
-      document.getElementById('fb-status').textContent=`+3pts — Sequence ${fbOrdersOk}/2`;
-      document.getElementById('fb-status').className='hk-status ok';playComplete();
-      if(fbOrdersOk>=2){fbLvl++;drawFBCanvas();setTimeout(()=>{document.getElementById('fb-status').textContent='';startFBLevel();},1200);}
-      else setTimeout(()=>{document.getElementById('fb-status').textContent='';startFBOrder();},800);}
-  } else {
-    if(fbTimerIv)clearInterval(fbTimerIv);fbActive=false;cell.className='fb-cell wrong';
-    document.getElementById('fb-status').textContent=`WRONG — expected ${fbNext}, got ${n}. RESET to retry.`;
-    document.getElementById('fb-status').className='hk-status bad';
-    document.getElementById('fb-timer-big').textContent='FAIL';document.getElementById('fb-timer-big').style.color='var(--red)';
-    document.querySelectorAll('.fb-cell').forEach(c=>{c.className='fb-cell disabled';c.onclick=null;});
-    playFail();
+function fbBuildPairs(ringCfg){
+  const {nodes,pairs}=ringCfg;
+  const activeSlots=fbShuffle([...Array(nodes).keys()]).slice(0,pairs);
+  FB.ringOffset=Math.floor(Math.random()*(nodes-1))+1;
+  FB.visualOffset=FB.ringOffset;
+  const result=[];
+  for(let p=0;p<pairs;p++){
+    result.push({colorKey:FB_COLOR_KEYS[p%FB_COLOR_KEYS.length],baseSlot:activeSlots[p],matched:false});
   }
+  return result;
 }
-function fbFail(){fbActive=false;document.getElementById('fb-status').textContent='[ TIMEOUT ] — RESET to retry.';document.getElementById('fb-status').className='hk-status bad';
-  document.getElementById('fb-timer-big').textContent='--';document.querySelectorAll('.fb-cell').forEach(c=>{c.className='fb-cell disabled';c.onclick=null;});playFail();}
 
-function drawFBCanvas(){
-  const cv=document.getElementById('fb-canvas');const ctx=cv.getContext('2d');
-  ctx.clearRect(0,0,200,200);const cx=100,cy=100;
-  const rings=[
-    {r:88,active:fbLvl===0,done:fbLvl>0,col:'#00aa22'},
-    {r:60,active:fbLvl===1,done:fbLvl>1,col:'#ccaa00'},
-    {r:32,active:fbLvl===2,done:fbLvl>2,col:'#cc2200'},
-  ];
-  rings.forEach(ring=>{
-    ctx.beginPath();
-    for(let a=0;a<6;a++){const ang=(a*60-30)*Math.PI/180;const px=cx+ring.r*Math.cos(ang),py=cy+ring.r*Math.sin(ang);
-      a===0?ctx.moveTo(px,py):ctx.lineTo(px,py);}
-    ctx.closePath();
-    ctx.fillStyle=ring.done?ring.col+'11':ring.active?ring.col+'33':ring.col+'22';ctx.fill();
-    ctx.strokeStyle=ring.done?ring.col+'44':ring.active?ring.col:ring.col+'55';
-    ctx.lineWidth=ring.active?2.5:1.5;ctx.stroke();
-    for(let a=0;a<6;a++){const ang=(a*60-30)*Math.PI/180;const nx=cx+ring.r*Math.cos(ang),ny=cy+ring.r*Math.sin(ang);
-      ctx.beginPath();ctx.arc(nx,ny,5,0,Math.PI*2);
-      ctx.fillStyle=ring.done?ring.col+'44':ring.active?ring.col:'#222';ctx.fill();
-      ctx.strokeStyle='#000';ctx.lineWidth=1;ctx.stroke();}
+// --- DRAW ---
+function fbDrawAll(){
+  fbCtx.clearRect(0,0,fbCv.width,fbCv.height);
+  fbRotOffset+=0.003; fbPulseT+=0.04;
+  fbDrawBackground(); fbDrawCrosshairs(); fbDrawDecorativeRings();
+  if(FB.phase!=='idle'){
+    FB.visualOffset+=(FB.ringOffset-FB.visualOffset)*0.2;
+    fbDrawActiveRing();
+  }
+  if(FB.phase==='ringing') fbDrawBreachFlash();
+  fbAnimFrame=requestAnimationFrame(fbDrawAll);
+}
+function fbDrawBackground(){
+  const grd=fbCtx.createRadialGradient(FB_CX,FB_CY,20,FB_CX,FB_CY,200);
+  grd.addColorStop(0,'rgba(255,51,51,0.04)');grd.addColorStop(1,'rgba(0,0,0,0)');
+  fbCtx.fillStyle=grd;fbCtx.beginPath();fbCtx.arc(FB_CX,FB_CY,200,0,Math.PI*2);fbCtx.fill();
+}
+function fbDrawCrosshairs(){
+  fbCtx.save();fbCtx.strokeStyle='rgba(255,51,51,0.10)';fbCtx.lineWidth=1;fbCtx.setLineDash([4,8]);
+  fbCtx.beginPath();fbCtx.moveTo(FB_CX-200,FB_CY);fbCtx.lineTo(FB_CX+200,FB_CY);fbCtx.stroke();
+  fbCtx.beginPath();fbCtx.moveTo(FB_CX,FB_CY-200);fbCtx.lineTo(FB_CX,FB_CY+200);fbCtx.stroke();
+  fbCtx.setLineDash([]);fbCtx.restore();
+}
+function fbDrawDecorativeRings(){
+  [175,115,58,30].forEach((r,i)=>{
+    fbCtx.save();fbCtx.strokeStyle=`rgba(255,51,51,${0.08+i*0.02})`;fbCtx.lineWidth=1;
+    fbCtx.beginPath();fbCtx.arc(FB_CX,FB_CY,r,0,Math.PI*2);fbCtx.stroke();fbCtx.restore();
   });
-  ctx.fillStyle='#009922';ctx.font='9px Courier New';ctx.textAlign='center';
-  ctx.fillText(fbLvl>=3?'BREACHED':FB_LVLS[fbLvl]?FB_LVLS[fbLvl].name:'',cx,cy+3);
+  const tickR=190;
+  for(let i=0;i<36;i++){
+    const inner=fbPolarXY(FB_CX,FB_CY,tickR-4,i*10+fbRotOffset*20);
+    const outer=fbPolarXY(FB_CX,FB_CY,tickR+4,i*10+fbRotOffset*20);
+    fbCtx.save();fbCtx.strokeStyle=i%3===0?'rgba(255,51,51,0.3)':'rgba(255,51,51,0.08)';
+    fbCtx.lineWidth=i%3===0?1.5:0.8;fbCtx.beginPath();fbCtx.moveTo(inner.x,inner.y);fbCtx.lineTo(outer.x,outer.y);fbCtx.stroke();fbCtx.restore();
+  }
+  const pulse=0.7+0.3*Math.sin(fbPulseT);
+  fbCtx.save();fbCtx.fillStyle=`rgba(255,51,51,${pulse*0.6})`;
+  fbCtx.beginPath();fbCtx.arc(FB_CX,FB_CY,4,0,Math.PI*2);fbCtx.fill();
+  fbCtx.strokeStyle=`rgba(255,51,51,${pulse*0.4})`;fbCtx.lineWidth=1;
+  fbCtx.beginPath();fbCtx.arc(FB_CX,FB_CY,10*pulse,0,Math.PI*2);fbCtx.stroke();fbCtx.restore();
+}
+function fbDrawActiveRing(){
+  const ringCfg=FB_RING_CFG[FB.ringIdx];
+  const R=ringCfg.radius, ARC_SPAN=28;
+  const anglePerNode=360/ringCfg.nodes;
+  const visOffAngle=FB.visualOffset*anglePerNode;
+  FB.pairs.forEach((pair,pi)=>{
+    const col=FB_COLORS[pair.colorKey];
+    const alpha=pair.matched?0.35:1;
+    const dotAngle=pair.baseSlot*anglePerNode;
+    const arcAngle=dotAngle+visOffAngle;
+    const aStart=(arcAngle-ARC_SPAN/2-90)*Math.PI/180;
+    const aEnd  =(arcAngle+ARC_SPAN/2-90)*Math.PI/180;
+    fbCtx.save();fbCtx.globalAlpha=alpha;fbCtx.strokeStyle=col.arc;fbCtx.lineWidth=7;fbCtx.lineCap='round';
+    if(!pair.matched){fbCtx.shadowColor=col.glow;fbCtx.shadowBlur=8;}
+    fbCtx.beginPath();fbCtx.arc(FB_CX,FB_CY,R,aStart,aEnd);fbCtx.stroke();
+    if(pair.matched){
+      fbCtx.strokeStyle=col.dot;fbCtx.lineWidth=3;fbCtx.shadowBlur=14;fbCtx.shadowColor=col.glow;
+      fbCtx.globalAlpha=0.9+0.1*Math.sin(fbPulseT+pi);
+      fbCtx.beginPath();fbCtx.arc(FB_CX,FB_CY,R,aStart,aEnd);fbCtx.stroke();
+    }
+    fbCtx.restore();
+    const dp=fbPolarXY(FB_CX,FB_CY,R,dotAngle);
+    const dotAlpha=pair.matched?0.4:1;
+    fbCtx.save();fbCtx.globalAlpha=dotAlpha;
+    if(!pair.matched){fbCtx.shadowColor=col.glow;fbCtx.shadowBlur=10;}
+    fbCtx.fillStyle=col.dot;fbCtx.beginPath();fbCtx.arc(dp.x,dp.y,7,0,Math.PI*2);fbCtx.fill();
+    fbCtx.strokeStyle=col.arc;fbCtx.lineWidth=2;fbCtx.globalAlpha=dotAlpha*0.8;
+    fbCtx.beginPath();fbCtx.arc(dp.x,dp.y,10,0,Math.PI*2);fbCtx.stroke();
+    if(pair.matched){
+      fbCtx.fillStyle=col.dot;fbCtx.font='bold 10px sans-serif';fbCtx.textAlign='center';fbCtx.textBaseline='middle';
+      fbCtx.globalAlpha=0.9;fbCtx.shadowColor=col.glow;fbCtx.shadowBlur=12;fbCtx.fillText('✓',dp.x,dp.y);
+    }
+    fbCtx.restore();
+  });
+  const p3=0.6+0.4*Math.sin(fbPulseT*0.7);
+  fbCtx.save();fbCtx.font='bold 8px Courier New';fbCtx.textAlign='center';fbCtx.textBaseline='middle';
+  fbCtx.fillStyle=`rgba(255,51,51,${p3})`;fbCtx.fillText(ringCfg.label,FB_CX,FB_CY-R-14);fbCtx.restore();
+}
+function fbDrawBreachFlash(){
+  fbFlashT+=0.15;
+  const alpha=Math.abs(Math.sin(fbFlashT))*0.25;
+  fbCtx.save();fbCtx.fillStyle=`rgba(255,51,51,${alpha})`;
+  fbCtx.beginPath();fbCtx.arc(FB_CX,FB_CY,200,0,Math.PI*2);fbCtx.fill();fbCtx.restore();
+  if(fbFlashT>Math.PI*3){FB.phase='running';fbFlashT=0;fbProceedToNextRing();}
 }
 
+// --- LOG ---
+const fbLogEl=document.getElementById('fb-log-out');
+function fbLog(msg,cls=''){
+  const d=document.createElement('div');if(cls)d.className=cls;d.innerHTML='> '+msg;
+  fbLogEl.appendChild(d);fbLogEl.scrollTop=fbLogEl.scrollHeight;
+}
+function fbLogDelay(lines){lines.forEach((l,i)=>setTimeout(()=>fbLog(l[0],l[1]),i*180));}
+
+// --- STATUS / UI ---
+function fbSetStatus(txt,cls){
+  const el=document.getElementById('fb-inf-status');el.textContent=txt;el.className='fb-ic-val';
+  if(cls==='ok')el.style.color='var(--green)';
+  else if(cls==='warn')el.style.color='var(--amber)';
+  else if(cls==='err')el.style.color='#ff6666';
+  else el.style.color='var(--green)';
+}
+function fbUpdateUI(){
+  const ringCfg=FB_RING_CFG[FB.ringIdx];
+  document.getElementById('fb-inf-ring').textContent=ringCfg.name;
+  const alignEl=document.getElementById('fb-inf-offset');
+  if(FB.phase==='running'){alignEl.textContent='LOCKED';alignEl.style.color='var(--amber)';}
+  fbUpdateTimerDisplay();
+}
+function fbUpdateTimerDisplay(){
+  const el=document.getElementById('fb-inf-time');el.textContent=FB.timerVal;el.className='fb-ic-val';
+  if(FB.timerVal<=5){el.classList.add('danger');}
+  else if(FB.timerVal<=10){el.style.color='var(--amber)';}
+  else{el.style.color='var(--green)';}
+}
+function fbUpdateProgress(){
+  const pct=(FB.ringsBreached/FB_RING_CFG.length)*100;
+  document.getElementById('fb-prog-fill').style.width=pct+'%';
+  document.getElementById('fb-prog-label').textContent=`RINGS BREACHED: ${FB.ringsBreached} / ${FB_RING_CFG.length}`;
+}
+
+// --- TIMER ---
+function fbStartTimer(){
+  clearInterval(FB.timerIv);
+  FB.timerIv=setInterval(()=>{
+    FB.timerVal--;fbUpdateTimerDisplay();
+    if(FB.timerVal<=0){clearInterval(FB.timerIv);FB.timerIv=null;fbTriggerFail('TIMEOUT');}
+  },1000);
+}
+
+// --- GAME LOGIC ---
+function fbCheckRingComplete(){
+  clearInterval(FB.timerIv);FB.timerIv=null;
+  FB.ringsBreached++;
+  const ringCfg=FB_RING_CFG[FB.ringIdx];
+  fbSetStatus('RING BREACHED','ok');
+  document.getElementById('fb-inf-offset').textContent='SYNCED';
+  document.getElementById('fb-inf-offset').style.color='var(--cyan)';
+  fbLog(`<span class="ok">━━ ${ringCfg.label} CLEARED ━━</span>`);
+  fbUpdateProgress();
+  if(FB.ringIdx>=FB_RING_CFG.length-1){setTimeout(fbTriggerWin,900);}
+  else{fbFlashT=0;fbLogDelay([[`Breach confirmed on ${ringCfg.name} ring.`,'ok'],['Tunnelling into next layer...','warn']]);}
+}
+function fbProceedToNextRing(){
+  FB.ringIdx++;
+  const ringCfg=FB_RING_CFG[FB.ringIdx];
+  FB.pairs=fbBuildPairs(ringCfg);FB.timerVal=ringCfg.time;
+  fbUpdateUI();fbSetStatus('DECRYPTING','warn');
+  fbLogDelay([[`Entering ${ringCfg.label}...`,'info'],[`Grid Matrix: ${ringCfg.nodes} Nodes`,'dim'],['Align rotational layers to proceed.','dim']]);
+  fbStartTimer();
+}
+function fbTriggerWin(){
+  FB.phase='done';playComplete();clearInterval(FB.timerIv);
+  // Update quest state
+  questFWDone=true;updateQuestBar();
+  fbSetStatus('FIREWALL BREACHED','ok');
+  fbLog('<span class="ok">━━━━━━━━━━━━━━━━━━━━━━━━</span>');
+  fbLog('<span class="ok">FIREWALL FULLY BREACHED</span>');
+  fbLog('<span class="ok">Root access obtained.</span>');
+  fbLog('<span class="ok">Handing off to Password Cracker...</span>');
+  fbLog('<span class="ok">━━━━━━━━━━━━━━━━━━━━━━━━</span>');
+  document.getElementById('fb-overlay-title').textContent='FIREWALL BREACHED';
+  document.getElementById('fb-overlay-title').style.color='var(--green)';
+  document.getElementById('fb-overlay-sub').innerHTML=
+    'All 3 firewall rings cleared.<br>Root tunnel established.<br><br>'+
+    '<span style="color:var(--amber);letter-spacing:1px;">→ Proceeding to password extraction phase.</span>';
+  document.getElementById('fb-overlay-btn').textContent='CONTINUE → PASSWORD CRACK';
+  document.getElementById('fb-overlay').classList.add('show');
+}
+function fbTriggerFail(reason){
+  FB.phase='failed';playFail();clearInterval(FB.timerIv);
+  fbSetStatus(reason,'err');
+  fbLog(`<span class="err">━━ BREACH FAILED: ${reason} ━━</span>`);
+  fbLog('<span class="err">Firewall reinitializing...</span>');
+  document.getElementById('fb-btn-reset').disabled=false;
+  document.getElementById('fb-btn-start').disabled=true;
+  document.getElementById('fb-overlay-title').textContent='BREACH FAILED';
+  document.getElementById('fb-overlay-title').style.color='#ff6666';
+  document.getElementById('fb-overlay-sub').innerHTML=
+    `Reason: <span style="color:var(--amber)">${reason}</span><br>`+
+    'Firewall has initiated countermeasures.<br><br>'+
+    '<span style="color:#ff3333;letter-spacing:1px;">Reset and try again.</span>';
+  document.getElementById('fb-overlay-btn').textContent='↺ TRY AGAIN';
+  setTimeout(()=>document.getElementById('fb-overlay').classList.add('show'),1200);
+}
+function fbFullReset(){
+  clearInterval(FB.timerIv);FB.timerIv=null;
+  FB.phase='idle';FB.ringIdx=0;FB.ringsBreached=0;FB.pairs=[];FB.timerVal=0;FB.ringOffset=0;FB.visualOffset=0;
+  document.getElementById('fb-btn-start').disabled=false;
+  document.getElementById('fb-btn-reset').disabled=true;
+  document.getElementById('fb-inf-ring').textContent='—';
+  document.getElementById('fb-inf-time').textContent='—';
+  document.getElementById('fb-inf-offset').textContent='—';
+  document.getElementById('fb-inf-offset').style.color='var(--green)';
+  document.getElementById('fb-overlay').classList.remove('show');
+  fbSetStatus('STANDBY','');fbUpdateProgress();
+  fbLogEl.innerHTML='';fbLog('System reset. Ready for breach attempt.','dim');
+}
+
+// --- KEY CONTROLS ---
+window.addEventListener('keydown',e=>{
+  // Only active when firewall panel is visible
+  if(!document.getElementById('hack-firewall').classList.contains('active'))return;
+  if(FB.phase!=='running')return;
+  if(e.key.toLowerCase()==='w'||e.key==='ArrowLeft'){FB.ringOffset--;playTick();}
+  else if(e.key.toLowerCase()==='d'||e.key==='ArrowRight'){FB.ringOffset++;playTick();}
+  else return;
+  fbUpdateUI();
+  const nodes=FB_RING_CFG[FB.ringIdx].nodes;
+  if(((FB.ringOffset%nodes)+nodes)%nodes===0){
+    FB.phase='ringing';playSuccess();FB.pairs.forEach(p=>p.matched=true);fbCheckRingComplete();
+  }
+});
+
+// --- BUTTONS ---
+document.getElementById('fb-btn-start').addEventListener('click',()=>{
+  if(FB.phase!=='idle')return;
+  document.getElementById('fb-btn-start').disabled=true;
+  document.getElementById('fb-btn-reset').disabled=false;
+  FB.phase='running';FB.ringIdx=0;FB.ringsBreached=0;
+  const ringCfg=FB_RING_CFG[0];
+  FB.pairs=fbBuildPairs(ringCfg);FB.timerVal=ringCfg.time;
+  fbUpdateUI();fbUpdateProgress();fbSetStatus('SCANNING','warn');
+  fbLogDelay([
+    ['Initiating firewall breach sequence...','warn'],
+    ['Target: 192.168.1.47','dim'],
+    ['Probing outer firewall ring...','dim'],
+    [`${ringCfg.label} detected.`,'info'],
+    [`Grid Matrix: ${ringCfg.nodes} Nodes`,'dim'],
+    ['Use W and D (or ← →) to rotate arcs and find the alignment point.','dim'],
+  ]);
+  setTimeout(()=>{fbSetStatus('DECRYPTING','warn');fbStartTimer();},1100);
+});
+document.getElementById('fb-btn-reset').addEventListener('click',fbFullReset);
+document.getElementById('fb-overlay-btn').addEventListener('click',()=>{
+  document.getElementById('fb-overlay').classList.remove('show');
+  if(FB.phase==='failed'){fbFullReset();return;}
+  // Win path: advance to password crack tab
+  unlockTab('crack');
+  document.getElementById('hack-firewall').classList.remove('active');document.getElementById('tab-firewall').classList.remove('active');
+  document.getElementById('hack-crack').classList.add('active');document.getElementById('tab-crack').classList.add('active');
+  initCrack();
+});
+
+// --- BOOT LOG ---
+fbLogDelay([
+  ['B0R1S-OS FIREWALL BREACH MODULE v3.4','ok'],
+  ['Loading ring-cipher engine...','dim'],
+  ['Target acquired: 192.168.1.47','info'],
+  ['Firewall topology: 3-ring cipher array','dim'],
+  ['Ring 1 (OUTER):  8-node grid · 30s','dim'],
+  ['Ring 2 (MIDDLE): 8-node grid · 22s','dim'],
+  ['Ring 3 (INNER):  6-node grid · 15s','dim'],
+  ['━━━━━━━━━━━━━━━━━━━━━━━━','dim'],
+  ['Press START BREACH to begin.','warn'],
+]);
+fbSetStatus('STANDBY','');
+fbDrawAll();
+
+// Expose reset for external callers (e.g. doSetTarget)
+window.fbFullReset=fbFullReset;
+
+})(); // end IIFE
+
 // =====================================================================
-// PASSWORD CRACKER
+// CIPHER CRACKER (replaces PASSWORD CRACKER)
 // =====================================================================
 
-let pcSecret='',pcRows=0,pcCols=7,pcMaxAttempts=6,pcUsed=0;
-const PC_CHARS='ABCDEFGHJKLMNPQRSTUVWXYZ0123456789';
-const PC_WORDS=['ACCESS','SHADOW','MATRIX','CIPHER','REBOOT','SYSTEM','KERNEL','BINARY','SHIELD','SECURE','BYPASS','PACKET','DAEMON','VECTOR'];
+const CC_PASSWORD_LENGTH = 10;
+const CC_CHARSET = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
+
+function ccGenerateTarget(){
+  let pw='';
+  for(let i=0;i<CC_PASSWORD_LENGTH;i++) pw+=CC_CHARSET[Math.floor(Math.random()*CC_CHARSET.length)];
+  return pw;
+}
+
+let ccTargetPassword=ccGenerateTarget();
+let ccCracking=false;
+let ccLockedChars=[];
+let ccSpinIntervals=[];
+let ccCurrentTry=Array(CC_PASSWORD_LENGTH).fill('');
 
 function initCrack(){
-  pcSecret=PC_WORDS[Math.floor(Math.random()*PC_WORDS.length)];
-  pcRows=pcSecret.length;pcUsed=0;
-  renderPCBoxes();buildPCGrid();
-  document.getElementById('pc-rem').textContent=pcMaxAttempts;
-  document.getElementById('pc-status').textContent='';
-  pcPrint('<span style="color:var(--cyan)">// PASSWORD CRACKER v2.1 ONLINE</span>');
-  pcPrint(`<span class="dim">Cipher: ${pcRows} letters · ${pcCols} columns · Matrix ready.</span>`);
-  pcPrint('<span class="dim">Each row hides ONE letter. Decode all rows → type the word.</span>');
-  pcPrint('<span class="dim">Commands: [word] to guess · HINT for matrix analysis</span>');
-  setTimeout(revealPCMatrix,400);
+  ccDoReset();
 }
 
-function renderPCBoxes(){
-  const row=document.getElementById('pc-attempt-row');row.innerHTML='';
-  for(let i=0;i<pcMaxAttempts;i++){const b=document.createElement('div');b.className='pc-box';b.id='pcb-'+i;row.appendChild(b);}
-}
+function ccBuildGrid(){
+  const tryReels=document.getElementById('cc-try-reels');
+  const slotReels=document.getElementById('cc-slot-reels');
+  const tickReels=document.getElementById('cc-tick-reels');
+  tryReels.innerHTML='';slotReels.innerHTML='';tickReels.innerHTML='';
 
-function buildPCGrid(){
-  const g=document.getElementById('pc-grid');
-  g.style.gridTemplateColumns=`repeat(${pcCols},1fr)`;g.innerHTML='';
-  window._pcLC=[];
-  for(let r=0;r<pcRows;r++){
-    const lc=Math.floor(Math.random()*pcCols);window._pcLC.push(lc);
-    for(let c=0;c<pcCols;c++){const el=document.createElement('div');el.className='pc-cell';el.id=`pcc-${r}-${c}`;el.textContent='0';g.appendChild(el);}
+  for(let i=0;i<CC_PASSWORD_LENGTH;i++){
+    // Try cell
+    const tc=document.createElement('div');
+    tc.className='cc-try-cell';tc.id='cc-try-'+i;
+    tryReels.appendChild(tc);
+
+    // Reel cell
+    const rc=document.createElement('div');
+    rc.className='cc-reel-cell';rc.id='cc-reel-'+i;
+    rc.innerHTML=`<div class="cc-reel-inner" id="cc-reel-inner-${i}">?</div>`;
+    slotReels.appendChild(rc);
+
+    // Tick cell
+    const xc=document.createElement('div');
+    xc.className='cc-tick-cell';xc.id='cc-tick-'+i;
+    xc.textContent='✕';
+    tickReels.appendChild(xc);
   }
 }
 
-function revealPCMatrix(){
-  for(let r=0;r<pcRows;r++){
-    const lc=window._pcLC[r];const cell=document.getElementById(`pcc-${r}-${lc}`);
-    const letter=pcSecret[r];let spins=0;const delay=r*180;
+function ccRandomChar(){return CC_CHARSET[Math.floor(Math.random()*CC_CHARSET.length)];}
+
+function ccStartSpinning(index){
+  const inner=document.getElementById('cc-reel-inner-'+index);
+  const reel=document.getElementById('cc-reel-'+index);
+  reel.classList.add('spinning');reel.classList.remove('locked');
+  const interval=setInterval(()=>{
+    const c=ccRandomChar();
+    inner.textContent=c;
+    const tc=document.getElementById('cc-try-'+index);
+    tc.textContent=c;tc.classList.add('active');
+    ccCurrentTry[index]=c;
+  },80);
+  ccSpinIntervals[index]=interval;
+}
+
+function ccStopSpinning(index,finalChar){
+  clearInterval(ccSpinIntervals[index]);
+  const inner=document.getElementById('cc-reel-inner-'+index);
+  const reel=document.getElementById('cc-reel-'+index);
+  const tick=document.getElementById('cc-tick-'+index);
+  const tryC=document.getElementById('cc-try-'+index);
+  inner.textContent=finalChar;tryC.textContent=finalChar;ccCurrentTry[index]=finalChar;
+  reel.classList.remove('spinning');reel.classList.add('locked');
+  tick.textContent='✔';tick.classList.remove('trying');tick.classList.add('confirmed');
+  beep(600+index*30,.05,'sine',.08);
+}
+
+function ccSetTickTrying(index){
+  const tick=document.getElementById('cc-tick-'+index);
+  tick.classList.remove('confirmed');tick.classList.add('trying');tick.textContent='/';
+}
+
+function ccSetStatus(html){document.getElementById('cc-status-line').innerHTML=html;}
+function ccSetProgress(pct){document.getElementById('cc-progress-bar').style.width=Math.min(100,pct)+'%';}
+
+function ccRandomIp(){return `${192+Math.floor(Math.random()*2)}.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*254)+1}`;}
+
+function ccStartCrack(){
+  if(ccCracking)return;
+  ccCracking=true;ccLockedChars=[];
+  document.getElementById('cc-btn-crack').disabled=true;
+  ccSetProgress(0);
+  for(let i=0;i<CC_PASSWORD_LENGTH;i++){
+    ccStartSpinning(i);ccSetTickTrying(i);
+    document.getElementById('cc-reel-'+i).classList.remove('locked');
+  }
+  ccSetStatus(`<span class="cc-highlight">SCANNING</span> @ <span class="cc-addr">${document.getElementById('cc-target-ip').textContent}</span> — Injecting brute-force payload...`);
+  playScan();
+  const BASE=1200,STAGGER=900;
+  for(let i=0;i<CC_PASSWORD_LENGTH;i++){
+    const delay=BASE+i*STAGGER+Math.random()*400;
     setTimeout(()=>{
-      const iv=setInterval(()=>{
-        cell.textContent=PC_CHARS[Math.floor(Math.random()*PC_CHARS.length)];spins++;
-        if(spins>14){clearInterval(iv);cell.textContent=letter;cell.className='pc-cell letter';beep(600+r*40,.05,'sine',.1);}
-      },55);
+      ccStopSpinning(i,ccTargetPassword[i]);
+      ccLockedChars.push(i);
+      const pct=(ccLockedChars.length/CC_PASSWORD_LENGTH)*100;
+      ccSetProgress(pct);
+      if(ccLockedChars.length<CC_PASSWORD_LENGTH){
+        ccSetStatus(`Running brute-force @ <span class="cc-addr">${document.getElementById('cc-target-ip').textContent}</span><br>Cracking character <span class="cc-highlight">[${ccLockedChars.length}/${CC_PASSWORD_LENGTH}]</span> — Please wait for the solution`);
+        playTick();
+      } else {
+        ccOnSuccess();
+      }
     },delay);
   }
 }
 
-function pcPrint(html){const o=document.getElementById('pc-term-out');const d=document.createElement('div');d.innerHTML=html;o.appendChild(d);o.scrollTop=o.scrollHeight;}
+function ccOnSuccess(){
+  ccCracking=false;
+  // Unlock animation on lock icon
+  document.getElementById('cc-lock-svg').classList.add('cc-unlocked');
+  document.getElementById('cc-lock-shackle').setAttribute('d','M20 38 V28 C20 10 60 10 60 24');
+  ccSetStatus(
+    `<span class="cc-success-txt">SUCCESS: Root password found @ <span class="cc-addr">${document.getElementById('cc-target-ip').textContent}</span></span><br>`+
+    `Password: <span class="cc-password-found">${ccTargetPassword}</span>`
+  );
+  document.getElementById('cc-btn-crack').disabled=false;
+  document.getElementById('cc-btn-crack').textContent='⚡ CRACK AGAIN';
+  ccSetProgress(100);
+  playComplete();
+  // Quest completion
+  questPWDone=true;updateQuestBar();
+  document.getElementById('tablet').classList.add('quest-complete-flash');
+  setTimeout(()=>document.getElementById('tablet').classList.remove('quest-complete-flash'),3000);
+  setTimeout(triggerRewardDelivery,1800);
+}
 
-// setup PC input
-document.addEventListener('keydown',e=>{
-  const inp=document.getElementById('pc-term-input');
-  if(document.activeElement!==inp||e.key!=='Enter')return;
-  const v=inp.value.trim().toUpperCase();inp.value='';if(!v)return;
-  pcPrint(`<span style="color:var(--green2)">crack> ${escH(v)}</span>`);
-  if(v==='HINT'){pcHint();return;}
-  if(v.length!==pcSecret.length){pcPrint(`<span class="err">Code must be ${pcSecret.length} letters</span>`);playFail();return;}
-  pcGuess(v);
+function ccDoReset(){
+  for(let i=0;i<CC_PASSWORD_LENGTH;i++) clearInterval(ccSpinIntervals[i]);
+  ccCracking=false;
+  ccBuildGrid();
+  document.getElementById('cc-lock-svg').classList.remove('cc-unlocked');
+  const shackle=document.getElementById('cc-lock-shackle');
+  if(shackle) shackle.setAttribute('d','M20 38 V24 C20 10 60 10 60 24 V38');
+  ccTargetPassword=ccGenerateTarget();
+  const ip=ccRandomIp();
+  document.getElementById('cc-target-ip').textContent=ip;
+  ccSetProgress(0);
+  ccSetStatus(`Status: <span class="cc-highlight">STANDBY</span> — Awaiting initiation sequence<span class="cc-cursor"></span>`);
+  document.getElementById('cc-btn-crack').disabled=false;
+  document.getElementById('cc-btn-crack').textContent='⚡ INITIATE CRACK';
+}
+
+// Button wiring (deferred to after DOM ready)
+document.addEventListener('DOMContentLoaded',()=>{
+  const btnCrack=document.getElementById('cc-btn-crack');
+  const btnReset=document.getElementById('cc-btn-reset');
+  if(btnCrack) btnCrack.addEventListener('click',()=>{
+    if(btnCrack.textContent.includes('AGAIN')) ccDoReset();
+    setTimeout(ccStartCrack,50);
+  });
+  if(btnReset) btnReset.addEventListener('click',ccDoReset);
 });
-
-function pcGuess(word){
-  if(pcUsed>=pcMaxAttempts){pcPrint('<span class="err">NO ATTEMPTS LEFT.</span>');playFail();return;}
-  const box=document.getElementById('pcb-'+pcUsed);if(box){box.textContent=word;box.classList.add('filled');}
-  pcUsed++;document.getElementById('pc-rem').textContent=pcMaxAttempts-pcUsed;
-  if(word===pcSecret){
-    pcPrint(`<span style="color:var(--cyan)">[ ACCESS GRANTED ] — Password cracked: ${word}</span>`);
-    document.getElementById('pc-status').textContent='[ BREACH COMPLETE ]';document.getElementById('pc-status').className='hk-status ok';
-    questPWDone=true;updateQuestBar();playComplete();
-    // Flash tablet
-    document.getElementById('tablet').classList.add('quest-complete-flash');
-    setTimeout(()=>document.getElementById('tablet').classList.remove('quest-complete-flash'),3000);
-    // Trigger reward delivery after short delay
-    setTimeout(triggerRewardDelivery,1500);
-    return;
-  }
-  let match=0;for(let i=0;i<Math.min(word.length,pcSecret.length);i++)if(word[i]===pcSecret[i])match++;
-  pcPrint(`<span class="err">DENIED: ${escH(word)} — ${match}/${pcSecret.length} chars match</span>`);playFail();
-  if(pcUsed>=pcMaxAttempts){pcPrint('<span class="err">[ LOCKOUT ] — Reset to retry.</span>');document.getElementById('pc-status').textContent='[ LOCKOUT ]';document.getElementById('pc-status').className='hk-status bad';}
-}
-
-function pcHint(){
-  let h='<span style="color:var(--amber)">MATRIX ANALYSIS:<br>';
-  for(let r=0;r<pcRows;r++){const lc=window._pcLC[r];const el=document.getElementById(`pcc-${r}-${lc}`);h+=`Row ${r+1}: col ${lc+1} → "${el?el.textContent:'?'}"<br>`;}
-  h+='</span>';pcPrint(h);beep(700,.08,'sine',.1);
-}
 
 // =====================================================================
 // REWARD DELIVERY (after all quests done)
@@ -2434,6 +2881,10 @@ trkInitMapEvents();
 // =====================================================================
 // START
 // =====================================================================
+
+// Build cipher cracker grid on load so reels are ready
+ccBuildGrid();
+document.getElementById('cc-target-ip').textContent=ccRandomIp();
 
 boot();
 </script>
