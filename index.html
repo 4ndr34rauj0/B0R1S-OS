@@ -454,6 +454,12 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 #note-bar{display:flex;align-items:center;gap:7px;padding:6px 10px;border-bottom:1px solid var(--border);flex-shrink:0;}
 #note-name{background:var(--bg3);border:1px solid var(--border);color:var(--green);font-family:var(--font);font-size:10px;padding:3px 6px;border-radius:3px;outline:none;width:180px;}
 #note-ta{flex:1;background:var(--bg2);border:none;outline:none;color:var(--green);font-family:var(--font);font-size:11px;padding:10px;resize:none;line-height:1.7;}
+#note-img-view{flex:1;display:none;align-items:center;justify-content:center;background:var(--bg2);overflow:hidden;position:relative;}
+#note-img-view.active{display:flex;}
+#note-img-view img{max-width:100%;max-height:100%;object-fit:contain;border:1px solid var(--border);image-rendering:auto;}
+#note-img-info{position:absolute;bottom:8px;left:10px;font-size:9px;color:var(--text-mute);letter-spacing:1px;pointer-events:none;}
+#note-img-dl{display:none;}
+#note-img-dl.active{display:inline-flex;}
 
 /* NETMAP */
 
@@ -982,7 +988,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
               <span style="font-size:9px;color:var(--text-mute);">Select a file from your device to import it into the current directory:</span>
             </div>
             <div class="up-row">
-              <input type="file" id="upload-file-input" style="font-size:10px;color:var(--text-dim);flex:1;">
+              <input type="file" id="upload-file-input" accept=".txt,.md,.log,.csv,.json,.html,.css,.js,image/*" style="font-size:10px;color:var(--text-dim);flex:1;">
               <button class="hk-btn" onclick="doUpload()">⬆ UPLOAD</button>
               <button class="hk-btn danger" onclick="toggleUploadPanel(false)">CLOSE</button>
             </div>
@@ -995,10 +1001,15 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
           <div id="note-bar">
             <span style="font-size:9px;color:var(--text-mute);">FILE:</span>
             <input type="text" id="note-name" placeholder="name.txt">
-            <button class="hk-btn" onclick="saveNote()">SAVE</button>
+            <button class="hk-btn" id="note-save-btn" onclick="saveNote()">SAVE</button>
+            <a id="note-img-dl" class="hk-btn" download>⬇ DOWNLOAD</a>
             <button class="hk-btn danger" onclick="closeNote()">CLOSE</button>
           </div>
           <textarea id="note-ta" placeholder="Notes..."></textarea>
+          <div id="note-img-view">
+            <img id="note-img-el" src="" alt="">
+            <span id="note-img-info"></span>
+          </div>
         </div>
       </div>
     </div>
@@ -1372,6 +1383,66 @@ const S={
     memStore[k]=v;
   },
 };
+
+// =====================================================================
+// IMAGE STORE — IndexedDB (no size limit, works on all deployments)
+// =====================================================================
+// Images are stored here by key; the FS node holds only the key.
+// All access is async via ImgStore.get / ImgStore.put / ImgStore.del.
+
+const ImgStore=(function(){
+  const DB='hos_imgdb',STORE='imgs';
+  let _db=null;
+  const memFallback={};
+
+  function open(){
+    return new Promise((res,rej)=>{
+      if(_db){res(_db);return;}
+      if(!window.indexedDB){res(null);return;}
+      const req=indexedDB.open(DB,1);
+      req.onupgradeneeded=e=>{e.target.result.createObjectStore(STORE);};
+      req.onsuccess=e=>{_db=e.target.result;res(_db);};
+      req.onerror=()=>{_db=null;res(null);};
+    });
+  }
+
+  return {
+    // Store a data-URL under key; returns a promise
+    put(key,dataUrl){
+      return open().then(db=>{
+        if(!db){memFallback[key]=dataUrl;return;}
+        return new Promise((res,rej)=>{
+          const tx=db.transaction(STORE,'readwrite');
+          tx.objectStore(STORE).put(dataUrl,key);
+          tx.oncomplete=res; tx.onerror=()=>{memFallback[key]=dataUrl;res();};
+        });
+      });
+    },
+    // Retrieve a data-URL by key; returns a promise resolving to the string or null
+    get(key){
+      return open().then(db=>{
+        if(!db)return memFallback[key]||null;
+        return new Promise(res=>{
+          const req=db.transaction(STORE,'readonly').objectStore(STORE).get(key);
+          req.onsuccess=()=>res(req.result||memFallback[key]||null);
+          req.onerror=()=>res(memFallback[key]||null);
+        });
+      });
+    },
+    // Delete a key
+    del(key){
+      return open().then(db=>{
+        delete memFallback[key];
+        if(!db)return;
+        return new Promise(res=>{
+          const tx=db.transaction(STORE,'readwrite');
+          tx.objectStore(STORE).delete(key);
+          tx.oncomplete=res; tx.onerror=res;
+        });
+      });
+    },
+  };
+})();
 
 // =====================================================================
 // AUDIO ENGINE
@@ -2496,7 +2567,9 @@ function renderFilesContent(dir){
   document.getElementById('files-count').textContent=node.children.length+' items';
   node.children.forEach(c=>{const full=dir+'/'+c;const cn=fs[full];if(!cn)return;
     const row=document.createElement('div');row.className='file-row';
-    row.innerHTML=`<span class="file-icon">${cn.type==='dir'?'📁':'📄'}</span><span class="file-name" style="${cn.type==='dir'?'color:var(--cyan)':''}">${escH(c)}</span><span class="file-meta">${cn.type==='file'?(cn.content||'').length+'B':'DIR'}</span>`;
+    const fileIcon=cn.type==='dir'?'📁':cn.fileType==='image'?'🖼️':'📄';
+    const fileMeta=cn.type==='dir'?'DIR':cn.fileType==='image'?'IMG':(cn.content||'').length+'B';
+    row.innerHTML=`<span class="file-icon">${fileIcon}</span><span class="file-name" style="${cn.type==='dir'?'color:var(--cyan)':''}">${escH(c)}</span><span class="file-meta">${fileMeta}</span>`;
     row.onclick=()=>{fsSelected=full;if(cn.type==='file')openNote(full);else{curDir=full;renderFilesContent(full);}};
     fc.appendChild(row);});
 }
@@ -2507,8 +2580,10 @@ function fsNewFolder(){const name=prompt('Folder name:');if(!name||!name.trim())
   const n=name.trim();const fs=getFS();const full=curDir+'/'+n;if(fs[full]){alert('Exists');return;}
   const p=fs[curDir];if(p)p.children.push(n);fs[full]={type:'dir',children:[]};saveFS(fs);renderFiles();}
 function fsDelSelected(){if(!fsSelected){alert('Select a file first');return;}if(!confirm('Delete '+fsSelected+'?'))return;
-  const fs=getFS();const name=fsSelected.split('/').pop();const par=fsSelected.slice(0,fsSelected.lastIndexOf('/'));
-  const p=fs[par];if(p)p.children=p.children.filter(c=>c!==name);delete fs[fsSelected];saveFS(fs);fsSelected=null;renderFiles();}
+  const fs=getFS();const node=fs[fsSelected];const name=fsSelected.split('/').pop();const par=fsSelected.slice(0,fsSelected.lastIndexOf('/'));
+  const p=fs[par];if(p)p.children=p.children.filter(c=>c!==name);
+  if(node&&node.fileType==='image'&&node.imgKey)ImgStore.del(node.imgKey);
+  delete fs[fsSelected];saveFS(fs);fsSelected=null;renderFiles();}
 
 // =====================================================================
 // UPLOAD FILES
@@ -2526,6 +2601,7 @@ function doUpload(){
   const file=input.files&&input.files[0];
   const status=document.getElementById('upload-status');
   if(!file){status.textContent='No file selected.';status.style.color='var(--red)';return;}
+  const isImage=file.type.startsWith('image/');
   const reader=new FileReader();
   reader.onload=()=>{
     const fs=getFS();let name=file.name||'upload.txt';let full=curDir+'/'+name;
@@ -2535,24 +2611,74 @@ function doUpload(){
       name=base+'_'+n+ext;full=curDir+'/'+name;
     }
     const p=fs[curDir];if(p)p.children.push(name);
-    fs[full]={type:'file',content:String(reader.result)};
-    saveFS(fs);renderFiles();
-    status.style.color='var(--green)';status.textContent='Uploaded: '+name;
-    input.value='';
+    if(isImage){
+      // Store the data-URL in IndexedDB; only keep a lookup key in the FS
+      const imgKey='img_'+Date.now()+'_'+Math.random().toString(36).slice(2);
+      ImgStore.put(imgKey,String(reader.result)).then(()=>{
+        fs[full]={type:'file',fileType:'image',mimeType:file.type,imgKey};
+        saveFS(fs);renderFiles();
+        status.style.color='var(--green)';status.textContent='Uploaded: '+name;
+        input.value='';
+      });
+    } else {
+      fs[full]={type:'file',content:String(reader.result)};
+      saveFS(fs);renderFiles();
+      status.style.color='var(--green)';status.textContent='Uploaded: '+name;
+      input.value='';
+    }
   };
   reader.onerror=()=>{status.style.color='var(--red)';status.textContent='Failed to read file.';};
-  reader.readAsText(file);
+  if(isImage){reader.readAsDataURL(file);}else{reader.readAsText(file);}
 }
-function openNote(path){const fs=getFS();const node=fs[path];if(!node||node.type!=='file')return;
-  fsEditPath=path;document.getElementById('note-name').value=path.split('/').pop();document.getElementById('note-ta').value=node.content||'';
-  document.getElementById('note-overlay').classList.add('open');}
-function saveNote(){if(!fsEditPath)return;const fs=getFS();const old=fsEditPath.split('/').pop();const newN=document.getElementById('note-name').value.trim()||old;
+function openNote(path){
+  const fs=getFS();const node=fs[path];if(!node||node.type!=='file')return;
+  fsEditPath=path;
+  const name=path.split('/').pop();
+  document.getElementById('note-name').value=name;
+  const isImg=node.fileType==='image';
+  // toggle text vs image view
+  document.getElementById('note-ta').style.display=isImg?'none':'';
+  document.getElementById('note-img-view').classList.toggle('active',isImg);
+  document.getElementById('note-save-btn').style.display=isImg?'none':'';
+  const dlBtn=document.getElementById('note-img-dl');
+  dlBtn.classList.toggle('active',isImg);
+  document.getElementById('note-overlay').classList.add('open');
+  if(isImg){
+    const imgEl=document.getElementById('note-img-el');
+    const info=document.getElementById('note-img-info');
+    imgEl.src='';info.textContent='LOADING…';
+    ImgStore.get(node.imgKey).then(dataUrl=>{
+      if(!dataUrl){info.textContent='⚠ Image data not found.';return;}
+      imgEl.src=dataUrl;
+      imgEl.alt=name;
+      dlBtn.href=dataUrl;
+      dlBtn.download=name;
+      imgEl.onload=()=>{info.textContent=imgEl.naturalWidth+'×'+imgEl.naturalHeight+' px  |  '+(node.mimeType||'image');};
+    });
+  } else {
+    document.getElementById('note-ta').value=node.content||'';
+  }
+}
+function saveNote(){
+  if(!fsEditPath)return;
+  const fs=getFS();const node=fs[fsEditPath];if(!node||node.fileType==='image')return;
+  const old=fsEditPath.split('/').pop();const newN=document.getElementById('note-name').value.trim()||old;
   const content=document.getElementById('note-ta').value;
   if(newN!==old){const dir=fsEditPath.slice(0,fsEditPath.lastIndexOf('/'));const np=dir+'/'+newN;
     const p=fs[dir];if(p)p.children=p.children.map(c=>c===old?newN:c);fs[np]={type:'file',content};delete fs[fsEditPath];fsEditPath=np;}
   else if(fs[fsEditPath])fs[fsEditPath].content=content;
-  saveFS(fs);renderFiles();}
-function closeNote(){document.getElementById('note-overlay').classList.remove('open');fsEditPath=null;}
+  saveFS(fs);renderFiles();
+}
+function closeNote(){
+  document.getElementById('note-overlay').classList.remove('open');
+  // reset to text mode for next open
+  document.getElementById('note-ta').style.display='';
+  document.getElementById('note-img-view').classList.remove('active');
+  document.getElementById('note-save-btn').style.display='';
+  document.getElementById('note-img-dl').classList.remove('active');
+  document.getElementById('note-img-el').src='';
+  fsEditPath=null;
+}
 
 // =====================================================================
 // TXTWRITER (standalone text editor app)
