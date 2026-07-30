@@ -339,6 +339,92 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 /* COMPLETION FLASH */
 
 @keyframes completion-flash{0%{box-shadow:0 0 40px #ff333388}50%{box-shadow:0 0 80px #ff3333cc}100%{box-shadow:0 0 40px #ff333388}}
+
+/* D20 ROLLER */
+
+#dice-app .win-content{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:20px;gap:16px;overflow:auto;}
+#dice-layout{display:flex;gap:28px;align-items:flex-start;justify-content:center;width:100%;flex-wrap:wrap;}
+#dice-left{display:flex;flex-direction:column;align-items:center;gap:14px;}
+#dice-right{display:flex;flex-direction:column;gap:10px;min-width:220px;flex:1;max-width:380px;}
+
+/* The D20 SVG polygon */
+#d20-wrap{position:relative;width:220px;height:220px;cursor:pointer;user-select:none;flex-shrink:0;}
+#d20-svg{width:100%;height:100%;filter:drop-shadow(0 0 12px var(--green-dim));transition:filter .3s;}
+#d20-wrap:hover #d20-svg{filter:drop-shadow(0 0 20px var(--green3));}
+#d20-wrap.rolling #d20-svg{animation:d20-spin .6s cubic-bezier(.4,0,.6,1) forwards;}
+#d20-wrap.win #d20-svg{filter:drop-shadow(0 0 30px var(--green));}
+#d20-wrap.lose #d20-svg{filter:drop-shadow(0 0 30px var(--red));}
+@keyframes d20-spin{
+  0%{transform:rotate(0deg) scale(1);}
+  20%{transform:rotate(72deg) scale(1.12);}
+  45%{transform:rotate(155deg) scale(1.18);}
+  70%{transform:rotate(290deg) scale(1.1);}
+  100%{transform:rotate(360deg) scale(1);}
+}
+#d20-number{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-size:52px;font-weight:bold;color:var(--green);font-family:var(--font);
+  text-shadow:0 0 14px var(--green);pointer-events:none;transition:color .3s,text-shadow .3s;
+  letter-spacing:-2px;}
+#d20-wrap.win #d20-number{color:var(--green);text-shadow:0 0 24px var(--green);}
+#d20-wrap.lose #d20-number{color:var(--red);text-shadow:0 0 24px var(--red);}
+#d20-wrap.neutral #d20-number{color:var(--amber);text-shadow:0 0 12px #ffb000;}
+
+#d20-label{font-size:9px;color:var(--text-mute);letter-spacing:3px;text-transform:uppercase;}
+#d20-roll-btn{font-size:13px;padding:10px 28px;letter-spacing:2px;cursor:pointer;
+  background:var(--green-faint);border:1px solid var(--green3);color:var(--green);
+  font-family:var(--font);border-radius:3px;transition:all .15s;}
+#d20-roll-btn:hover{background:var(--green-dim);border-color:var(--green);box-shadow:0 0 10px var(--green-dim);}
+#d20-roll-btn:active{transform:scale(.97);}
+#d20-roll-btn:disabled{opacity:.4;cursor:not-allowed;}
+
+/* Difficulty selector */
+#diff-section{width:100%;}
+.diff-title{font-size:9px;color:var(--text-mute);letter-spacing:2px;margin-bottom:8px;}
+#diff-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:10px;}
+.diff-btn{padding:7px 4px;font-size:10px;letter-spacing:1px;cursor:pointer;
+  background:var(--bg3);border:1px solid var(--border);color:var(--text-dim);
+  font-family:var(--font);border-radius:3px;text-align:center;transition:all .12s;}
+.diff-btn:hover{border-color:var(--green2);color:var(--green);}
+.diff-btn.sel{background:var(--green-faint);border-color:var(--green);color:var(--green);
+  box-shadow:0 0 6px var(--green-dim);}
+.diff-btn .diff-name{display:block;font-size:8px;letter-spacing:1px;margin-bottom:2px;}
+.diff-btn .diff-dc{display:block;font-size:13px;color:inherit;}
+
+/* DC Custom */
+#diff-custom-row{display:flex;align-items:center;gap:7px;}
+#dc-label{font-size:9px;color:var(--text-dim);letter-spacing:1px;white-space:nowrap;}
+#dc-input{width:58px;background:var(--bg3);border:1px solid var(--border);color:var(--green);
+  font-family:var(--font);font-size:13px;padding:4px 8px;border-radius:3px;outline:none;text-align:center;}
+#dc-input:focus{border-color:var(--green2);}
+#dc-display{font-size:9px;color:var(--text-mute);letter-spacing:1px;}
+
+/* Result panel */
+#dice-result-box{background:var(--bg3);border:1px solid var(--border);padding:12px 14px;border-radius:4px;}
+#result-title{font-size:9px;color:var(--text-mute);letter-spacing:2px;margin-bottom:8px;}
+#result-row{display:flex;align-items:baseline;gap:8px;margin-bottom:6px;}
+#result-roll-val{font-size:28px;color:var(--green);font-family:var(--font);line-height:1;}
+#result-vs{font-size:9px;color:var(--text-mute);}
+#result-dc-val{font-size:18px;color:var(--text-dim);font-family:var(--font);}
+#result-verdict{font-size:12px;letter-spacing:3px;font-family:var(--font);min-height:18px;margin-bottom:6px;}
+#result-verdict.win{color:var(--green);text-shadow:0 0 8px var(--green);}
+#result-verdict.lose{color:var(--red);}
+#result-verdict.nat{color:#ffdd00;text-shadow:0 0 12px #ffdd0088;}
+#result-detail{font-size:9px;color:var(--text-mute);letter-spacing:1px;line-height:1.6;}
+
+/* Roll history */
+#history-section{width:100%;}
+.history-title{font-size:9px;color:var(--text-mute);letter-spacing:2px;margin-bottom:6px;}
+#roll-history{max-height:130px;overflow-y:auto;display:flex;flex-direction:column;gap:3px;}
+.hist-row{display:flex;align-items:center;gap:7px;padding:3px 7px;border:1px solid var(--border);border-radius:2px;
+  font-size:9px;font-family:var(--font);animation:row-appear .25s ease-out;}
+.hist-row .hr-num{color:var(--green2);width:22px;}
+.hist-row .hr-vs{color:var(--text-mute);}
+.hist-row .hr-dc{color:var(--text-dim);width:26px;}
+.hist-row .hr-verdict{flex:1;letter-spacing:1px;}
+.hist-row .hr-verdict.win{color:var(--green);}
+.hist-row .hr-verdict.lose{color:var(--red);}
+.hist-row .hr-verdict.nat{color:#ffdd00;}
+
 .quest-complete-flash{animation:completion-flash 1s 3;}
 
 /* FILES */
@@ -700,6 +786,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
       </div>
       <div class="app-icon" onclick="openApp('tracker')">
         <div class="icon-box">📡</div><span class="label">Tracker</span>
+      </div>
+      <div class="app-icon" onclick="openApp('dice')">
+        <div class="icon-box">🎲</div><span class="label">D20 Roller</span>
       </div>
       <div id="custom-icons"></div>
     </div>
@@ -1152,6 +1241,102 @@ document.write('<h2 style="letter-spacing:2px;">MY APP v1.0</h2><p style="color:
     </div>
 
     <div id="custom-windows"></div>
+
+    <!-- D20 ROLLER -->
+
+    <div class="app-window" id="dice-app">
+      <div class="win-bar">
+        <span class="win-title">D20 ROLLER — PROBABILITY ENGINE v1.0</span>
+        <button class="win-close" onclick="closeApp('dice')">✕</button>
+      </div>
+      <div class="win-content">
+        <div id="dice-layout">
+
+          <!-- LEFT: dice + roll button -->
+          <div id="dice-left">
+            <div id="d20-label">CLICK TO ROLL</div>
+            <div id="d20-wrap" onclick="diceRoll()" title="Roll the D20">
+              <svg id="d20-svg" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <radialGradient id="d20grad" cx="40%" cy="35%" r="70%">
+                    <stop offset="0%" stop-color="#3a0000"/>
+                    <stop offset="100%" stop-color="#0e0000"/>
+                  </radialGradient>
+                </defs>
+               
+                <polygon id="d20-body" points="110,14 198,67 198,153 110,206 22,153 22,67"
+                  fill="url(#d20grad)" stroke="var(--green)" stroke-width="2.5" stroke-linejoin="round"/>
+                
+                <line x1="110" y1="14"  x2="110" y2="110" stroke="var(--green3)" stroke-width="1" opacity=".7"/>
+                <line x1="198" y1="67"  x2="110" y2="110" stroke="var(--green3)" stroke-width="1" opacity=".7"/>
+                <line x1="198" y1="153" x2="110" y2="110" stroke="var(--green3)" stroke-width="1" opacity=".7"/>
+                <line x1="110" y1="206" x2="110" y2="110" stroke="var(--green3)" stroke-width="1" opacity=".7"/>
+                <line x1="22"  y1="153" x2="110" y2="110" stroke="var(--green3)" stroke-width="1" opacity=".7"/>
+                <line x1="22"  y1="67"  x2="110" y2="110" stroke="var(--green3)" stroke-width="1" opacity=".7"/>
+                
+                <line x1="154" y1="40"  x2="154" y2="180" stroke="var(--green-dim)" stroke-width=".8" opacity=".4"/>
+                <line x1="66"  y1="40"  x2="66"  y2="180" stroke="var(--green-dim)" stroke-width=".8" opacity=".4"/>
+                <line x1="22"  y1="110" x2="198" y2="110" stroke="var(--green-dim)" stroke-width=".8" opacity=".4"/>
+                
+                <circle cx="110" cy="110" r="4" fill="var(--green)" opacity=".5">
+                  <animate attributeName="opacity" values=".5;.9;.5" dur="2.2s" repeatCount="indefinite"/>
+                </circle>
+              </svg>
+              <div id="d20-number">20</div>
+            </div>
+            <button id="d20-roll-btn" onclick="diceRoll()">⚡ ROLL D20</button>
+          </div>
+
+          <!-- RIGHT: difficulty + result + history -->
+          <div id="dice-right">
+
+            <!-- Difficulty -->
+            <div id="diff-section">
+              <div class="diff-title">// DIFFICULTY CLASS (DC)</div>
+              <div id="diff-grid">
+                <div class="diff-btn sel" onclick="diceSetDiff(5,this)">
+                  <span class="diff-name">TRIVIAL</span><span class="diff-dc">5</span>
+                </div>
+                <div class="diff-btn" onclick="diceSetDiff(10,this)">
+                  <span class="diff-name">EASY</span><span class="diff-dc">10</span>
+                </div>
+                <div class="diff-btn" onclick="diceSetDiff(15,this)">
+                  <span class="diff-name">MEDIUM</span><span class="diff-dc">15</span>
+                </div>
+                <div class="diff-btn" style="grid-column:span 2;" id="diff-custom-preset" onclick="diceSetDiff(null,this)">
+                  <span class="diff-name">CUSTOM</span><span class="diff-dc" id="diff-custom-val">—</span>
+                </div>
+              </div>
+              <div id="diff-custom-row">
+                <span id="dc-label">CUSTOM DC:</span>
+                <input type="number" id="dc-input" min="1" max="30" value="12" placeholder="DC" oninput="diceCustomDC(this.value)">
+                <span id="dc-display">ENTER 1–30</span>
+              </div>
+            </div>
+
+            <!-- Result -->
+            <div id="dice-result-box">
+              <div class="result-title" style="font-size:9px;color:var(--text-mute);letter-spacing:2px;margin-bottom:8px;">// LAST ROLL</div>
+              <div id="result-row">
+                <span id="result-roll-val">—</span>
+                <span id="result-vs">vs DC</span>
+                <span id="result-dc-val">—</span>
+              </div>
+              <div id="result-verdict"></div>
+              <div id="result-detail">Roll the dice to begin.</div>
+            </div>
+
+            <!-- History -->
+            <div id="history-section">
+              <div class="history-title">// ROLL LOG <span id="dice-clear-btn" onclick="diceClearHistory()" style="cursor:pointer;color:var(--text-mute);margin-left:8px;font-size:8px;">[CLEAR]</span></div>
+              <div id="roll-history"></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -2867,6 +3052,179 @@ function trkInitMapEvents(){
   },{passive:false});
 }
 trkInitMapEvents();
+
+// =====================================================================
+// D20 ROLLER
+// =====================================================================
+
+let diceCurrentDC = 5;
+let diceRolling = false;
+let diceHistory = [];
+
+// Win sound: triumphant ascending fanfare
+function playDiceWin(){
+  const notes=[330,415,523,659,784];
+  notes.forEach((n,i)=>setTimeout(()=>beep(n,.18,'sine',.28),i*90));
+  setTimeout(()=>beep(1047,.35,'sine',.2),notes.length*90);
+}
+
+// Lose sound: descending ominous descent
+function playDiceLose(){
+  beep(330,.12,'sawtooth',.25);
+  setTimeout(()=>beep(277,.15,'sawtooth',.22),110);
+  setTimeout(()=>beep(220,.2,'sawtooth',.2),230);
+  setTimeout(()=>beep(185,.35,'sawtooth',.18),390);
+}
+
+// Nat 20 sound: triumphant + sparkle
+function playDiceNat20(){
+  [523,659,784,1047,1319].forEach((n,i)=>setTimeout(()=>beep(n,.15,'sine',.3),i*70));
+  setTimeout(()=>{
+    [1319,1047,1319,1568].forEach((n,i)=>setTimeout(()=>beep(n,.1,'sine',.25),i*60));
+  }, 420);
+}
+
+// Nat 1 sound: descending disaster
+function playDiceNat1(){
+  beep(400,.08,'sawtooth',.25);
+  setTimeout(()=>beep(300,.1,'sawtooth',.25),90);
+  setTimeout(()=>beep(220,.15,'sawtooth',.25),200);
+  setTimeout(()=>beep(150,.3,'sawtooth',.3),340);
+  setTimeout(()=>beep(110,.5,'sawtooth',.2),580);
+}
+
+// Rolling tumble sound
+function playDiceRoll(){
+  for(let i=0;i<6;i++) setTimeout(()=>beep(600+Math.random()*400,.04,'square',.12),i*60);
+}
+
+function diceSetDiff(dc, el){
+  // Deselect all
+  document.querySelectorAll('.diff-btn').forEach(b=>b.classList.remove('sel'));
+  if(el) el.classList.add('sel');
+  if(dc !== null){
+    diceCurrentDC = dc;
+    document.getElementById('diff-custom-val').textContent = '—';
+    document.getElementById('dc-display').textContent='';
+  }
+  diceUpdateDCDisplay();
+  playKeyClick();
+}
+
+function diceCustomDC(v){
+  const n = parseInt(v,10);
+  if(isNaN(n)||n<1||n>30){
+    document.getElementById('dc-display').textContent='1–30 ONLY';
+    return;
+  }
+  diceCurrentDC = n;
+  document.getElementById('diff-custom-val').textContent = n;
+  document.getElementById('dc-display').textContent='DC '+n+' SET';
+  // Select custom preset btn
+  document.querySelectorAll('.diff-btn').forEach(b=>b.classList.remove('sel'));
+  document.getElementById('diff-custom-preset').classList.add('sel');
+}
+
+function diceUpdateDCDisplay(){
+  document.getElementById('result-dc-val').textContent = diceCurrentDC;
+}
+
+function diceRoll(){
+  if(diceRolling) return;
+  diceRolling = true;
+
+  const wrap = document.getElementById('d20-wrap');
+  const numEl = document.getElementById('d20-number');
+  const btn = document.getElementById('d20-roll-btn');
+
+  // Clear state classes
+  wrap.className = 'rolling';
+  numEl.style.opacity = '0';
+  btn.disabled = true;
+
+  playDiceRoll();
+
+  // Rapid number scramble during roll animation
+  const scramble = setInterval(()=>{
+    numEl.textContent = Math.floor(Math.random()*20)+1;
+  }, 60);
+
+  setTimeout(()=>{
+    clearInterval(scramble);
+    const roll = Math.floor(Math.random()*20)+1;
+    numEl.textContent = roll;
+    numEl.style.opacity = '1';
+
+    // Determine outcome
+    const dc = diceCurrentDC;
+    let verdict, verdictClass, isNat;
+
+    if(roll === 20){
+      verdict = '★ NAT 20 — CRITICAL HIT!';
+      verdictClass = 'nat';
+      isNat = 'nat20';
+      wrap.className = 'win';
+      playDiceNat20();
+    } else if(roll === 1){
+      verdict = '✕ NAT 1 — CRITICAL FAIL';
+      verdictClass = 'lose';
+      isNat = 'nat1';
+      wrap.className = 'lose';
+      playDiceNat1();
+    } else if(roll >= dc){
+      verdict = '✔ SUCCESS';
+      verdictClass = 'win';
+      isNat = null;
+      wrap.className = 'win';
+      playDiceWin();
+    } else {
+      verdict = '✘ FAILURE';
+      verdictClass = 'lose';
+      isNat = null;
+      wrap.className = 'lose';
+      playDiceLose();
+    }
+
+    // Update result panel
+    document.getElementById('result-roll-val').textContent = roll;
+    document.getElementById('result-dc-val').textContent = dc;
+    const verdictEl = document.getElementById('result-verdict');
+    verdictEl.textContent = verdict;
+    verdictEl.className = verdictClass;
+
+    let detail = '';
+    if(isNat === 'nat20') detail = 'Natural 20 — succeeds regardless of DC.';
+    else if(isNat === 'nat1') detail = 'Natural 1 — fails regardless of DC.';
+    else if(roll >= dc) detail = `Roll ${roll} ≥ DC ${dc}. Margin: +${roll-dc}.`;
+    else detail = `Roll ${roll} < DC ${dc}. Short by ${dc-roll}.`;
+    document.getElementById('result-detail').textContent = detail;
+
+    // Add to history
+    diceHistory.unshift({roll, dc, verdict, verdictClass});
+    if(diceHistory.length > 20) diceHistory.pop();
+    diceRenderHistory();
+
+    diceRolling = false;
+    btn.disabled = false;
+  }, 650);
+}
+
+function diceRenderHistory(){
+  const el = document.getElementById('roll-history');
+  el.innerHTML = '';
+  diceHistory.forEach(h=>{
+    const row = document.createElement('div');
+    row.className = 'hist-row';
+    row.innerHTML = `<span class="hr-num">${h.roll}</span><span class="hr-vs">vs</span><span class="hr-dc">${h.dc}</span><span class="hr-verdict ${h.verdictClass}">${h.verdict}</span>`;
+    el.appendChild(row);
+  });
+}
+
+function diceClearHistory(){
+  diceHistory = [];
+  diceRenderHistory();
+  playKeyClick();
+}
 
 // =====================================================================
 // START
