@@ -635,6 +635,134 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 ::-webkit-scrollbar-thumb{background:var(--green-dim);border-radius:4px;}
 ::-webkit-scrollbar-track{background:#0a0505;}
 
+/* SURVEILLANCE POINT APP */
+
+#surv-app .win-content{padding:0;overflow:hidden;}
+#surv-main{display:flex;flex-direction:column;height:100%;}
+#surv-header{padding:10px 16px;border-bottom:1px solid var(--border);background:#0a0202;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;}
+#surv-header-left{display:flex;flex-direction:column;gap:2px;}
+#surv-header-title{color:var(--green);font-size:12px;letter-spacing:3px;}
+#surv-header-sub{color:var(--text-mute);font-size:9px;letter-spacing:1px;}
+#surv-status-badge{font-size:9px;padding:3px 10px;border-radius:3px;letter-spacing:1px;}
+#surv-status-badge.active{color:var(--green);border:1px solid var(--green3);background:var(--green-faint);}
+#surv-status-badge.inactive{color:var(--text-mute);border:1px solid var(--border);}
+
+#surv-buttons{display:flex;gap:10px;padding:14px 16px;border-bottom:1px solid var(--border);flex-shrink:0;background:#080202;}
+.surv-main-btn{flex:1;padding:12px 8px;border-radius:5px;font-family:var(--font);font-size:11px;cursor:pointer;letter-spacing:1px;
+  transition:all .18s;display:flex;flex-direction:column;align-items:center;gap:5px;border:1px solid var(--border);}
+.surv-main-btn .s-btn-icon{font-size:20px;}
+.surv-main-btn .s-btn-label{color:var(--text-dim);font-size:9px;letter-spacing:2px;}
+.surv-main-btn.deploy{background:var(--green-faint);border-color:var(--green3);color:var(--green);}
+.surv-main-btn.deploy:hover{background:var(--green-dim);border-color:var(--green);}
+.surv-main-btn.deploy:disabled{opacity:.4;cursor:not-allowed;}
+.surv-main-btn.view{background:#0a0505;border-color:#441111;color:#cc3333;}
+.surv-main-btn.view:hover{background:#150202;border-color:var(--red);}
+.surv-main-btn.view:disabled{opacity:.35;cursor:not-allowed;background:#0a0505;border-color:#331010;}
+.surv-main-btn.view:disabled:hover{background:#0a0505;border-color:#331010;}
+
+#surv-body{flex:1;overflow:hidden;display:flex;flex-direction:column;position:relative;}
+
+/* Loading sequence panel */
+#surv-loading-panel{position:absolute;inset:0;background:var(--bg);display:none;flex-direction:column;z-index:10;overflow:hidden;}
+#surv-loading-panel.active{display:flex;}
+#surv-load-header{padding:10px 14px;border-bottom:1px solid var(--border);background:#050202;font-size:10px;color:var(--green2);letter-spacing:2px;flex-shrink:0;}
+#surv-load-log{flex:1;overflow-y:auto;padding:10px 14px;font-size:11px;line-height:1.7;}
+#surv-load-log div{color:var(--text-dim);padding:1px 0;}
+#surv-load-log div.ok{color:var(--green);}
+#surv-load-log div.warn{color:var(--amber);}
+#surv-load-log div.err{color:var(--red);}
+#surv-load-log div.info{color:var(--cyan);}
+#surv-load-log div.bright{color:var(--green);font-weight:bold;}
+#surv-load-progress{height:4px;background:var(--bg2);border-top:1px solid var(--border);flex-shrink:0;}
+#surv-load-bar{height:100%;background:var(--green2);width:0%;transition:width .1s;}
+#surv-load-footer{padding:8px 14px;border-top:1px solid var(--border);background:#050202;font-size:9px;color:var(--text-mute);flex-shrink:0;display:flex;align-items:center;justify-content:space-between;}
+#surv-load-done-btn{background:var(--green-faint);border:1px solid var(--green3);color:var(--green);font-family:var(--font);font-size:10px;padding:4px 14px;cursor:pointer;border-radius:3px;display:none;}
+
+/* Device list panel */
+#surv-devices-panel{position:absolute;inset:0;background:var(--bg);display:none;flex-direction:column;z-index:10;}
+#surv-devices-panel.active{display:flex;}
+#surv-dev-toolbar{padding:9px 14px;border-bottom:1px solid var(--border);background:#060202;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+#surv-dev-toolbar-title{color:var(--green2);font-size:10px;letter-spacing:2px;flex:1;}
+#surv-dev-back-btn{background:none;border:1px solid var(--border);color:var(--text-dim);font-family:var(--font);font-size:9px;padding:3px 9px;cursor:pointer;border-radius:3px;letter-spacing:1px;}
+#surv-dev-back-btn:hover{border-color:var(--green3);color:var(--green);}
+#surv-dev-add-btn{background:var(--green-faint);border:1px solid var(--green3);color:var(--green);font-family:var(--font);font-size:9px;padding:3px 9px;cursor:pointer;border-radius:3px;letter-spacing:1px;}
+#surv-dev-add-btn:hover{background:var(--green-dim);}
+
+#surv-device-list{flex:1;overflow-y:auto;padding:8px;}
+.surv-device-card{border:1px solid var(--border);border-radius:5px;margin-bottom:8px;background:#0a0202;overflow:hidden;transition:border-color .15s;}
+.surv-device-card:hover{border-color:var(--green3);}
+.surv-dev-card-header{display:flex;align-items:center;gap:10px;padding:9px 12px;cursor:pointer;border-bottom:1px solid transparent;}
+.surv-device-card.expanded .surv-dev-card-header{border-bottom-color:var(--border);}
+.surv-dev-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.surv-dev-dot.live{background:var(--green);box-shadow:0 0 6px var(--green);animation:surv-pulse 1.8s ease-in-out infinite;}
+@keyframes surv-pulse{0%,100%{opacity:1}50%{opacity:.45}}
+.surv-dev-dot.idle{background:var(--amber);}
+.surv-dev-dot.offline{background:var(--text-mute);}
+.surv-dev-name{color:var(--text);font-size:11px;flex:1;}
+.surv-dev-type{color:var(--text-mute);font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border:1px solid var(--border);border-radius:3px;}
+.surv-dev-expand-btn{color:var(--text-mute);font-size:10px;background:none;border:none;cursor:pointer;font-family:var(--font);}
+.surv-dev-card-body{display:none;padding:10px 12px;}
+.surv-device-card.expanded .surv-dev-card-body{display:block;}
+.surv-dev-log{font-size:10px;color:var(--text-dim);line-height:1.7;max-height:130px;overflow-y:auto;}
+.surv-dev-log-entry{display:flex;gap:8px;padding:2px 0;border-bottom:1px solid var(--border);}
+.surv-dev-log-entry:last-child{border-bottom:none;}
+.surv-dev-log-time{color:var(--text-mute);font-size:9px;flex-shrink:0;width:52px;}
+.surv-dev-log-type{font-size:9px;padding:1px 5px;border-radius:2px;flex-shrink:0;letter-spacing:.5px;}
+.surv-dev-log-type.msg{color:#00ccff;border:1px solid #00667788;}
+.surv-dev-log-type.call{color:var(--green);border:1px solid var(--green3);}
+.surv-dev-log-type.net{color:var(--amber);border:1px solid #665500;}
+.surv-dev-log-type.loc{color:#cc77ff;border:1px solid #551177;}
+.surv-dev-log-type.app{color:var(--text-dim);border:1px solid var(--border);}
+.surv-dev-log-content{flex:1;color:var(--text-dim);font-size:9px;}
+.surv-dev-actions{display:flex;gap:6px;margin-top:8px;}
+
+/* Intercept add form */
+.surv-intercept-form{margin-top:8px;border:1px solid var(--border);border-radius:4px;padding:7px 9px;background:#060101;}
+.surv-intercept-form-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.surv-itype-select{display:flex;gap:3px;flex-shrink:0;}
+.surv-itype-opt{font-size:8px;padding:3px 7px;border:1px solid var(--border);border-radius:3px;cursor:pointer;font-family:var(--font);color:var(--text-mute);letter-spacing:.5px;transition:all .1s;}
+.surv-itype-opt:hover{border-color:var(--green3);color:var(--green2);}
+.surv-itype-opt.sel{border-color:var(--green);color:var(--green);background:var(--green-faint);}
+.surv-intercept-input{flex:1;min-width:120px;background:var(--bg3);border:1px solid var(--border);color:var(--green);font-family:var(--font);font-size:10px;padding:4px 7px;border-radius:3px;outline:none;}
+.surv-intercept-input:focus{border-color:var(--green3);}
+.surv-intercept-input::placeholder{color:var(--text-mute);}
+.surv-intercept-add-btn{flex-shrink:0;background:var(--green-faint)!important;border-color:var(--green3)!important;color:var(--green)!important;}
+
+/* Log entry delete button */
+.surv-log-deletable{position:relative;}
+.surv-log-del-btn{display:none;margin-left:auto;flex-shrink:0;background:none;border:1px solid #550000;color:#993333;font-family:var(--font);font-size:9px;padding:1px 5px;border-radius:3px;cursor:pointer;line-height:1;transition:all .1s;}
+.surv-log-deletable:hover .surv-log-del-btn{display:inline-flex;align-items:center;}
+.surv-log-del-btn:hover{background:#1a0000;border-color:var(--red);color:var(--red);}
+.surv-dev-act-btn{font-size:9px;padding:3px 8px;background:var(--bg3);border:1px solid var(--border);color:var(--text-dim);cursor:pointer;border-radius:3px;font-family:var(--font);transition:all .12s;}
+.surv-dev-act-btn:hover{border-color:var(--green3);color:var(--green);}
+.surv-dev-act-btn.danger{color:#993333;}
+.surv-dev-act-btn.danger:hover{border-color:var(--red);color:var(--red);}
+
+/* Edit overlay */
+#surv-edit-overlay{position:absolute;inset:0;background:#000a;display:none;z-index:20;align-items:center;justify-content:center;}
+#surv-edit-overlay.active{display:flex;}
+#surv-edit-box{background:#0e0202;border:1px solid var(--border-bright);border-radius:8px;padding:20px 22px;width:320px;}
+#surv-edit-box h3{color:var(--green);font-size:11px;letter-spacing:2px;margin-bottom:14px;border-bottom:1px solid var(--border);padding-bottom:8px;}
+.surv-edit-row{margin-bottom:10px;}
+.surv-edit-label{color:var(--text-mute);font-size:9px;display:block;margin-bottom:3px;letter-spacing:1px;}
+.surv-edit-input{width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--green);font-family:var(--font);font-size:10px;padding:5px 8px;border-radius:3px;outline:none;}
+.surv-edit-input:focus{border-color:var(--green3);}
+.surv-type-select{display:flex;gap:4px;flex-wrap:wrap;margin-top:2px;}
+.surv-type-opt{font-size:8px;padding:3px 7px;background:var(--bg3);border:1px solid var(--border);color:var(--text-mute);cursor:pointer;border-radius:3px;font-family:var(--font);transition:all .1s;}
+.surv-type-opt.sel{border-color:var(--green);color:var(--green);background:var(--green-faint);}
+.surv-edit-btns{display:flex;gap:7px;margin-top:16px;}
+.surv-edit-save{flex:1;background:var(--green-faint);border:1px solid var(--green3);color:var(--green);font-family:var(--font);font-size:10px;padding:6px;cursor:pointer;border-radius:3px;letter-spacing:1px;}
+.surv-edit-save:hover{background:var(--green-dim);}
+.surv-edit-cancel{background:none;border:1px solid var(--border);color:var(--text-mute);font-family:var(--font);font-size:10px;padding:6px 14px;cursor:pointer;border-radius:3px;}
+.surv-edit-cancel:hover{border-color:var(--red);color:var(--red);}
+
+/* Idle state */
+#surv-idle{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--text-mute);}
+#surv-idle .idle-icon{font-size:36px;opacity:.4;}
+#surv-idle .idle-msg{font-size:10px;letter-spacing:2px;}
+#surv-edit-mode-banner{background:#0a0500;border-bottom:1px solid #664400;color:var(--amber);font-size:9px;letter-spacing:2px;padding:4px 14px;text-align:center;display:none;flex-shrink:0;}
+#surv-edit-mode-banner.active{display:block;}
+
 /* TRACKER LOCATOR */
 
 #tracker-app .win-content{padding:0;}
@@ -847,6 +975,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
       </div>
       <div class="app-icon" onclick="openApp('dice')">
         <div class="icon-box">🎲</div><span class="label">D20 Roller</span>
+      </div>
+      <div class="app-icon" onclick="openApp('surv')">
+        <div class="icon-box">👁️</div><span class="label">SurvPoint</span>
       </div>
       <div id="custom-icons"></div>
     </div>
@@ -1342,6 +1473,116 @@ document.write('<h2 style="letter-spacing:2px;">MY APP v1.0</h2><p style="color:
 
     <div id="custom-windows"></div>
 
+    <!-- SURVEILLANCE POINT -->
+
+    <div class="app-window" id="surv-app">
+      <div class="win-bar">
+        <span class="win-title">SURVEILLANCE POINT — v1.0 — MONITORING SUITE</span>
+        <button class="win-close" onclick="closeApp('surv')">✕</button>
+      </div>
+      <div class="win-content" style="padding:0;overflow:hidden;">
+        <div id="surv-main">
+
+          <!-- Edit mode banner -->
+          <div id="surv-edit-mode-banner">⚠ EDIT MODE ACTIVE — Device names/types/info are editable. Disable with: <b>survmode off</b></div>
+
+          <!-- Header -->
+          <div id="surv-header">
+            <div id="surv-header-left">
+              <div id="surv-header-title">// SURVEILLANCE POINT</div>
+              <div id="surv-header-sub">PASSIVE INTERCEPT FRAMEWORK — ALL CHANNELS</div>
+            </div>
+            <span id="surv-status-badge" class="inactive">● INACTIVE</span>
+          </div>
+
+          <!-- 3 main buttons -->
+          <div id="surv-buttons">
+            <button class="surv-main-btn deploy" id="surv-deploy-btn" onclick="survDeploy()">
+              <span class="s-btn-icon">📡</span>
+              <span class="s-btn-label">DEPLOY POINT</span>
+            </button>
+            <button class="surv-main-btn view" id="surv-view-btn" onclick="survShowDevices()" disabled title="Deploy a surveillance point first">
+              <span class="s-btn-icon">🖥️</span>
+              <span class="s-btn-label">VIEW MONITORED</span>
+            </button>
+
+          </div>
+
+          <!-- Body area -->
+          <div id="surv-body">
+
+            <!-- Idle state -->
+            <div id="surv-idle">
+              <span class="idle-icon">👁️</span>
+              <span class="idle-msg">SURVEILLANCE POINT READY TO WORK</span>
+              <span style="font-size:9px;color:var(--text-mute);letter-spacing:1px;">Deploy a surveillance point to start monitoring enemy devices</span>
+            </div>
+
+            <!-- Loading/deploy sequence panel -->
+            <div id="surv-loading-panel">
+              <div id="surv-load-header">// DEPLOYING SURVEILLANCE POINT — MONITORIZATION ENGINE INITIALIZING</div>
+              <div id="surv-load-log"></div>
+              <div id="surv-load-progress"><div id="surv-load-bar"></div></div>
+              <div id="surv-load-footer">
+                <span id="surv-load-status">Initializing...</span>
+                <button id="surv-load-done-btn" onclick="survLoadingDone()">MONITORING ACTIVE →</button>
+              </div>
+            </div>
+
+            <!-- Device list panel -->
+            <div id="surv-devices-panel">
+              <div id="surv-dev-toolbar">
+                <span id="surv-dev-toolbar-title">// MONITORED DEVICES</span>
+                <span id="surv-dev-count" style="font-size:9px;color:var(--text-mute);margin-right:auto;margin-left:4px;"></span>
+                <button id="surv-dev-back-btn" onclick="survHideDevices()">← BACK</button>
+                <button id="surv-dev-add-btn" onclick="survAddDevicePrompt()" style="display:none;">+ ADD DEVICE</button>
+              </div>
+              <div id="surv-device-list"></div>
+            </div>
+
+            <!-- Edit overlay -->
+            <div id="surv-edit-overlay">
+              <div id="surv-edit-box">
+                <h3 id="surv-edit-title">// EDIT DEVICE</h3>
+                <div class="surv-edit-row">
+                  <label class="surv-edit-label">DEVICE NAME / ALIAS</label>
+                  <input type="text" class="surv-edit-input" id="surv-ed-name" placeholder="Target alias..." autocomplete="off" spellcheck="false">
+                </div>
+                <div class="surv-edit-row">
+                  <label class="surv-edit-label">DEVICE TYPE</label>
+                  <div class="surv-type-select" id="surv-ed-type-select">
+                    <div class="surv-type-opt sel" data-type="SMARTPHONE" onclick="survSelType(this)">📱 SMARTPHONE</div>
+                    <div class="surv-type-opt" data-type="LAPTOP" onclick="survSelType(this)">💻 LAPTOP</div>
+                    <div class="surv-type-opt" data-type="TABLET" onclick="survSelType(this)">🖥️ TABLET</div>
+                    <div class="surv-type-opt" data-type="DESKTOP" onclick="survSelType(this)">🖧 DESKTOP</div>
+                    <div class="surv-type-opt" data-type="WEARABLE" onclick="survSelType(this)">⌚ WEARABLE</div>
+                    <div class="surv-type-opt" data-type="VEHICLE" onclick="survSelType(this)">🚗 VEHICLE</div>
+                  </div>
+                </div>
+                <div class="surv-edit-row">
+                  <label class="surv-edit-label">SUBJECT INFO / NOTES</label>
+                  <input type="text" class="surv-edit-input" id="surv-ed-info" placeholder="e.g. Jane Doe · Burner #2" autocomplete="off" spellcheck="false">
+                </div>
+                <div class="surv-edit-row">
+                  <label class="surv-edit-label">STATUS</label>
+                  <div class="surv-type-select" id="surv-ed-status-select">
+                    <div class="surv-type-opt sel" data-status="live" onclick="survSelStatus(this)">🟢 LIVE</div>
+                    <div class="surv-type-opt" data-status="idle" onclick="survSelStatus(this)">🟡 IDLE</div>
+                    <div class="surv-type-opt" data-status="offline" onclick="survSelStatus(this)">🔴 OFFLINE</div>
+                  </div>
+                </div>
+                <div class="surv-edit-btns">
+                  <button class="surv-edit-cancel" onclick="survCloseEdit()">CANCEL</button>
+                  <button class="surv-edit-save" onclick="survSaveEdit()">SAVE CHANGES</button>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /surv-body -->
+        </div><!-- /surv-main -->
+      </div>
+    </div>
+
     <!-- D20 ROLLER -->
 
     <div class="app-window" id="dice-app">
@@ -1758,7 +1999,7 @@ const tHist=[];let tHistIdx=-1,noteEditing=null;
 
 const TCMDS={
   help:()=>`<span class="info">COMMANDS:</span>
-  ls · cd [dir] · pwd · cat [file] · mkdir [name] · rm [name] · ifconfig · ping [h] · nmap [ip] · clear · history · setreward · upload · edtnetmap · setmap · help`,
+  ls · cd [dir] · pwd · cat [file] · mkdir [name] · rm [name] · ifconfig · ping [h] · nmap [ip] · clear · history · setreward · upload · edtnetmap · setmap · survmode [on|off] · help`,
   ls:(a)=>{const fs=getFS();const n=fs[curDir];if(!n||n.type!=='dir')return '<span class="err">Not a dir</span>';
     if(!n.children.length)return '<span class="dim">(empty)</span>';
     return n.children.map(c=>{const f=curDir+'/'+c;const isD=fs[f]&&fs[f].type==='dir';return isD?`<span class="info">${c}/</span>`:`<span class="dim">${c}</span>`;}).join('  ');},
@@ -1807,6 +2048,24 @@ const TCMDS={
     trkSwitchTab('map',document.getElementById('trk-tab-map'));
     trkEnterEditMode();
     return '<span class="info">Opening TRACKER LOCATOR → MAP in edit mode. Click the map to place the ping.</span>';
+  },
+  survmode:(a)=>{
+    const arg=(a[0]||'').toLowerCase();
+    if(arg==='on'){
+      survSetEditMode(true);
+      openApp('surv');
+      return '<span class="ok">SURVPOINT edit mode ENABLED — device names, types, and info are now editable.</span>';
+    } else if(arg==='off'){
+      survSetEditMode(false);
+      return '<span class="warn">SURVPOINT edit mode DISABLED.</span>';
+    } else {
+      const cur=survState.editMode;
+      survSetEditMode(!cur);
+      openApp('surv');
+      return survState.editMode
+        ?'<span class="ok">SURVPOINT edit mode ENABLED — device names, types, and info are now editable.</span>'
+        :'<span class="warn">SURVPOINT edit mode DISABLED.</span>';
+    }
   },
 };
 
@@ -3660,6 +3919,415 @@ function diceClearHistory(){
   diceHistory = [];
   diceRenderHistory();
   playKeyClick();
+}
+
+// =====================================================================
+// SURVEILLANCE POINT APP
+// =====================================================================
+
+let survState = {
+  deployed: false,   // true once a point has EVER been deployed — unlocks "View Monitored" for good
+  deploying: false,  // true only while the terminal animation is actively playing
+  editMode: false,
+  devices: [],
+  editingId: null,
+  editingIsNew: false,
+};
+
+const SURV_LOAD_SEQUENCE = [
+  {t:500,  msg:'Initializing intercept framework...', cls:'dim'},
+  {t:900,  msg:'Loading signal acquisition modules...', cls:'dim'},
+  {t:1350, msg:'[OK] RF scanner module loaded', cls:'ok'},
+  {t:1700, msg:'Binding to network interfaces eth0, wlan0...', cls:'dim'},
+  {t:2100, msg:'[OK] Interface binding complete', cls:'ok'},
+  {t:2450, msg:'Injecting passive intercept payload...', cls:'warn'},
+  {t:2900, msg:'  > payload_core.so → 0x7f3d2a001000', cls:'dim'},
+  {t:3250, msg:'  > ssl_strip_hook.so → 0x7f3d2a006800', cls:'dim'},
+  {t:3600, msg:'  > sms_mirror.so → 0x7f3d2a00b000', cls:'dim'},
+  {t:3950, msg:'  > call_intercept.so → 0x7f3d2a010300', cls:'dim'},
+  {t:4300, msg:'[OK] Payloads injected (4/4)', cls:'ok'},
+  {t:4650, msg:'Establishing covert C2 channel...', cls:'dim'},
+  {t:5050, msg:'  > TCP tunnel → 185.234.xx.xx:4433 [ENCRYPTED]', cls:'info'},
+  {t:5400, msg:'[OK] C2 channel active — AES-256-GCM', cls:'ok'},
+  {t:5750, msg:'Enabling passive monitoring hooks...', cls:'dim'},
+  {t:6050, msg:'  > SMS/MMS intercept: ENABLED', cls:'ok'},
+  {t:6300, msg:'  > VoIP / GSM call tap: ENABLED', cls:'ok'},
+  {t:6550, msg:'  > Messaging apps (Signal, WhatsApp, Telegram): ENABLED', cls:'ok'},
+  {t:6800, msg:'  > Browser history mirror: ENABLED', cls:'ok'},
+  {t:7050, msg:'  > GPS location stream: ENABLED', cls:'ok'},
+  {t:7300, msg:'  > App activity log: ENABLED', cls:'ok'},
+  {t:7650, msg:'Scanning for active devices on subnet...', cls:'dim'},
+  {t:8100, msg:'  > ARP sweep 192.168.0.0/24 ... found 3 hosts', cls:'info'},
+  {t:8500, msg:'  > Fingerprinting MAC / OS signatures...', cls:'dim'},
+  {t:8900, msg:'[OK] Device discovery complete', cls:'ok'},
+  {t:9300, msg:'Calibrating signal strength thresholds...', cls:'dim'},
+  {t:9700, msg:'[OK] Surveillance Point ONLINE — all channels active', cls:'bright'},
+];
+
+const SURV_MSG_POOL = [
+  'Sending message to +1(XXX)XXX-XXXX',
+  'Received iMessage from "Mom"',
+  'WhatsApp msg from unknown sender',
+  'SMS: "r u coming tonight?"',
+  'Telegram: encrypted msg forwarded',
+  'Signal: outgoing — 2 attachments',
+  'Received SMS verification code: 8****',
+];
+const SURV_CALL_POOL = [
+  'Outgoing call to +1(XXX)XXX-XXXX — 4m12s',
+  'Incoming call — unknown number — rejected',
+  'VoIP call via WhatsApp — 11m04s',
+  'Missed call x3 — contact: Unknown',
+  'Outgoing GSM call — 2m31s',
+  'FaceTime audio — 8m17s',
+];
+const SURV_NET_POOL = [
+  'HTTPS → instagram.com',
+  'DNS lookup: api.whatsapp.com',
+  'HTTP POST → metrics.internal',
+  'TCP → 31.13.77.35:443',
+  'WebSocket → wss://ws.ifconfig.me',
+  'Data upload 2.1MB → cloud storage',
+];
+const SURV_LOC_POOL = [
+  'GPS fix: 40.7128° N, 74.0060° W',
+  'Location update: 48.8566° N, 2.3522° E',
+  'Cell tower ping: sector 7B',
+  'Wi-Fi geoloc: ±12m accuracy',
+  'Motion detected: device in transit',
+];
+const SURV_APP_POOL = [
+  'App opened: Instagram',
+  'App closed: Maps',
+  'Screen unlock — face auth',
+  'Clipboard accessed by Chrome',
+  'Camera accessed by unknown app',
+  'Microphone activated — 4s',
+  'App install: com.unknown.service',
+];
+
+function survRandFrom(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+function survRandTime(){
+  const d=new Date();
+  const h=d.getHours(), m=d.getMinutes()-Math.floor(Math.random()*60);
+  return `${String(h).padStart(2,'0')}:${String((m+60)%60).padStart(2,'0')}`;
+}
+function survGenLogs(count=8){
+  const types=['msg','call','net','loc','app'];
+  const pools={msg:SURV_MSG_POOL,call:SURV_CALL_POOL,net:SURV_NET_POOL,loc:SURV_LOC_POOL,app:SURV_APP_POOL};
+  const logs=[];
+  for(let i=0;i<count;i++){
+    const t=types[Math.floor(Math.random()*types.length)];
+    logs.push({time:survRandTime(), type:t, content:survRandFrom(pools[t])});
+  }
+  return logs.sort((a,b)=>b.time.localeCompare(a.time));
+}
+
+function survGenDevices(){
+  const names=['New_Point_1','Unknown_Device','New_Point_2','New_Point_3','Unknown_Device','New_Point_4'];
+  const types=['SMARTPHONE','LAPTOP','TABLET','COMPUTER','WEARABLE','VEHICLE'];
+  const statuses=['live','idle','offline'];
+  const infos=['Encrypted','[unidentified]','prepaid',];
+  const count=Math.floor(Math.random()*3)+2;
+  survState.devices=[];
+  for(let i=0;i<count;i++){
+    survState.devices.push({
+      id:'dev_'+Date.now()+'_'+i,
+      name:names[i]||'Device '+(i+1),
+      type:types[i]||'SMARTPHONE',
+      status:statuses[i]||'idle',
+      info:infos[i]||'',
+      logs:survGenLogs(6+Math.floor(Math.random()*6)),
+    });
+  }
+}
+
+function survDeploy(){
+  if(survState.deploying) return; // animation already running — ignore extra clicks
+  survState.deploying=true;
+  document.getElementById('surv-deploy-btn').disabled=true;
+
+  // Show loading panel
+  const lp=document.getElementById('surv-loading-panel');
+  const log=document.getElementById('surv-load-log');
+  const bar=document.getElementById('surv-load-bar');
+  const status=document.getElementById('surv-load-status');
+  const doneBtn=document.getElementById('surv-load-done-btn');
+  document.getElementById('surv-idle').style.display='none';
+  lp.classList.add('active');
+  log.innerHTML='';
+  bar.style.width='0%';
+  doneBtn.style.display='none';
+  status.textContent='Initializing...';
+
+  const totalDuration=SURV_LOAD_SEQUENCE[SURV_LOAD_SEQUENCE.length-1].t+400;
+
+  SURV_LOAD_SEQUENCE.forEach((step,i)=>{
+    setTimeout(()=>{
+      const d=document.createElement('div');
+      d.className=step.cls;
+      d.textContent='> '+step.msg;
+      log.appendChild(d);
+      log.scrollTop=log.scrollHeight;
+      bar.style.width=((step.t/totalDuration)*100).toFixed(1)+'%';
+      status.textContent=step.msg.length>45?step.msg.slice(0,45)+'…':step.msg;
+      if(typeof playScan==='function')playScan();
+    },step.t);
+  });
+
+  setTimeout(()=>{
+    bar.style.width='100%';
+    status.textContent='SURVEILLANCE POINT ACTIVE';
+    doneBtn.style.display='block';
+    document.getElementById('surv-status-badge').textContent='● ACTIVE';
+    document.getElementById('surv-status-badge').className='active';
+
+    const firstDeploy=!survState.deployed;
+    survState.deployed=true;
+    survState.deploying=false;
+    document.getElementById('surv-deploy-btn').disabled=false;
+
+    if(typeof playSuccess==='function')playSuccess();
+
+    // The device roster is only ever generated on the FIRST deploy.
+    // Deploying again (if triggered later) just replays this terminal
+    // animation — it never touches survState.devices again, so any
+    // edits made in "View Monitored" are never wiped out.
+    if(firstDeploy){
+      survGenDevices();
+      const viewBtn=document.getElementById('surv-view-btn');
+      viewBtn.disabled=false;
+      viewBtn.removeAttribute('title');
+    }
+  }, totalDuration+200);
+}
+
+function survLoadingDone(){
+  document.getElementById('surv-loading-panel').classList.remove('active');
+  survShowDevices();
+}
+
+function survShowDevices(){
+  if(!survState.deployed){
+    // Flash hint
+    const btn=document.getElementById('surv-deploy-btn');
+    btn.style.boxShadow='0 0 14px var(--green)';
+    setTimeout(()=>btn.style.boxShadow='',700);
+    return;
+  }
+  document.getElementById('surv-idle').style.display='none';
+  document.getElementById('surv-loading-panel').classList.remove('active');
+  document.getElementById('surv-devices-panel').classList.add('active');
+  survRenderDevices();
+}
+
+function survHideDevices(){
+  document.getElementById('surv-devices-panel').classList.remove('active');
+  document.getElementById('surv-idle').style.display='flex';
+}
+
+function survRenderDevices(){
+  const list=document.getElementById('surv-device-list');
+  const count=document.getElementById('surv-dev-count');
+  list.innerHTML='';
+  const live=survState.devices.filter(d=>d.status==='live').length;
+  count.textContent=`${survState.devices.length} DEVICE(S) — ${live} LIVE`;
+
+  if(!survState.devices.length){
+    list.innerHTML='<div style="color:var(--text-mute);font-size:10px;padding:18px;text-align:center;letter-spacing:1px;">READY TO ADD A NEW DEVICE TO BEGIN MONITORAZITION</div>';
+    return;
+  }
+
+  survState.devices.forEach(dev=>{
+    const card=document.createElement('div');
+    card.className='surv-device-card';
+    card.id='surv-card-'+dev.id;
+
+    const typeIcons={SMARTPHONE:'📱',LAPTOP:'💻',TABLET:'🖥️',DESKTOP:'🖧',WEARABLE:'⌚',VEHICLE:'🚗'};
+    const icon=typeIcons[dev.type]||'📱';
+
+    let logsHtml='';
+    dev.logs.forEach((l, idx)=>{
+      const delBtn=survState.editMode
+        ?`<button class="surv-log-del-btn" onclick="survDeleteIntercept('${dev.id}',${idx})" title="Delete intercept">✕</button>`
+        :'';
+      logsHtml+=`<div class="surv-dev-log-entry${survState.editMode?' surv-log-deletable':''}">
+        <span class="surv-dev-log-time">${escH(l.time)}</span>
+        <span class="surv-dev-log-type ${l.type}">${l.type.toUpperCase()}</span>
+        <span class="surv-dev-log-content">${escH(l.content)}</span>
+        ${delBtn}
+      </div>`;
+    });
+
+    const actionsHtml = survState.editMode
+      ? `<div class="surv-intercept-form">
+           <div class="surv-intercept-form-row">
+             <div class="surv-itype-select">
+               <span class="surv-itype-opt sel" data-itype="msg"  onclick="survSelIType(this)">MSG</span>
+               <span class="surv-itype-opt"     data-itype="call" onclick="survSelIType(this)">CALL</span>
+               <span class="surv-itype-opt"     data-itype="net"  onclick="survSelIType(this)">NET</span>
+               <span class="surv-itype-opt"     data-itype="loc"  onclick="survSelIType(this)">LOC</span>
+               <span class="surv-itype-opt"     data-itype="app"  onclick="survSelIType(this)">APP</span>
+             </div>
+             <input class="surv-intercept-input" type="text" placeholder="Intercept content..." autocomplete="off" spellcheck="false">
+             <button class="surv-dev-act-btn surv-intercept-add-btn" onclick="survAddIntercept(this,'${dev.id}')">+ ADD</button>
+           </div>
+         </div>
+         <div class="surv-dev-actions">
+           <button class="surv-dev-act-btn" onclick="survEditDevice('${dev.id}')">✏ EDIT</button>
+           <button class="surv-dev-act-btn danger" onclick="survDeleteDevice('${dev.id}')">✕ REMOVE</button>
+         </div>`
+      : ``;
+
+    card.innerHTML=`
+      <div class="surv-dev-card-header" onclick="survToggleCard('${dev.id}')">
+        <span class="surv-dev-dot ${dev.status}"></span>
+        <span style="font-size:15px;">${icon}</span>
+        <span class="surv-dev-name">${escH(dev.name)}</span>
+        ${dev.info?`<span style="font-size:9px;color:var(--text-mute);margin-right:6px;">${escH(dev.info)}</span>`:''}
+        <span class="surv-dev-type">${escH(dev.type)}</span>
+        <button class="surv-dev-expand-btn">▾</button>
+      </div>
+      <div class="surv-dev-card-body">
+        <div class="surv-dev-log">${logsHtml||'<span style="color:var(--text-mute);font-size:9px;">No activity recorded yet.</span>'}</div>
+        ${actionsHtml}
+      </div>`;
+    list.appendChild(card);
+  });
+}
+
+function survToggleCard(id){
+  const card=document.getElementById('surv-card-'+id);
+  if(!card)return;
+  card.classList.toggle('expanded');
+  const btn=card.querySelector('.surv-dev-expand-btn');
+  if(btn)btn.textContent=card.classList.contains('expanded')?'▴':'▾';
+}
+
+
+function survSelIType(el){
+  const row=el.closest('.surv-itype-select');
+  if(!row)return;
+  row.querySelectorAll('.surv-itype-opt').forEach(o=>o.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+function survAddIntercept(btn, id){
+  const dev=survState.devices.find(d=>d.id===id);
+  if(!dev)return;
+  const form=btn.closest('.surv-intercept-form');
+  const typeSel=form.querySelector('.surv-itype-opt.sel');
+  const input=form.querySelector('.surv-intercept-input');
+  const type=typeSel?typeSel.dataset.itype:'msg';
+  const content=input.value.trim();
+  if(!content)return;
+  const d=new Date();
+  const time=`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+  dev.logs.unshift({time, type, content});
+  survRenderDevices();
+  const card=document.getElementById('surv-card-'+id);
+  if(card){card.classList.add('expanded');const b=card.querySelector('.surv-dev-expand-btn');if(b)b.textContent='▴';}
+  if(typeof playSuccess==='function')playSuccess();
+}
+
+function survDeleteIntercept(id, idx){
+  const dev=survState.devices.find(d=>d.id===id);
+  if(!dev)return;
+  dev.logs.splice(idx,1);
+  survRenderDevices();
+  const card=document.getElementById('surv-card-'+id);
+  if(card){card.classList.add('expanded');const b=card.querySelector('.surv-dev-expand-btn');if(b)b.textContent='▴';}
+}
+
+function survDeleteDevice(id){
+  survState.devices=survState.devices.filter(d=>d.id!==id);
+  survRenderDevices();
+}
+
+// -- Edit overlay --
+
+function survSelType(el){
+  document.querySelectorAll('#surv-ed-type-select .surv-type-opt').forEach(o=>o.classList.remove('sel'));
+  el.classList.add('sel');
+}
+function survSelStatus(el){
+  document.querySelectorAll('#surv-ed-status-select .surv-type-opt').forEach(o=>o.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+function survEditDevice(id){
+  const dev=survState.devices.find(d=>d.id===id);
+  if(!dev)return;
+  survState.editingId=id;
+  survState.editingIsNew=false;
+  document.getElementById('surv-edit-title').textContent='// EDIT DEVICE';
+  document.getElementById('surv-ed-name').value=dev.name;
+  document.getElementById('surv-ed-info').value=dev.info||'';
+
+  // Select type
+  document.querySelectorAll('#surv-ed-type-select .surv-type-opt').forEach(o=>{
+    o.classList.toggle('sel',o.dataset.type===dev.type);
+  });
+  // Select status
+  document.querySelectorAll('#surv-ed-status-select .surv-type-opt').forEach(o=>{
+    o.classList.toggle('sel',o.dataset.status===dev.status);
+  });
+  document.getElementById('surv-edit-overlay').classList.add('active');
+}
+
+function survAddDevicePrompt(){
+  survState.editingId='dev_'+Date.now();
+  survState.editingIsNew=true;
+  document.getElementById('surv-edit-title').textContent='// ADD NEW DEVICE';
+  document.getElementById('surv-ed-name').value='';
+  document.getElementById('surv-ed-info').value='';
+  document.querySelectorAll('#surv-ed-type-select .surv-type-opt').forEach((o,i)=>o.classList.toggle('sel',i===0));
+  document.querySelectorAll('#surv-ed-status-select .surv-type-opt').forEach((o,i)=>o.classList.toggle('sel',i===0));
+  // make sure device panel is visible
+  if(!document.getElementById('surv-devices-panel').classList.contains('active'))survShowDevices();
+  document.getElementById('surv-edit-overlay').classList.add('active');
+}
+
+function survSaveEdit(){
+  const name=document.getElementById('surv-ed-name').value.trim()||'Unknown Device';
+  const info=document.getElementById('surv-ed-info').value.trim();
+  const typeSel=document.querySelector('#surv-ed-type-select .surv-type-opt.sel');
+  const statusSel=document.querySelector('#surv-ed-status-select .surv-type-opt.sel');
+  const type=typeSel?typeSel.dataset.type:'SMARTPHONE';
+  const status=statusSel?statusSel.dataset.status:'idle';
+
+  if(survState.editingIsNew){
+    survState.devices.push({
+      id:survState.editingId,
+      name,type,status,info,
+      logs:survGenLogs(4+Math.floor(Math.random()*5)),
+    });
+  } else {
+    const dev=survState.devices.find(d=>d.id===survState.editingId);
+    if(dev){dev.name=name;dev.type=type;dev.status=status;dev.info=info;}
+  }
+
+  survCloseEdit();
+  survRenderDevices();
+  if(typeof playSuccess==='function')playSuccess();
+}
+
+function survCloseEdit(){
+  document.getElementById('surv-edit-overlay').classList.remove('active');
+  survState.editingId=null;
+}
+
+// -- Edit mode toggle (via terminal command) --
+
+function survSetEditMode(on){
+  survState.editMode=on;
+  document.getElementById('surv-edit-mode-banner').classList.toggle('active',on);
+  document.getElementById('surv-dev-add-btn').style.display=on?'block':'none';
+  // If device panel is open, re-render to show/hide edit buttons
+  if(document.getElementById('surv-devices-panel').classList.contains('active')){
+    survRenderDevices();
+  }
+  return on;
 }
 
 // =====================================================================
