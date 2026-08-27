@@ -202,7 +202,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 .pf-sub-count{color:var(--text-mute);font-size:8px;letter-spacing:2px;white-space:nowrap;flex-shrink:0;}
 .pf-topic-body{display:flex;flex-direction:column;gap:8px;padding:10px;}
 .pf-empty-sub{color:var(--text-mute);font-size:9px;padding:8px 4px;letter-spacing:2px;}
-
 .pf-sub-card{border:1px solid var(--border);border-radius:4px;background:#0e0606;
   padding:9px;display:flex;flex-direction:column;gap:7px;}
 .pf-sub-header{display:flex;align-items:center;gap:8px;}
@@ -210,8 +209,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
   font-family:var(--font);font-size:13px;padding:4px 7px;border-radius:3px;outline:none;}
 .pf-sub-title:focus{border-color:var(--green2);}
 .pf-sub-content{background:var(--bg2);border:1px solid var(--border);color:var(--text-dim);
-  font-family:var(--font);font-size:13px;padding:8px;border-radius:3px;outline:none;
-  resize:none;overflow:hidden;min-height:44px;line-height:1.6;}
+  font-family:var(--font);font-size:16px;padding:8px;border-radius:3px;outline:none;
+  resize:none;overflow:hidden;min-height:50px;line-height:1.6;}
 .pf-sub-content:focus{border-color:var(--green3);color:var(--text);}
 
 .pf-sub-images{display:flex;flex-wrap:wrap;gap:7px;align-items:center;}
@@ -4434,7 +4433,7 @@ function pfTopicHtml(t){
     <div class="pf-topic-header">
       <button class="pf-expand-btn" onclick="pfToggleTopic('${t.id}')" title="Expand/collapse">${t.expanded===false?'▸':'▾'}</button>
       <input type="text" class="pf-topic-title" value="${escAttr(t.title)}" placeholder="Untitled topic"
-        oninput="pfUpdateTopicTitle('${t.id}',this.value)">
+        autocomplete="off" spellcheck="false" oninput="pfUpdateTopicTitle('${t.id}',this.value)">
       <span class="pf-sub-count">${subCount} SUBTOPIC${subCount!==1?'S':''}</span>
       <button class="hk-btn" onclick="pfAddSubtopic('${t.id}')">+ SUBTOPIC</button>
       <button class="hk-btn danger" onclick="pfArmDelete(this,()=>pfDeleteTopic('${t.id}'))">DEL</button>
@@ -4452,10 +4451,10 @@ function pfSubHtml(topicId,s){
   return `<div class="pf-sub-card" id="pf-sub-${s.id}">
     <div class="pf-sub-header">
       <input type="text" class="pf-sub-title" value="${escAttr(s.title)}" placeholder="Untitled subtopic"
-        oninput="pfUpdateSubTitle('${topicId}','${s.id}',this.value)">
+        autocomplete="off" spellcheck="false" oninput="pfUpdateSubTitle('${topicId}','${s.id}',this.value)">
       <button class="hk-btn danger" onclick="pfArmDelete(this,()=>pfDeleteSubtopic('${topicId}','${s.id}'))">DEL</button>
     </div>
-    <textarea class="pf-sub-content" placeholder="Write content here..." rows="1"
+    <textarea class="pf-sub-content" placeholder="Write content here..." rows="1" spellcheck="false"
       oninput="pfUpdateSubContent('${topicId}','${s.id}',this.value);pfAutoGrow(this);">${escH(s.content)}</textarea>
     <div class="pf-sub-images">
       ${imgs}
