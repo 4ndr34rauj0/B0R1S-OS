@@ -1756,15 +1756,10 @@ document.write('<h2 style="letter-spacing:2px;">MY APP v1.0</h2><p style="color:
 <script>
 "use strict";
 
-// =====================================================================
+
 // =====================================================================
 // STORAGE — Cloudflare KV via Worker API
 // =====================================================================
-// All data (settings, filesystem, netmap, portfolio, images, etc.)
-// is persisted in Cloudflare KV through the companion Worker.
-//
-// WORKER URL: set this to your deployed Cloudflare Worker URL.
-// Example: 'https://boris-os-storage.YOUR-SUBDOMAIN.workers.dev'
 const CF_WORKER_URL = 'https://boris-os-storage.by-4ndr3.workers.dev';
 
 // In-memory write-back cache so reads are instant after the first load.
@@ -1909,8 +1904,9 @@ function playRmlog(){
 // GLOBALS
 // =====================================================================
 
-let uname=S.g('username','root'),hname=S.g('hostname','admin'),pinCode=S.g('pin','1337');
-let curDir='/root',sessionStart=Date.now(),matrixIv=null,customApps=S.g('custom_apps',{});
+// These are populated after preloadAllData() resolves (see bottom of file).
+let uname='root',hname='admin',pinCode='1337';
+let curDir='/root',sessionStart=Date.now(),matrixIv=null,customApps={};
 // Quest state
 let questScanDone=false,questFWDone=false,questPWDone=false,questTarget=null;
 let rwSelected=null,rwEditPath=null;
@@ -1919,13 +1915,14 @@ let rwSelected=null,rwEditPath=null;
 // BOOT
 // =====================================================================
 
-const bootLines=[
-  {t:'BIOS v1.0.1...'},{t:'Memory: 8192MB [OK]',c:'ok'},{t:'Kernel shadow-5.4.0 [OK]',c:'ok'},
-  {t:'Encrypted FS mounted [OK]',c:'ok'},{t:'Firewall rules applied [OK]',c:'ok'},
-  {t:'VPN tunnel established [OK]',c:'ok'},{t:'anonymizer-daemon [OK]',c:'ok'},
-  {t:'shadow-shell [OK]',c:'ok'},{t:`Profile: ${uname} [OK]`,c:'ok'},{t:'DEVICE LOCKED.'},
-];
 function boot(){
+  // Build bootLines here so Profile line uses the loaded uname value.
+  const bootLines=[
+    {t:'BIOS v1.0.1...'},{t:'Memory: 8192MB [OK]',c:'ok'},{t:'Kernel shadow-5.4.0 [OK]',c:'ok'},
+    {t:'Encrypted FS mounted [OK]',c:'ok'},{t:'Firewall rules applied [OK]',c:'ok'},
+    {t:'VPN tunnel established [OK]',c:'ok'},{t:'anonymizer-daemon [OK]',c:'ok'},
+    {t:'shadow-shell [OK]',c:'ok'},{t:`Profile: ${uname} [OK]`,c:'ok'},{t:'DEVICE LOCKED.'},
+  ];
   const log=document.getElementById('boot-log'),bar=document.getElementById('boot-bar');
   let i=0;
   function step(){
@@ -1944,7 +1941,6 @@ function boot(){
 // LOGIN
 // =====================================================================
 
-const DEVICE_PIN='7845';
 let loginEntry='';
 function showLogin(){document.getElementById('login-layer').style.display='flex';loginEntry='';updDots();document.getElementById('login-error').textContent='';}
 function lk(k){
@@ -1956,7 +1952,9 @@ function lk(k){
 }
 function updDots(){for(let i=0;i<4;i++)document.getElementById('ld'+i).classList.toggle('filled',i<loginEntry.length);}
 function checkPin(){
-  if(loginEntry===DEVICE_PIN){
+  const stored=String(pinCode||'1337').trim();
+  const entered=String(loginEntry).trim();
+  if(entered===stored){
     playUnlock();
     document.getElementById('login-layer').style.display='none';
     bootOS();
@@ -1967,13 +1965,14 @@ function checkPin(){
     setTimeout(()=>document.getElementById('login-error').textContent='',1500);
   }
 }
-function lockDevice(){toggleCC();document.getElementById('os-layer').style.display='none';showLogin();}
-// Keyboard support for login numpad
+// Keyboard support for login screen
 document.addEventListener('keydown',function(e){
-  if(document.getElementById('login-layer').style.display!=='flex')return;
-  if(e.key==='Backspace'){e.preventDefault();lk('del');}
-  else if(/^[0-9]$/.test(e.key)){e.preventDefault();lk(Number(e.key));}
+  if(document.getElementById('login-layer').style.display==='none')return;
+  if(e.key>='0'&&e.key<='9'){lk(parseInt(e.key));}
+  else if(e.key==='Backspace'){lk('del');}
+  else if(e.key==='Enter'&&loginEntry.length===4){checkPin();}
 });
+function lockDevice(){toggleCC();document.getElementById('os-layer').style.display='none';showLogin();}
 
 // =====================================================================
 // OS START
@@ -2057,7 +2056,7 @@ function startMatrix(){
 }
 function setUser(v){uname=v||'root';S.s('username',v);updatePrompt();}
 function setHost(v){hname=v||'admin';S.s('hostname',v);updatePrompt();document.getElementById('term-win-title').textContent='TERMINAL — '+uname+'@'+hname;}
-function setPin(v){if(/^\d{4}$/.test(v)){pinCode=v;S.s('pin',v);}}
+function setPin(v){if(/^\d{4}$/.test(v)){pinCode=String(v);S.s('pin',String(v));}}
 function clearAll(){
   const keys=['settings','fs','netmap','netmap_presets','rewards','custom_apps','portfolio','tracker_ping'];
   Promise.all(keys.map(k=>cfDel('hos_'+k))).then(()=>location.reload());
@@ -4665,6 +4664,13 @@ document.getElementById('cc-target-ip').textContent=ccRandomIp();
   } catch(e) {
     console.warn('[CF-Storage] Preload failed, booting with defaults', e);
   }
+  // Populate globals from the now-loaded cache.
+  uname      = S.g('username',    'root') || 'root';
+  hname      = S.g('hostname',    'admin') || 'admin';
+  // Pin is always stored/compared as a string.
+  pinCode    = String(S.g('pin',  '1337') || '1337').trim();
+  customApps = S.g('custom_apps', {}) || {};
+  console.log('[CF-Storage] Loaded pin:', pinCode, '| user:', uname);
   boot();
 })();
 </script>
