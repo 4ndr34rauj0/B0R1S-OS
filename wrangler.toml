@@ -1,7 +1,0 @@
-name       = "boris-os-storage"
-main       = "worker.js"
-compatibility_date = "2024-01-01"
-
-[[kv_namespaces]]
-binding    = "BORIS_STORE"
-id         = "62f4665111a34f1390ff47d8517f7f3a"
