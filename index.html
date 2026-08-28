@@ -1824,7 +1824,9 @@ async function cfDel(key) {
 const S = {
   g(k, d = null) {
     // Return from cache (populated by preloadAllData on startup).
-    return Object.prototype.hasOwnProperty.call(_memCache, k) ? _memCache[k] : d;
+    // Nullish check (not hasOwnProperty) — see the note in preloadAllData().
+    const v = _memCache[k];
+    return (v === undefined || v === null) ? d : v;
   },
   s(k, v) {
     // Fire-and-forget async write; cache is updated synchronously.
@@ -1848,7 +1850,14 @@ async function preloadAllData() {
   // Re-wire so S.g('username') reads _memCache['hos_username']:
   S.g = function(k, d = null) {
     const full = 'hos_' + k;
-    return Object.prototype.hasOwnProperty.call(_memCache, full) ? _memCache[full] : d;
+    const v = _memCache[full];
+    // IMPORTANT: preloadAllData() above always sets _memCache[full], even
+    // when the KV key doesn't exist yet (404) or the fetch failed — in
+    // both cases it stores `null`. A hasOwnProperty() check is therefore
+    // always true here, so the caller's default `d` was never actually
+    // being used for any key that hadn't been saved before. Checking for
+    // null/undefined instead restores the intended fallback behavior.
+    return (v === undefined || v === null) ? d : v;
   };
 }
 
