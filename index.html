@@ -35,8 +35,8 @@ body{display:flex;align-items:center;justify-content:center;}
 /* LAYERS */
 
 #boot-layer,#login-layer,#os-layer{position:absolute;inset:0;}
-#boot-layer{background:#000;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--green);}
-#login-layer{background:#000;z-index:90;display:none;flex-direction:column;align-items:center;justify-content:center;}
+#boot-layer{background:var(--bg,#000);z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--green);}
+#login-layer{background:var(--bg,#000);z-index:90;display:none;flex-direction:column;align-items:center;justify-content:center;}
 #os-layer{z-index:10;display:none;flex-direction:column;}
 
 /* BOOT */
@@ -637,6 +637,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 .theme-cyan{--green:#00ffff;--green2:#00cccc;--green3:#009999;--green-dim:#004d4d;--green-faint:#001a1a;--text:#00ffff;--text-dim:#009999;--text-mute:#004d4d;--border:#00444499;--border-bright:#00ffff55;}
 .theme-red{--green:#ff3333;--green2:#cc1111;--green3:#991111;--green-dim:#4d0000;--green-faint:#1a0000;--text:#ff3333;--text-dim:#991111;--text-mute:#4d0000;--border:#44000099;--border-bright:#ff333355;}
 .theme-purple{--green:#cc44ff;--green2:#aa22dd;--green3:#881199;--green-dim:#3d0055;--green-faint:#150019;--text:#cc44ff;--text-dim:#881199;--text-mute:#3d0055;--border:#44006699;--border-bright:#cc44ff55;}
+.theme-white{--green:#ffffff;--green2:#cccccc;--green3:#999999;--green-dim:#333333;--green-faint:#1a1a1a;--text:#ffffff;--text-dim:#aaaaaa;--text-mute:#555555;--border:#ffffff33;--border-bright:#ffffff55;}
 
 ::-webkit-scrollbar{width:5px;}
 ::-webkit-scrollbar-track{background:var(--bg2);}
@@ -984,6 +985,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
         <div class="swatch" style="background:#00ffff;" onclick="setTheme('cyan',this)"></div>
         <div class="swatch active" style="background:#ff3333;" onclick="setTheme('red',this)"></div>
         <div class="swatch" style="background:#cc44ff;" onclick="setTheme('purple',this)"></div>
+        <div class="swatch" style="background:#ffffff;" onclick="setTheme('white',this)"></div>
       </div>
     </div>
     <div class="cc-section">
@@ -1771,11 +1773,15 @@ const _saveQueue = {};
 async function cfGet(key, defaultVal = null) {
   if (Object.prototype.hasOwnProperty.call(_memCache, key)) return _memCache[key];
   try {
-    const r = await fetch(`${CF_WORKER_URL}/kv/${encodeURIComponent(key)}`);
-    if (r.status === 404) { _memCache[key] = defaultVal; return defaultVal; }
+    // Use batch endpoint with a single key to avoid browser-logged 404s.
+    const r = await fetch(`${CF_WORKER_URL}/kv`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ keys: [key] }),
+    });
     if (!r.ok) throw new Error(r.status);
     const data = await r.json();
-    _memCache[key] = data.value ?? defaultVal;
+    _memCache[key] = (data.values && key in data.values) ? data.values[key] : defaultVal;
     return _memCache[key];
   } catch(e) {
     console.warn('[CF-Storage] GET failed for', key, e);
@@ -1834,29 +1840,34 @@ const S = {
   },
 };
 
-// Pre-load all known keys from Cloudflare before the OS boots so that
-// every S.g() call returns the right value immediately.
+// Pre-load all known keys from Cloudflare in ONE request before the OS
+// boots. Using a single batch GET avoids individual 404s showing up as
+// red errors in the browser console when keys don't exist yet.
 async function preloadAllData() {
   const KEYS = [
     'username','hostname','pin','settings','fs','netmap',
     'netmap_presets','rewards','custom_apps','portfolio','tracker_ping'
   ];
-  await Promise.all(KEYS.map(async k => {
-    const val = await cfGet('hos_' + k, null);
-    _memCache['hos_' + k] = val; // already set by cfGet, but be explicit
-  }));
-  // Now re-alias S.g to read with the 'hos_' prefix transparently.
-  // (The original S.g doesn't add the prefix — cfGet does that via cfSet.)
-  // Re-wire so S.g('username') reads _memCache['hos_username']:
+  const fullKeys = KEYS.map(k => 'hos_' + k);
+  try {
+    const r = await fetch(`${CF_WORKER_URL}/kv`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ keys: fullKeys }),
+    });
+    if (r.ok) {
+      const data = await r.json();
+      fullKeys.forEach(k => {
+        _memCache[k] = (data.values && k in data.values) ? data.values[k] : null;
+      });
+    }
+  } catch(e) {
+    console.warn('[CF-Storage] Preload batch failed, using defaults', e);
+    fullKeys.forEach(k => { _memCache[k] = null; });
+  }
+  // Re-wire S.g so S.g('username') reads _memCache['hos_username'].
   S.g = function(k, d = null) {
-    const full = 'hos_' + k;
-    const v = _memCache[full];
-    // IMPORTANT: preloadAllData() above always sets _memCache[full], even
-    // when the KV key doesn't exist yet (404) or the fetch failed — in
-    // both cases it stores `null`. A hasOwnProperty() check is therefore
-    // always true here, so the caller's default `d` was never actually
-    // being used for any key that hadn't been saved before. Checking for
-    // null/undefined instead restores the intended fallback behavior.
+    const v = _memCache['hos_' + k];
     return (v === undefined || v === null) ? d : v;
   };
 }
@@ -2034,7 +2045,7 @@ function applyTheme(name){
   t.className=t.className.replace(/theme-\w+/g,'').trim();
   if(name!=='red')t.classList.add('theme-'+name);
   document.querySelectorAll('.swatch').forEach(s=>{
-    const m={green:'#00ff41',amber:'#ffb000',cyan:'#00ffff',red:'#ff3333',purple:'#cc44ff'};
+    const m={green:'#00ff41',amber:'#ffb000',cyan:'#00ffff',red:'#ff3333',purple:'#cc44ff',white:'#ffffff'};
     s.classList.toggle('active',m[name]&&s.style.background===m[name]);
   });
 }
@@ -4678,7 +4689,6 @@ document.getElementById('cc-target-ip').textContent=ccRandomIp();
   // Pin is always stored/compared as a string.
   pinCode    = String(S.g('pin',  '1337') || '1337').trim();
   customApps = S.g('custom_apps', {}) || {};
-  console.log('[CF-Storage] Loaded pin:', pinCode, '| user:', uname);
   boot();
 })();
 </script>
