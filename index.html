@@ -2194,7 +2194,6 @@ function initTerminal(){
   tPrint('<span class="dim">Tip: type <b>upload</b> to import a file into FILES</span>');
   tPrint('<span class="dim">Tip: type <b>edtnetmap</b> to toggle NETMAP edit mode</span>');*/
 
-  if(!lsOK)tPrint('<span class="warn">⚠ Local storage unavailable (likely opened via file://) — changes will NOT persist across reloads. Open via a local web server to enable saving.</span>');
   const inp=document.getElementById('term-input');
   inp.addEventListener('keydown',e=>{
     if(e.key==='Enter'){
