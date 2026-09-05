@@ -209,7 +209,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
   font-family:var(--font);font-size:15.6px;padding:4px 7px;border-radius:3px;outline:none;}
 .pf-sub-title:focus{border-color:var(--green2);}
 .pf-sub-content{background:var(--bg2);border:1px solid var(--border);color:var(--text-dim);
-  font-family:var(--font);font-size:19.2px;padding:8px;border-radius:3px;outline:none;
+  font-family:var(--font);font-size:15.6px;padding:8px;border-radius:3px;outline:none;
   resize:none;overflow:hidden;min-height:50px;line-height:1.6;}
 .pf-sub-content:focus{border-color:var(--green3);color:var(--text);}
 
@@ -624,7 +624,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 #tw-ta{flex:1;width:100%;background:var(--bg2);color:var(--green);font-family:var(--font);font-size:15.6px;border:none;outline:none;padding:14px;resize:none;line-height:1.7;}
 #tw-picker{max-height:160px;overflow-y:auto;border-bottom:1px solid var(--border);background:var(--bg2);display:flex;flex-direction:column;flex-shrink:0;}
 #tw-picker.open{display:flex;}
-.tw-pick-row{padding:5px 10px;font-size:12px;color:var(--text-dim);cursor:pointer;display:flex;gap:7px;align-items:center;border-bottom:1px solid var(--border);}
+.tw-pick-row{padding:5px 10px;font-size:15.6px;color:var(--text-dim);cursor:pointer;display:flex;gap:7px;align-items:center;border-bottom:1px solid var(--border);}
 .tw-pick-row:hover{background:var(--green-faint);color:var(--green);}
 
 /* UPLOAD PANEL */
@@ -1283,7 +1283,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
       <div class="win-bar"><span class="win-title">NETMAP — LIVE TOPOLOGY</span><button class="win-close" onclick="closeApp('netmap')">✕</button></div>
       <div class="win-content">
         <div id="nm-toolbar">
-          <span id="nm-edit-indicator">READY--<span style="color:var(--text-mute);">Use console below to target/scan nodes · click a node in edit mode to rename/retype</span></span>
+          <span id="nm-edit-indicator">READY-<span style="color:var(--text-mute);">Use console below to target/scan nodes</span></span>
           <div id="nm-edit-controls">
             <button class="nm-tb-btn" onclick="nmAdd()">+ NODE</button>
             <button class="nm-tb-btn" onclick="nmToggleConnect()" id="nm-conn-btn">CONNECT: OFF</button>
@@ -3093,7 +3093,7 @@ function nmToggleEditMode(){
   ind.classList.toggle('active',nmEditMode);
   ind.innerHTML=nmEditMode
     ?'EDIT MODE: ON <span style="color:var(--text-mute);">(type <b>edtnetmap</b> again to lock)</span>'
-    :'EDIT MODE: OFF <span style="color:var(--text-mute);">(type <b>edtnetmap</b> in terminal)</span>';
+    :'READY <span style="color:var(--text-mute);"></span>';
   if(!nmEditMode){
     nmConnMode=false;nmConnFirst=null;
     nmLinkMode=false;nmLinkFirst=null;
