@@ -123,23 +123,23 @@ header p{color:var(--text-mute);font-size:11px;letter-spacing:1px;}
 <div id="panel">
   <header>
     <h1>E.C.H.O. — CONTROL WINDOW</h1>
-    <p>pushes a protocol to the main device in real time</p>
+    <p>Deseja ativar um protocolo?</p>
   </header>
 
   <div id="status-line"><div id="status-dot"></div><span id="status-text">no active protocol</span></div>
 
   <div id="msg-row">
-    <label for="msg-input">CUSTOM LINE (optional, shown under the headline on the target device)</label>
+    <label for="msg-input">CUSTOM (opcional, em baixo da headline do dispositivo principal)</label>
     <textarea id="msg-input" placeholder="leave blank to use the default line for each protocol..."></textarea>
   </div>
 
   <div id="duration-row">
     <label for="dur-select">AUTO-CLEAR</label>
     <select id="dur-select">
-      <option value="0">Manual (stays until cleared)</option>
-      <option value="10000">After 10s</option>
-      <option value="30000" selected>After 30s</option>
-      <option value="60000">After 60s</option>
+      <option value="0">Manual</option>
+      <option value="10000">10s</option>
+      <option value="30000" selected>30s</option>
+      <option value="60000">60s</option>
     </select>
   </div>
 
@@ -154,23 +154,23 @@ header p{color:var(--text-mute);font-size:11px;letter-spacing:1px;}
     <div class="proto-card echo">
       <div class="proto-info">
         <h3>E.C.H.O. CONTROL</h3>
-        <p>Simulated autonomous takeover — wandering cursor, E.C.H.O. console, command log.</p>
+        <p>simula que o dispositivo está sobre controlo do E.C.H.O.</p>
       </div>
       <button class="trigger-btn" onclick="trigger('echo')">TRIGGER</button>
     </div>
     <div class="proto-card spoof">
       <div class="proto-info">
         <h3>CONNECTION SPOOFING</h3>
-        <p>Reroute visual — pulsing relay graph, forged-route log feed.</p>
+        <p>Simula uma intercepção na rede / contaminação pela conexão</p>
       </div>
       <button class="trigger-btn" onclick="trigger('spoof')">TRIGGER</button>
     </div>
   </div>
 
-  <button id="stop-btn" onclick="stopAll()">■ STOP / CLEAR ACTIVE PROTOCOL</button>
+  <button id="stop-btn" onclick="stopAll()">■ STOP / CLEAR PROTOCOL</button>
 
   <div id="log-box">
-    <h4>SESSION LOG (this browser only)</h4>
+    <h4>SESSION LOG </h4>
     <div id="log-list"></div>
   </div>
 
