@@ -903,11 +903,66 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
   color:var(--green);font-size:10.8px;letter-spacing:2px;padding:5px 12px;border-radius:4px;display:none;z-index:6;pointer-events:none;}
 #trk-map-wrap.edit-mode #trk-map-hint{display:block;}
 
+/* =====================================================================
+   LIVE PROTOCOL OVERLAY — pushed live from /adminwindow via KV
+   ===================================================================== */
+#live-overlay{position:absolute;inset:0;z-index:20000;display:none;flex-direction:column;
+  background:#000;overflow:hidden;font-family:var(--font);}
+#live-overlay.active{display:flex;}
+#live-overlay .lo-scan{position:absolute;inset:0;pointer-events:none;z-index:5;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.16) 2px,rgba(0,0,0,.16) 4px);}
+#live-overlay .lo-vignette{position:absolute;inset:0;pointer-events:none;z-index:4;box-shadow:inset 0 0 160px #000;}
+#live-overlay .lo-flash{position:absolute;inset:0;background:#ff000022;z-index:2;animation:lo-flash .8s infinite;}
+@keyframes lo-flash{0%,100%{opacity:0}50%{opacity:1}}
+#lo-headline{position:absolute;top:0;left:0;width:100%;padding:26px 20px 14px;text-align:center;z-index:3;}
+#lo-headline h1{font-size:27px;letter-spacing:5px;margin-bottom:8px;}
+#lo-headline p{font-size:12px;letter-spacing:2px;color:var(--text-dim);}
+#lo-log{position:absolute;left:0;bottom:0;width:100%;max-height:40%;overflow:hidden;
+  padding:10px 18px 14px;font-size:11.4px;line-height:1.6;color:var(--text-dim);z-index:3;
+  background:linear-gradient(0deg,#000 45%,transparent);}
+#lo-log div{opacity:0;animation:lo-line-in .25s forwards;}
+@keyframes lo-line-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+#lo-cursor{position:absolute;width:14px;height:14px;border:2px solid var(--cyan);border-radius:50%;
+  z-index:6;pointer-events:none;transition:left .55s cubic-bezier(.4,0,.2,1),top .55s cubic-bezier(.4,0,.2,1);
+  box-shadow:0 0 12px var(--cyan);}
+#lo-cursor::after{content:'';position:absolute;inset:-4px;border:1px solid var(--cyan);border-radius:50%;opacity:.5;}
+#lo-echo-console{position:absolute;top:96px;left:50%;transform:translateX(-50%);width:min(62%,520px);
+  border:1px solid #00ffff55;background:#00151599;border-radius:6px;padding:14px 16px;z-index:3;
+  font-size:12px;color:var(--cyan);min-height:30px;}
+#lo-echo-console .lo-caret{display:inline-block;width:7px;height:13px;background:var(--cyan);
+  animation:cc-blink 1s step-end infinite;vertical-align:middle;margin-left:2px;}
+
+/* protocol: device compromised */
+.lo-compromised{animation:lo-shake .25s infinite;}
+.lo-compromised #lo-headline h1{color:var(--red);animation:lo-glitch-text .4s infinite;}
+@keyframes lo-shake{0%,100%{transform:translate(0,0)}25%{transform:translate(-2px,1px)}
+  50%{transform:translate(2px,-1px)}75%{transform:translate(-1px,-2px)}}
+@keyframes lo-glitch-text{0%,100%{transform:translate(0,0);text-shadow:2px 0 var(--cyan),-2px 0 var(--red)}
+  50%{transform:translate(1px,-1px);text-shadow:-2px 0 var(--cyan),2px 0 var(--red)}}
+
+/* protocol: E.C.H.O. control */
+.lo-echo #lo-headline h1{color:var(--cyan);}
+
+/* protocol: connection spoofing */
+.lo-spoof #lo-headline h1{color:var(--amber);}
+#lo-spoof-net{position:absolute;inset:0;z-index:2;opacity:.8;}
 </style>
 </head>
 <body>
 <div id="tablet">
 <div class="scanlines" id="scanlines-el"></div>
+
+<!-- LIVE PROTOCOL OVERLAY (triggered instantly from /adminwindow) -->
+<div id="live-overlay">
+  <div class="lo-scan"></div>
+  <div class="lo-vignette"></div>
+  <div class="lo-flash" id="lo-flash-el" style="display:none"></div>
+  <svg id="lo-spoof-net" style="display:none"></svg>
+  <div id="lo-headline"><h1 id="lo-title"></h1><p id="lo-sub"></p></div>
+  <div id="lo-echo-console" style="display:none">E.C.H.O. <span class="lo-caret"></span></div>
+  <div id="lo-cursor" style="display:none"></div>
+  <div id="lo-log"></div>
+</div>
 
 <!-- BOOT -->
 
@@ -1909,6 +1964,133 @@ async function preloadAllData() {
     const v = _memCache['hos_' + k];
     return (v === undefined || v === null) ? d : v;
   };
+}
+
+// =====================================================================
+// LIVE PROTOCOL SYNC — driven by the /adminwindow control page
+// The admin page writes {id, protocol, message} to KV key
+// 'hos_live_event'. This page polls that single key on a short
+// interval (bypassing the boot-time cache, since it must always see
+// the freshest value) and plays the matching full-screen protocol the
+// moment a new id shows up. Polling is used instead of a persistent
+// socket because the storage backend is a plain KV Worker; this still
+// lands within ~1s of the admin triggering it.
+// =====================================================================
+
+let _liveLastId = null, _livePollIv = null, _liveLogIv = null, _liveCursorIv = null;
+
+const LIVE_TITLES = {
+  compromised: ['SYSTEM COMPROMISED', 'unauthorized control detected on this device'],
+  echo:        ['E.C.H.O. HAS ASSUMED CONTROL', 'autonomous protocol engaged — input suspended'],
+  spoof:       ['CONNECTION SPOOFED', 'this session is being rerouted through an unknown relay'],
+};
+const LIVE_LOGS = {
+  compromised: [
+    'root access escalated on /dev/tty0','firewall rule DROP-ALL bypassed',
+    'kernel module injected: rk_stealth.ko','session token replayed',
+    'writing to /etc/shadow ... done','exfil channel opened :: port 4444',
+    'AV heartbeat suppressed','persistence: cron entry planted',
+    'process hidden from task list',
+  ],
+  echo: [
+    'E.C.H.O. :: subject profile loaded','E.C.H.O. :: input channels rerouted',
+    'E.C.H.O. :: cursor authority = ECHO','E.C.H.O. :: analyzing interface tree',
+    'E.C.H.O. :: override token accepted','E.C.H.O. :: autonomy level 3 engaged',
+    'E.C.H.O. :: decision loop running',
+  ],
+  spoof: [
+    'route table rewritten :: 10.0.0.1 -> ???','DNS answer forged for 3 domains',
+    'handshake replayed on tunnel 2','peer identity spoofed :: node_07',
+    'ARP cache poisoned :: gateway','certificate fingerprint mismatch — ignored',
+    'relay hop added :: unknown-AS',
+  ],
+};
+
+async function liveCheckOnce(){
+  try{
+    const r = await fetch(`${CF_WORKER_URL}/kv`, {
+      method:'PUT', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ keys:['hos_live_event'] }),
+    });
+    if(!r.ok) return;
+    const data = await r.json();
+    const raw = data.values && data.values['hos_live_event'];
+    if(!raw) return;
+    let ev; try{ ev = typeof raw==='string' ? JSON.parse(raw) : raw; }catch{ return; }
+    if(!ev || ev.id===_liveLastId) return;
+    _liveLastId = ev.id;
+    applyLiveEvent(ev);
+  }catch(e){ /* never let polling break the UI */ }
+}
+
+function startLivePolling(){
+  liveCheckOnce();
+  clearInterval(_livePollIv);
+  _livePollIv = setInterval(liveCheckOnce, 1000);
+}
+
+function applyLiveEvent(ev){
+  if(!ev.protocol || ev.protocol==='none' || ev.protocol==='clear'){ endLiveProtocol(); return; }
+  startLiveProtocol(ev.protocol, ev.message||'');
+}
+
+function startLiveProtocol(kind, message){
+  const ov = document.getElementById('live-overlay');
+  ov.className = 'active lo-'+kind;
+  document.getElementById('lo-title').textContent = (LIVE_TITLES[kind]||['UNKNOWN PROTOCOL',''])[0];
+  document.getElementById('lo-sub').textContent = message || (LIVE_TITLES[kind]||['',''])[1];
+  document.getElementById('lo-log').innerHTML = '';
+  document.getElementById('lo-flash-el').style.display = kind==='compromised' ? 'block' : 'none';
+  document.getElementById('lo-echo-console').style.display = kind==='echo' ? 'block' : 'none';
+  document.getElementById('lo-cursor').style.display = kind==='echo' ? 'block' : 'none';
+  document.getElementById('lo-spoof-net').style.display = kind==='spoof' ? 'block' : 'none';
+  if(kind==='spoof') renderSpoofNet();
+
+  clearInterval(_liveLogIv);
+  const pool = LIVE_LOGS[kind] || [];
+  let i = 0;
+  _liveLogIv = setInterval(()=>{
+    const log = document.getElementById('lo-log');
+    const line = document.createElement('div');
+    const t = new Date().toISOString().substr(11,8);
+    line.textContent = `[${t}] ${pool[i % pool.length]}`;
+    log.appendChild(line);
+    while(log.children.length > 14) log.removeChild(log.firstChild);
+    log.scrollTop = log.scrollHeight;
+    i++;
+    if(Math.random() < 0.5) beep(180+Math.random()*400, .03, 'square', .06);
+  }, 420);
+
+  clearInterval(_liveCursorIv);
+  if(kind==='echo'){
+    const cur = document.getElementById('lo-cursor');
+    _liveCursorIv = setInterval(()=>{
+      cur.style.left = (10+Math.random()*80)+'%';
+      cur.style.top  = (26+Math.random()*64)+'%';
+    }, 900);
+  }
+  playUnlock();
+}
+
+function endLiveProtocol(){
+  clearInterval(_liveLogIv); clearInterval(_liveCursorIv);
+  document.getElementById('live-overlay').className = '';
+}
+
+function renderSpoofNet(){
+  const svg = document.getElementById('lo-spoof-net');
+  const w = 1280, h = 720, n = 9, nodes = [];
+  for(let i=0;i<n;i++) nodes.push({x:60+Math.random()*(w-120), y:60+Math.random()*(h-120)});
+  let s = `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">`;
+  for(let i=0;i<nodes.length;i++){
+    const j=(i+1)%nodes.length;
+    s+=`<line x1="${nodes[i].x}" y1="${nodes[i].y}" x2="${nodes[j].x}" y2="${nodes[j].y}" stroke="var(--amber)" stroke-opacity=".35" stroke-width="1"><animate attributeName="stroke-opacity" values=".1;.5;.1" dur="${1.5+Math.random()}s" repeatCount="indefinite"/></line>`;
+  }
+  nodes.forEach(p=>{
+    s+=`<circle cx="${p.x}" cy="${p.y}" r="4" fill="var(--amber)"><animate attributeName="r" values="3;6;3" dur="${1+Math.random()}s" repeatCount="indefinite"/></circle>`;
+  });
+  s+='</svg>';
+  svg.outerHTML = s.replace('<svg viewBox','<svg id="lo-spoof-net" style="display:block" viewBox');
 }
 
 // =====================================================================
@@ -5031,6 +5213,11 @@ document.getElementById('cc-target-ip').textContent=ccRandomIp();
   customApps = S.g('custom_apps', {}) || {};
   boot();
 })();
+
+// Live protocol polling starts immediately and independently of the boot
+// sequence, so a triggered protocol can take over the screen even during
+// the boot animation or the lock screen, not just once the OS is open.
+startLivePolling();
 </script>
 </body>
 </html>
