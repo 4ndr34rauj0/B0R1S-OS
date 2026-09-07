@@ -1126,7 +1126,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
         <div id="terminal-output"></div>
         <div class="term-input-row">
           <span class="prompt" id="term-prompt">root@admin:~$</span>
-          <input type="text" id="term-input" autocomplete="off" spellcheck="false" placeholder="type command... (# to chat)">
+          <input type="text" id="term-input" autocomplete="off" spellcheck="false" placeholder="type command... ">
         </div>
       </div>
     </div>
@@ -2485,12 +2485,8 @@ const TCMDS={
 
 function initTerminal(){
   tPrint('<span class="info">B0R1S-OS Terminal — type <b>help</b> for commands</span>');
-  tPrint('<span class="dim">Tip: start a line with <b>#</b> to send a message on an unknown channel</span>');
 
-  /*tPrint('<span class="dim">Tip: type <b>setreward</b> to configure mission rewards</span>');
-  tPrint('<span class="dim">Tip: type <b>upload</b> to import a file into FILES</span>');
-  tPrint('<span class="dim">Tip: type <b>edtnetmap</b> to toggle NETMAP edit mode</span>');*/
-
+   
   const inp=document.getElementById('term-input');
   inp.addEventListener('keydown',e=>{
     if(e.key==='Enter'){
