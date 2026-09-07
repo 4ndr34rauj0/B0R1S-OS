@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛰️</text></svg>">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>E.C.H.O. — CONTROL WINDOW</title>
+<style>
+:root{
+  --bg:#0e0a0a;--bg2:#150f0f;--bg3:#1e1414;
+  --green:#ff3333;--green2:#cc1111;--green3:#991111;
+  --green-dim:#4d0000;--green-faint:#1a0000;
+  --amber:#ffb000;--red:#ff3333;--cyan:#00ffff;
+  --text:#ff3333;--text-dim:#991111;--text-mute:#4d0000;
+  --border:#44000099;--border-bright:#ff333355;
+  --font:'Courier New',Courier,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{width:100%;min-height:100%;background:#000;font-family:var(--font);color:var(--text);}
+body{display:flex;align-items:center;justify-content:center;padding:24px;}
+
+/* ---------- PIN GATE ---------- */
+#gate{display:flex;flex-direction:column;align-items:center;gap:14px;}
+#gate-box{border:1px solid var(--border-bright);border-radius:8px;padding:28px 38px;background:#0d0505;
+  display:flex;flex-direction:column;align-items:center;gap:14px;min-width:280px;}
+#gate-box h2{color:var(--green);font-size:14px;letter-spacing:3px;text-align:center;}
+#gate-icon{font-size:40px;}
+#gate-dots{display:flex;gap:6px;}
+.g-dot{width:10px;height:10px;border-radius:50%;border:1px solid var(--green-dim);background:transparent;transition:background .1s;}
+.g-dot.filled{background:var(--green);}
+#gate-error{color:var(--red);font-size:11px;min-height:14px;letter-spacing:2px;}
+#gate-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;}
+.gkey{background:var(--bg3);border:1px solid var(--border);color:var(--green2);font-family:var(--font);
+  font-size:15px;padding:9px;cursor:pointer;border-radius:4px;transition:all .1s;}
+.gkey:hover{background:var(--green-faint);border-color:var(--green2);color:var(--green);}
+.gkey:active{transform:scale(.95);}
+#gate-hint{color:var(--text-mute);font-size:10px;letter-spacing:2px;text-align:center;max-width:300px;}
+
+/* ---------- PANEL ---------- */
+#panel{display:none;width:100%;max-width:640px;flex-direction:column;gap:16px;}
+#panel.show{display:flex;}
+header{display:flex;flex-direction:column;gap:4px;border-bottom:1px solid var(--border);padding-bottom:12px;}
+header h1{color:var(--green);font-size:19px;letter-spacing:4px;}
+header p{color:var(--text-mute);font-size:11px;letter-spacing:1px;}
+#status-line{display:flex;align-items:center;gap:8px;font-size:12px;letter-spacing:1px;color:var(--text-dim);}
+#status-dot{width:8px;height:8px;border-radius:50%;background:var(--text-mute);flex-shrink:0;}
+#status-dot.live{background:var(--cyan);box-shadow:0 0 8px var(--cyan);animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+#msg-row{display:flex;flex-direction:column;gap:6px;}
+#msg-row label{font-size:11px;color:var(--text-dim);letter-spacing:2px;}
+#msg-input{background:var(--bg3);border:1px solid var(--border);color:var(--green);font-family:var(--font);
+  font-size:13px;padding:8px 10px;border-radius:4px;outline:none;resize:vertical;min-height:44px;}
+#msg-input:focus{border-color:var(--green2);}
+
+#duration-row{display:flex;align-items:center;gap:10px;font-size:11px;color:var(--text-dim);letter-spacing:1px;}
+#duration-row select{background:var(--bg3);border:1px solid var(--border);color:var(--green);
+  font-family:var(--font);font-size:12px;padding:4px 8px;border-radius:4px;}
+
+.protocols{display:grid;grid-template-columns:1fr;gap:10px;}
+.proto-card{border:1px solid var(--border);border-radius:8px;padding:14px 16px;background:#0d0505;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;transition:border-color .15s;}
+.proto-card:hover{border-color:var(--border-bright);}
+.proto-info h3{font-size:13px;letter-spacing:2px;margin-bottom:4px;}
+.proto-info p{font-size:11px;color:var(--text-mute);letter-spacing:.5px;}
+.proto-card.compromised .proto-info h3{color:var(--red);}
+.proto-card.echo .proto-info h3{color:var(--cyan);}
+.proto-card.spoof .proto-info h3{color:var(--amber);}
+.trigger-btn{background:var(--green-faint);border:1px solid var(--green3);color:var(--green);font-family:var(--font);
+  font-size:11px;padding:9px 14px;cursor:pointer;border-radius:4px;letter-spacing:2px;transition:all .15s;white-space:nowrap;}
+.trigger-btn:hover{background:var(--green-dim);}
+.trigger-btn:active{transform:scale(.96);}
+
+#stop-btn{margin-top:4px;background:#1a0000;border:1px solid var(--red);color:var(--red);font-family:var(--font);
+  font-size:12px;padding:12px;cursor:pointer;border-radius:6px;letter-spacing:3px;transition:all .15s;}
+#stop-btn:hover{background:#2a0000;}
+
+#log-box{border-top:1px solid var(--border);padding-top:10px;}
+#log-box h4{font-size:10px;color:var(--text-mute);letter-spacing:2px;margin-bottom:6px;}
+#log-list{display:flex;flex-direction:column;gap:3px;max-height:120px;overflow-y:auto;font-size:11px;color:var(--text-dim);}
+
+/* ---------- CHAT ---------- */
+#chat-box{border-top:1px solid var(--border);padding-top:12px;display:flex;flex-direction:column;gap:8px;}
+#chat-box h4{font-size:10px;color:var(--text-mute);letter-spacing:2px;}
+#chat-msgs{display:flex;flex-direction:column;gap:6px;max-height:220px;overflow-y:auto;
+  border:1px solid var(--border);border-radius:6px;padding:10px;background:#0a0404;}
+.chat-msg{max-width:80%;padding:6px 10px;border-radius:6px;font-size:12px;line-height:1.4;word-break:break-word;}
+.chat-msg.from-device{align-self:flex-start;background:#1a0000;border:1px solid var(--border);color:var(--text-dim);}
+.chat-msg.from-admin{align-self:flex-end;background:#001a1a;border:1px solid #00ffff33;color:var(--cyan);}
+.chat-msg .chat-meta{display:block;font-size:9px;letter-spacing:1px;opacity:.6;margin-bottom:2px;}
+#chat-empty{color:var(--text-mute);font-size:11px;text-align:center;padding:10px 0;}
+#chat-input-row{display:flex;gap:8px;}
+#chat-input{flex:1;background:var(--bg3);border:1px solid var(--border);color:var(--cyan);font-family:var(--font);
+  font-size:12.5px;padding:9px 10px;border-radius:4px;outline:none;}
+#chat-input:focus{border-color:#00ffff88;}
+#chat-send{background:#001a1a;border:1px solid #00ffff55;color:var(--cyan);font-family:var(--font);
+  font-size:11px;padding:9px 14px;cursor:pointer;border-radius:4px;letter-spacing:2px;transition:all .15s;}
+#chat-send:hover{background:#002a2a;}
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <div id="gate-box">
+    <div id="gate-icon">🛰️</div>
+    <h2>E.C.H.O. — CONTROL WINDOW</h2>
+    <div id="gate-dots">
+      <div class="g-dot" id="gd0"></div><div class="g-dot" id="gd1"></div>
+      <div class="g-dot" id="gd2"></div><div class="g-dot" id="gd3"></div>
+    </div>
+    <div id="gate-error"></div>
+    <div id="gate-pad">
+      <button class="gkey" onclick="gk(7)">7</button><button class="gkey" onclick="gk(8)">8</button><button class="gkey" onclick="gk(9)">9</button>
+      <button class="gkey" onclick="gk(4)">4</button><button class="gkey" onclick="gk(5)">5</button><button class="gkey" onclick="gk(6)">6</button>
+      <button class="gkey" onclick="gk(1)">1</button><button class="gkey" onclick="gk(2)">2</button><button class="gkey" onclick="gk(3)">3</button>
+      <button class="gkey" style="grid-column:span 2" onclick="gk(0)">0</button>
+      <button class="gkey" onclick="gk('del')">⌫</button>
+    </div>
+  </div>
+  <div id="gate-hint">Enter the same PIN to access the control window</div>
+</div>
+
+<div id="panel">
+  <header>
+    <h1>E.C.H.O. — CONTROL WINDOW</h1>
+    <p>pushes a protocol to the main device in real time</p>
+  </header>
+
+  <div id="status-line"><div id="status-dot"></div><span id="status-text">no active protocol</span></div>
+
+  <div id="msg-row">
+    <label for="msg-input">CUSTOM LINE (optional, shown under the headline on the target device)</label>
+    <textarea id="msg-input" placeholder="leave blank to use the default line for each protocol..."></textarea>
+  </div>
+
+  <div id="duration-row">
+    <label for="dur-select">AUTO-CLEAR</label>
+    <select id="dur-select">
+      <option value="0">Manual (stays until cleared)</option>
+      <option value="10000">After 10s</option>
+      <option value="30000" selected>After 30s</option>
+      <option value="60000">After 60s</option>
+    </select>
+  </div>
+
+  <div class="protocols">
+    <div class="proto-card compromised">
+      <div class="proto-info">
+        <h3>DEVICE COMPROMISED</h3>
+        <p>Red alert takeover — glitching headline, screen shake, breach log feed.</p>
+      </div>
+      <button class="trigger-btn" onclick="trigger('compromised')">TRIGGER</button>
+    </div>
+    <div class="proto-card echo">
+      <div class="proto-info">
+        <h3>E.C.H.O. CONTROL</h3>
+        <p>Simulated autonomous takeover — wandering cursor, E.C.H.O. console, command log.</p>
+      </div>
+      <button class="trigger-btn" onclick="trigger('echo')">TRIGGER</button>
+    </div>
+    <div class="proto-card spoof">
+      <div class="proto-info">
+        <h3>CONNECTION SPOOFING</h3>
+        <p>Reroute visual — pulsing relay graph, forged-route log feed.</p>
+      </div>
+      <button class="trigger-btn" onclick="trigger('spoof')">TRIGGER</button>
+    </div>
+  </div>
+
+  <button id="stop-btn" onclick="stopAll()">■ STOP / CLEAR ACTIVE PROTOCOL</button>
+
+  <div id="log-box">
+    <h4>SESSION LOG (this browser only)</h4>
+    <div id="log-list"></div>
+  </div>
+
+  <div id="chat-box">
+    <h4>LIVE CHAT — DEVICE TERMINAL</h4>
+    <div id="chat-msgs"><div id="chat-empty">no messages yet</div></div>
+    <div id="chat-input-row">
+      <input type="text" id="chat-input" autocomplete="off" spellcheck="false" placeholder="message the device terminal...">
+      <button id="chat-send" onclick="sendChat()">SEND</button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+// Same storage worker the main site uses — this page is meant to be
+// deployed under the same domain, at a route like /adminwindow.
+const CF_WORKER_URL = 'https://boris-os-storage.by-4ndr3.workers.dev';
+
+async function cfGetKey(key, def=null){
+  try{
+    const r = await fetch(`${CF_WORKER_URL}/kv`, {
+      method:'PUT', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ keys:[key] }),
+    });
+    if(!r.ok) throw new Error(r.status);
+    const data = await r.json();
+    return (data.values && key in data.values) ? data.values[key] : def;
+  }catch(e){ console.warn('[ECHO] GET failed', key, e); return def; }
+}
+async function cfSetKey(key, value){
+  try{
+    await fetch(`${CF_WORKER_URL}/kv`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ batch:{ [key]: value } }),
+    });
+  }catch(e){ console.warn('[ECHO] SET failed', key, e); }
+}
+
+function escH(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+// ---------------- CHAT (admin side) ----------------
+const CHAT_KEY = 'hos_chat_log';
+let _chatSeenIds = new Set(), _chatPollIv = null;
+
+async function chatFetchLog(){
+  try{
+    const r = await fetch(`${CF_WORKER_URL}/kv`, {
+      method:'PUT', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ keys:[CHAT_KEY] }),
+    });
+    if(!r.ok) return [];
+    const data = await r.json();
+    const raw = data.values && data.values[CHAT_KEY];
+    if(!raw) return [];
+    const arr = typeof raw==='string' ? JSON.parse(raw) : raw;
+    return Array.isArray(arr) ? arr : [];
+  }catch(e){ return []; }
+}
+
+async function chatAppend(from, text){
+  const arr = await chatFetchLog();
+  const msg = { id: Date.now()*1000 + Math.floor(Math.random()*1000), from, text: String(text).slice(0,500), ts: Date.now() };
+  arr.push(msg);
+  while(arr.length > 60) arr.shift();
+  try{
+    await fetch(`${CF_WORKER_URL}/kv`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ batch:{ [CHAT_KEY]: JSON.stringify(arr) } }),
+    });
+  }catch(e){ console.warn('[CHAT] append failed', e); }
+  return msg;
+}
+
+function chatRender(arr){
+  const box = document.getElementById('chat-msgs');
+  if(!arr.length){ box.innerHTML = '<div id="chat-empty">no messages yet</div>'; return; }
+  box.innerHTML = arr.slice().sort((a,b)=>a.id-b.id).map(m=>{
+    const cls = m.from==='admin' ? 'from-admin' : 'from-device';
+    const label = m.from==='admin' ? 'YOU' : 'DEVICE TERMINAL';
+    const t = new Date(m.ts||Date.now()).toLocaleTimeString();
+    return `<div class="chat-msg ${cls}"><span class="chat-meta">${label} · ${t}</span>${escH(m.text)}</div>`;
+  }).join('');
+  box.scrollTop = box.scrollHeight;
+}
+
+async function chatPollOnce(){
+  const arr = await chatFetchLog();
+  chatRender(arr);
+}
+
+function startChatPolling(){
+  chatPollOnce();
+  clearInterval(_chatPollIv);
+  _chatPollIv = setInterval(chatPollOnce, 1200);
+}
+
+async function sendChat(){
+  const inp = document.getElementById('chat-input');
+  const text = inp.value.trim();
+  if(!text) return;
+  inp.value='';
+  await chatAppend('admin', text);
+  chatPollOnce();
+}
+document.addEventListener('DOMContentLoaded', ()=>{
+  const inp = document.getElementById('chat-input');
+  if(inp) inp.addEventListener('keydown', e=>{ if(e.key==='Enter') sendChat(); });
+});
+
+// ---------------- PIN GATE ----------------
+let gPin='', gExpected='1337';
+function gk(v){
+  const err=document.getElementById('gate-error');
+  if(v==='del'){ gPin=gPin.slice(0,-1); }
+  else if(gPin.length<4){ gPin+=String(v); }
+  for(let i=0;i<4;i++) document.getElementById('gd'+i).classList.toggle('filled', i<gPin.length);
+  err.textContent='';
+  if(gPin.length===4){
+    if(gPin===gExpected){ unlockPanel(); }
+    else{
+      err.textContent='ACCESS DENIED';
+      setTimeout(()=>{ gPin=''; for(let i=0;i<4;i++) document.getElementById('gd'+i).classList.remove('filled'); }, 500);
+    }
+  }
+}
+function unlockPanel(){
+  document.getElementById('gate').style.display='none';
+  document.getElementById('panel').classList.add('show');
+  refreshStatus();
+  setInterval(refreshStatus, 2000);
+  startChatPolling();
+}
+
+// ---------------- PROTOCOL CONTROL ----------------
+let autoClearTimer=null;
+
+async function trigger(kind){
+  clearTimeout(autoClearTimer);
+  const message = document.getElementById('msg-input').value.trim();
+  const id = Date.now();
+  await cfSetKey('hos_live_event', JSON.stringify({ id, protocol:kind, message }));
+  logAction(`Triggered "${kind}"${message ? ' — "'+message+'"' : ''}`);
+  setStatus(kind);
+
+  const dur = parseInt(document.getElementById('dur-select').value, 10);
+  if(dur > 0){
+    autoClearTimer = setTimeout(()=>{ stopAll(true); }, dur);
+  }
+}
+
+async function stopAll(silent){
+  clearTimeout(autoClearTimer);
+  const id = Date.now();
+  await cfSetKey('hos_live_event', JSON.stringify({ id, protocol:'clear' }));
+  if(!silent) logAction('Cleared active protocol');
+  else logAction('Auto-cleared (timer expired)');
+  setStatus(null);
+}
+
+function setStatus(kind){
+  const dot=document.getElementById('status-dot');
+  const txt=document.getElementById('status-text');
+  if(kind){
+    dot.classList.add('live');
+    txt.textContent = 'live: ' + kind.toUpperCase();
+  }else{
+    dot.classList.remove('live');
+    txt.textContent = 'no active protocol';
+  }
+}
+
+async function refreshStatus(){
+  const raw = await cfGetKey('hos_live_event', null);
+  if(!raw){ setStatus(null); return; }
+  try{
+    const ev = typeof raw==='string' ? JSON.parse(raw) : raw;
+    if(!ev || !ev.protocol || ev.protocol==='none' || ev.protocol==='clear') setStatus(null);
+    else setStatus(ev.protocol);
+  }catch{ setStatus(null); }
+}
+
+function logAction(text){
+  const list=document.getElementById('log-list');
+  const row=document.createElement('div');
+  const t=new Date().toLocaleTimeString();
+  row.textContent=`[${t}] ${text}`;
+  list.prepend(row);
+  while(list.children.length>20) list.removeChild(list.lastChild);
+}
+
+// Load the real PIN from KV (falls back to the main site's default '1337'
+// if it has never been changed / KV is unreachable).
+(async()=>{
+  const stored = await cfGetKey('hos_pin', '1337');
+  gExpected = String(stored || '1337').trim();
+})();
+</script>
+</body>
+</html>

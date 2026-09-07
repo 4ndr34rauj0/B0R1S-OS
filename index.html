@@ -1126,7 +1126,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
         <div id="terminal-output"></div>
         <div class="term-input-row">
           <span class="prompt" id="term-prompt">root@admin:~$</span>
-          <input type="text" id="term-input" autocomplete="off" spellcheck="false" placeholder="type command...">
+          <input type="text" id="term-input" autocomplete="off" spellcheck="false" placeholder="type command... (# to chat)">
         </div>
       </div>
     </div>
@@ -2094,6 +2094,70 @@ function renderSpoofNet(){
 }
 
 // =====================================================================
+// LIVE CHAT — device terminal <-> /adminwindow
+// A single KV key ('hos_chat_log') holds a capped JSON array of
+// {id, from, text, ts} messages. Both sides read-modify-write it to
+// append, and poll it to pick up new messages. Not race-proof against
+// two messages sent in the same instant (there's no atomic append in
+// this KV backend) but that's an acceptable trade-off for a novelty
+// chat feature.
+// =====================================================================
+
+const CHAT_KEY = 'hos_chat_log';
+let _chatLastSeenId = 0, _chatPollIv = null;
+
+async function chatFetchLog(){
+  try{
+    const r = await fetch(`${CF_WORKER_URL}/kv`, {
+      method:'PUT', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ keys:[CHAT_KEY] }),
+    });
+    if(!r.ok) return [];
+    const data = await r.json();
+    const raw = data.values && data.values[CHAT_KEY];
+    if(!raw) return [];
+    const arr = typeof raw==='string' ? JSON.parse(raw) : raw;
+    return Array.isArray(arr) ? arr : [];
+  }catch(e){ return []; }
+}
+
+async function chatAppend(from, text){
+  const arr = await chatFetchLog();
+  const msg = { id: Date.now()*1000 + Math.floor(Math.random()*1000), from, text: String(text).slice(0,500), ts: Date.now() };
+  arr.push(msg);
+  while(arr.length > 60) arr.shift();
+  try{
+    await fetch(`${CF_WORKER_URL}/kv`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ batch:{ [CHAT_KEY]: JSON.stringify(arr) } }),
+    });
+  }catch(e){ console.warn('[CHAT] append failed', e); }
+  return msg;
+}
+
+async function chatPollOnce(){
+  const arr = await chatFetchLog();
+  if(!arr.length) return;
+  const incoming = arr.filter(m => m.id > _chatLastSeenId && m.from === 'admin');
+  incoming.sort((a,b)=>a.id-b.id).forEach(m=>{
+    tPrint(`<span style="color:var(--red)">[UNKNOWN SENDER]:</span> <span class="dim">${escH(m.text)}</span>`);
+    beep(300, .05, 'square', .12);
+  });
+  const maxId = arr.reduce((mx,m)=>Math.max(mx,m.id), 0);
+  if(maxId > _chatLastSeenId) _chatLastSeenId = maxId;
+}
+
+function startChatPolling(){
+  // Baseline to the current max id first, so old history doesn't flood
+  // into the terminal the moment the page loads.
+  chatFetchLog().then(arr=>{
+    _chatLastSeenId = arr.reduce((mx,m)=>Math.max(mx,m.id), 0);
+    clearInterval(_chatPollIv);
+    _chatPollIv = setInterval(chatPollOnce, 1200);
+  });
+}
+
+// =====================================================================
 // IMAGE STORE — Cloudflare KV (base64 data-URLs stored as values)
 // =====================================================================
 const ImgStore = {
@@ -2421,6 +2485,7 @@ const TCMDS={
 
 function initTerminal(){
   tPrint('<span class="info">B0R1S-OS Terminal — type <b>help</b> for commands</span>');
+  tPrint('<span class="dim">Tip: start a line with <b>#</b> to send a message on an unknown channel</span>');
 
   /*tPrint('<span class="dim">Tip: type <b>setreward</b> to configure mission rewards</span>');
   tPrint('<span class="dim">Tip: type <b>upload</b> to import a file into FILES</span>');
@@ -2432,6 +2497,17 @@ function initTerminal(){
       const v=inp.value.trim();if(!v)return;
       tHist.push(v);tHistIdx=-1;
       tPrint(`<span style="color:var(--green2)">${escH(getPrompt())} ${escH(v)}</span>`);
+      if(v.startsWith('#')){
+        // Anything after a leading # is a chat message to the admin
+        // control window instead of a command.
+        const msg=v.slice(1).trim();
+        if(msg){
+          tPrint(`<span style="color:var(--cyan)">[SENT → UNKNOWN CHANNEL]:</span> <span class="dim">${escH(msg)}</span>`);
+          chatAppend('device', msg);
+        }
+        inp.value='';playKeyClick();
+        return;
+      }
       const parts=v.split(' ');const cmd=parts[0].toLowerCase();const args=parts.slice(1);
       if(TCMDS[cmd]){const out=TCMDS[cmd](args);if(out!==null&&out!==undefined&&out!=='')tPrint(out);}
       else tPrint(`<span class="err">${escH(cmd)}: command not found</span>`);
@@ -5218,6 +5294,7 @@ document.getElementById('cc-target-ip').textContent=ccRandomIp();
 // sequence, so a triggered protocol can take over the screen even during
 // the boot animation or the lock screen, not just once the OS is open.
 startLivePolling();
+startChatPolling();
 </script>
 </body>
 </html>
