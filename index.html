@@ -946,6 +946,63 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 /* protocol: connection spoofing */
 .lo-spoof #lo-headline h1{color:var(--amber);}
 #lo-spoof-net{position:absolute;inset:0;z-index:2;opacity:.8;}
+
+/* =====================================================================
+   NONO-EXE — ANTIVIRUS
+   ===================================================================== */
+#nono-wrap{flex:1;display:flex;flex-direction:column;overflow:hidden;height:100%;}
+#nono-header{display:flex;align-items:center;justify-content:space-between;gap:14px;
+  padding:14px 16px;border-bottom:1px solid var(--border);flex-shrink:0;}
+#nono-header-top{display:flex;align-items:center;gap:12px;}
+#nono-shield{font-size:30px;}
+#nono-status-line{color:var(--green);font-size:13.2px;letter-spacing:1px;}
+#nono-status-val{color:var(--red);font-weight:bold;}
+#nono-status-line.clean #nono-status-val{color:var(--green);}
+#nono-status-sub{color:var(--text-mute);font-size:10.2px;margin-top:2px;letter-spacing:1px;}
+#nono-log-list{flex:1;overflow-y:auto;padding:10px 16px;}
+.nono-log-hdr{display:grid;grid-template-columns:1.6fr .6fr 1fr 24px;gap:8px;
+  color:var(--text-mute);font-size:9.6px;letter-spacing:2px;padding:0 10px 6px;text-transform:uppercase;}
+.nono-log-row{display:grid;grid-template-columns:1.6fr .6fr 1fr 24px;gap:8px;align-items:center;
+  background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:10px;cursor:pointer;
+  transition:all .15s;margin-bottom:6px;}
+.nono-log-row:hover{border-color:var(--green3);background:var(--green-faint);}
+.nono-log-row.solved{opacity:.65;}
+.nono-proc{color:var(--text);font-size:12px;}
+.nono-pid{color:var(--text-dim);font-size:11px;}
+.nono-threat{color:var(--red);font-size:10.2px;letter-spacing:1px;}
+.nono-log-row.solved .nono-threat{color:var(--green);}
+.nono-arrow{color:var(--green2);font-size:14px;text-align:right;}
+#nono-footer{padding:8px 16px;border-top:1px solid var(--border);color:var(--text-mute);
+  font-size:9.6px;letter-spacing:1px;flex-shrink:0;}
+
+#nono-overlay{position:absolute;inset:0;background:#000c;display:none;align-items:center;
+  justify-content:center;z-index:60;}
+#nono-overlay.open{display:flex;}
+#nono-overlay-box{width:460px;max-width:92%;max-height:86%;background:#0d0202;
+  border:1px solid var(--border-bright);border-radius:8px;overflow:hidden;
+  display:flex;flex-direction:column;box-shadow:0 0 40px #000c;}
+#nono-overlay-bar{display:flex;align-items:center;justify-content:space-between;
+  background:#0d0505;border-bottom:1px solid var(--border);padding:8px 12px;
+  color:var(--green2);font-size:11px;letter-spacing:2px;flex-shrink:0;}
+#nono-overlay-body{padding:22px;overflow-y:auto;display:flex;flex-direction:column;
+  align-items:center;text-align:center;gap:10px;}
+#nono-game-intro{display:flex;flex-direction:column;align-items:center;gap:10px;}
+#nono-game-board,#nono-game-success{display:none;flex-direction:column;align-items:center;gap:10px;}
+#nono-game-intro p{color:var(--text-dim);font-size:12px;line-height:1.7;max-width:380px;}
+#nono-round-line{color:var(--green);font-size:11px;letter-spacing:2px;}
+#nono-game-status{color:var(--amber);font-size:11px;letter-spacing:2px;margin-bottom:2px;min-height:14px;}
+#nono-grid{display:grid;grid-template-columns:repeat(3,64px);gap:10px;margin:6px 0;}
+.nono-cell{width:64px;height:64px;border:1px solid var(--green3);border-radius:6px;
+  background:var(--bg3);display:flex;align-items:center;justify-content:center;
+  color:var(--text-dim);font-size:12px;letter-spacing:1px;cursor:pointer;transition:all .1s;user-select:none;}
+.nono-cell:hover{border-color:var(--green2);}
+.nono-cell.lit{background:var(--green2);color:#0a0505;border-color:var(--green);
+  box-shadow:0 0 16px var(--green2);}
+.nono-cell.wrong{background:var(--red);border-color:#ff6666;color:#1a0000;}
+.nono-cell.locked{cursor:not-allowed;}
+#nono-success-icon{font-size:34px;color:var(--green);}
+#nono-success-title{color:var(--green);font-size:13.2px;letter-spacing:1px;max-width:360px;}
+#nono-success-sub{color:var(--text-dim);font-size:10.8px;}
 </style>
 </head>
 <body>
@@ -1113,6 +1170,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
       </div>
       <div class="app-icon" onclick="openApp('portfolio')">
         <div class="icon-box">🗂️</div><span class="label">Portfolio</span>
+      </div>
+      <div class="app-icon" onclick="openApp('nono')">
+        <div class="icon-box">🛡️</div><span class="label">nono-exe</span>
       </div>
       <div id="custom-icons"></div>
     </div>
@@ -1844,6 +1904,68 @@ document.write('<h2 style="letter-spacing:2px;">MY APP v1.0</h2><p style="color:
       <div id="pf-lightbox" onclick="pfCloseLightbox()"><img id="pf-lightbox-img" src="" alt=""></div>
     </div>
 
+    <!-- NONO-EXE -->
+
+    <div class="app-window" id="nono-app">
+      <div class="win-bar"><span class="win-title">NONO-EXE — ANTIVIRUS</span>
+        <button class="win-close" onclick="closeApp('nono')">✕</button></div>
+      <div class="win-content" style="padding:0;">
+        <div id="nono-wrap">
+          <div id="nono-header">
+            <div id="nono-header-top">
+              <span id="nono-shield">🛡️</span>
+              <div>
+                <div id="nono-status-line">SYSTEM STATUS: <span id="nono-status-val">1 THREAT DETECTED</span></div>
+                <div id="nono-status-sub">last scan just now</div>
+              </div>
+            </div>
+            <button class="hk-btn" onclick="nonoScan()">⟳ RESCAN</button>
+          </div>
+          <div id="nono-log-list">
+            <div class="nono-log-hdr"><span>PROCESS</span><span>PID</span><span>STATUS</span><span></span></div>
+            <div class="nono-log-row" id="nono-row-saifora" onclick="nonoOpenLog()">
+              <span class="nono-proc">saifora.sys</span>
+              <span class="nono-pid">4471</span>
+              <span class="nono-threat" id="nono-threat-val">⚠ SUSPICIOUS</span>
+              <span class="nono-arrow">›</span>
+            </div>
+          </div>
+          <div id="nono-footer">nono-exe v4.4.1 — heuristic engine — definitions up to date</div>
+        </div>
+      </div>
+
+      <div id="nono-overlay">
+        <div id="nono-overlay-box">
+          <div id="nono-overlay-bar">
+            <span>PROCESS INSPECTOR — saifora.sys</span>
+            <button class="win-close" onclick="nonoCloseOverlay()">✕</button>
+          </div>
+          <div id="nono-overlay-body">
+
+            <div id="nono-game-intro">
+              <p>Process <b>saifora.sys</b> is holding an encrypted token in memory and resisting removal.</p>
+              <p>Forcing a clean removal means mirroring its handshake sequence from memory across 5 rounds. The sequence grows every round — one wrong cell restarts that round.</p>
+              <button class="hk-btn" id="nono-start-btn" onclick="nonoStartGame()">▶ BEGIN REMOVAL</button>
+            </div>
+
+            <div id="nono-game-board">
+              <div id="nono-round-line">ROUND <span id="nono-round-val">1</span> / <span id="nono-round-max">5</span></div>
+              <div id="nono-game-status">MEMORIZE THE SEQUENCE</div>
+              <div id="nono-grid"></div>
+            </div>
+
+            <div id="nono-game-success">
+              <div id="nono-success-icon">✔</div>
+              <div id="nono-success-title">echo_token_33#33 sucessfully removed</div>
+              <div id="nono-success-sub">saifora.sys — process terminated, memory scrubbed.</div>
+              <button class="hk-btn" onclick="nonoCloseOverlay()">CLOSE</button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -1940,7 +2062,7 @@ const S = {
 async function preloadAllData() {
   const KEYS = [
     'username','hostname','pin','settings','fs','netmap',
-    'netmap_presets','rewards','custom_apps','portfolio','tracker_ping'
+    'netmap_presets','rewards','custom_apps','portfolio','tracker_ping','nono_solved'
   ];
   const fullKeys = KEYS.map(k => 'hos_' + k);
   try {
@@ -2215,6 +2337,7 @@ let curDir='/root',sessionStart=Date.now(),matrixIv=null,customApps={};
 // Quest state
 let questScanDone=false,questFWDone=false,questPWDone=false,questTarget=null;
 let rwSelected=null,rwEditPath=null;
+let nonoState={seq:[],round:1,maxRound:5,playerPos:0,busy:false,solved:false};
 
 // =====================================================================
 // BOOT
@@ -2386,6 +2509,142 @@ function openApp(id){
 function closeApp(id){document.getElementById(id+'-app').classList.remove('active');document.getElementById('home').classList.remove('hidden');}
 function escH(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function escAttr(s){return escH(s).replace(/"/g,'&quot;');}
+
+// =====================================================================
+// NONO-EXE — fake antivirus w/ "saifora" process removal minigame
+// =====================================================================
+
+const NONO_SYMS=['A3','F1','09','7C','B2','E4','1D','C6','55'];
+
+function nonoScan(){
+  const sub=document.getElementById('nono-status-sub');
+  beep(500,.03,'sine',.08);
+  setTimeout(()=>beep(700,.03,'sine',.08),120);
+  setTimeout(()=>beep(900,.04,'sine',.1),240);
+  sub.textContent='scanning running processes...';
+  setTimeout(()=>{sub.textContent=nonoState.solved?'last scan just now — system clean':'last scan just now';},900);
+}
+
+function nonoOpenLog(){
+  document.getElementById('nono-overlay').classList.add('open');
+  if(nonoState.solved){nonoShowSuccess();}
+  else{nonoResetIntro();}
+}
+
+function nonoCloseOverlay(){
+  document.getElementById('nono-overlay').classList.remove('open');
+}
+
+function nonoResetIntro(){
+  document.getElementById('nono-game-intro').style.display='flex';
+  document.getElementById('nono-game-board').style.display='none';
+  document.getElementById('nono-game-success').style.display='none';
+}
+
+function nonoStartGame(){
+  document.getElementById('nono-game-intro').style.display='none';
+  document.getElementById('nono-game-board').style.display='flex';
+  nonoState.round=1;
+  nonoBuildGrid();
+  nonoNextRound();
+}
+
+function nonoBuildGrid(){
+  const grid=document.getElementById('nono-grid');
+  grid.innerHTML='';
+  NONO_SYMS.forEach((s,i)=>{
+    const c=document.createElement('div');
+    c.className='nono-cell';
+    c.textContent=s;
+    c.dataset.idx=i;
+    c.onclick=()=>nonoCellClick(i);
+    grid.appendChild(c);
+  });
+}
+
+function nonoNextRound(){
+  document.getElementById('nono-round-val').textContent=nonoState.round;
+  nonoState.seq=[];
+  const len=nonoState.round+2;
+  for(let i=0;i<len;i++)nonoState.seq.push(Math.floor(Math.random()*9));
+  nonoState.playerPos=0;
+  nonoPlaySequence();
+}
+
+function nonoPlaySequence(){
+  nonoState.busy=true;
+  document.getElementById('nono-game-status').textContent='MEMORIZE THE SEQUENCE';
+  document.querySelectorAll('.nono-cell').forEach(c=>c.classList.add('locked'));
+  let i=0;
+  const step=()=>{
+    if(i>0){
+      const prevCell=document.querySelector(`.nono-cell[data-idx="${nonoState.seq[i-1]}"]`);
+      if(prevCell)prevCell.classList.remove('lit');
+    }
+    if(i>=nonoState.seq.length){
+      document.querySelectorAll('.nono-cell').forEach(c=>c.classList.remove('locked'));
+      document.getElementById('nono-game-status').textContent='YOUR TURN — REPEAT THE SEQUENCE';
+      nonoState.busy=false;
+      return;
+    }
+    const cell=document.querySelector(`.nono-cell[data-idx="${nonoState.seq[i]}"]`);
+    if(cell)cell.classList.add('lit');
+    beep(500+nonoState.seq[i]*35,.09,'sine',.15);
+    i++;
+    setTimeout(step,550);
+  };
+  setTimeout(step,500);
+}
+
+function nonoCellClick(i){
+  if(nonoState.busy)return;
+  const cell=document.querySelector(`.nono-cell[data-idx="${i}"]`);
+  if(i===nonoState.seq[nonoState.playerPos]){
+    cell.classList.add('lit');
+    beep(500+i*35,.06,'sine',.12);
+    setTimeout(()=>cell.classList.remove('lit'),180);
+    nonoState.playerPos++;
+    if(nonoState.playerPos>=nonoState.seq.length){
+      nonoState.busy=true;
+      playSuccess();
+      setTimeout(()=>{
+        if(nonoState.round>=nonoState.maxRound){nonoFinishGame();}
+        else{nonoState.round++;nonoNextRound();}
+      },700);
+    }
+  }else{
+    cell.classList.add('wrong');
+    playFail();
+    nonoState.busy=true;
+    document.getElementById('nono-game-status').textContent='WRONG SEQUENCE — RETRYING ROUND';
+    setTimeout(()=>{
+      cell.classList.remove('wrong');
+      setTimeout(()=>nonoNextRound(),600);
+    },400);
+  }
+}
+
+function nonoFinishGame(){
+  nonoState.solved=true;
+  S.s('nono_solved',true);
+  playComplete();
+  nonoShowSuccess();
+  nonoMarkRowSolved();
+}
+
+function nonoShowSuccess(){
+  document.getElementById('nono-game-intro').style.display='none';
+  document.getElementById('nono-game-board').style.display='none';
+  document.getElementById('nono-game-success').style.display='flex';
+}
+
+function nonoMarkRowSolved(){
+  const row=document.getElementById('nono-row-saifora');
+  row.classList.add('solved');
+  document.getElementById('nono-threat-val').textContent='✔ REMOVED';
+  document.getElementById('nono-status-val').textContent='0 THREATS';
+  document.getElementById('nono-status-line').classList.add('clean');
+}
 
 // =====================================================================
 // FILESYSTEM (localStorage)
@@ -5283,6 +5542,8 @@ document.getElementById('cc-target-ip').textContent=ccRandomIp();
   // Pin is always stored/compared as a string.
   pinCode    = String(S.g('pin',  '1337') || '1337').trim();
   customApps = S.g('custom_apps', {}) || {};
+  nonoState.solved = !!S.g('nono_solved', false);
+  if(nonoState.solved)nonoMarkRowSolved();
   boot();
 })();
 
